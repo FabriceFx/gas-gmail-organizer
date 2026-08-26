@@ -1,0 +1,10 @@
+# Fichiers clasp — contiennent le scriptId personnel et les tokens d'auth
+.clasp.json
+.clasprc.json
+
+# macOS
+.DS_Store
+
+# Éditeurs
+.vscode/
+*.swp
