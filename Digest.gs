@@ -196,21 +196,21 @@ function envoyerDigest() {
 function construireSectionsDigest_() {
     const sections = [
         {
-            titre: '⚠️ Erreurs de tri',
+            titre: '\u26A0\uFE0F Erreurs de tri',
             titreTexte: 'Erreurs de tri',
             couleur: '#B06000',
             requete:
                 `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.ERREUR)}"`
         },
         {
-            titre: '🔴 Attention requise',
+            titre: '\uD83D\uDD34 Attention requise',
             titreTexte: 'Attention requise',
             couleur: '#C5221F',
             requete:
                 `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.ATTENTION)}"`
         },
         {
-            titre: '🟠 Actions rapides',
+            titre: '\uD83D\uDFE0 Actions rapides',
             titreTexte: 'Actions rapides',
             couleur: '#E8710A',
             requete:
@@ -225,8 +225,8 @@ function construireSectionsDigest_() {
 
         sections.push({
             titre: CONFIG.TRI.ARCHIVER_AUCUNE_ACTION
-                ? '🟢 Aucune action classée sur les dernières 24 h'
-                : '🟢 Aucune action',
+                ? '\uD83D\uDFE2 Aucune action classée sur les dernières 24 h'
+                : '\uD83D\uDFE2 Aucune action',
             titreTexte: CONFIG.TRI.ARCHIVER_AUCUNE_ACTION
                 ? 'Aucune action classée sur les dernières 24 h'
                 : 'Aucune action',

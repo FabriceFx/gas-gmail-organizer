@@ -39,10 +39,10 @@ function _loadArrayProp(key, defaultArr) {
 
 const CONFIG = Object.freeze({
     LABELS: Object.freeze({
-        RAPIDE: '🟠 Action rapide',
-        ATTENTION: '🔴 Attention requise',
-        AUCUNE: '🟢 Aucune action',
-        ERREUR: '⚠️ Erreur de tri',
+        RAPIDE: '\uD83D\uDFE0 Action rapide',
+        ATTENTION: '\uD83D\uDD34 Attention requise',
+        AUCUNE: '\uD83D\uDFE2 Aucune action',
+        ERREUR: '\u26A0\uFE0F Erreur de tri',
         MARQUEUR: '· analysé'
     }),
 
