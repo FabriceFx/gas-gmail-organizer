@@ -150,6 +150,58 @@ body {
     font-variation-settings: 'FILL' 1;
 }
 
+/* ── Toggle Switch (MD3) ── */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.slider {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    background: var(--md-sys-color-surface-variant);
+    border: 2px solid var(--md-sys-color-outline);
+    border-radius: 100px;
+    transition: var(--transition-standard);
+}
+
+.slider::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--md-sys-color-outline);
+    border-radius: 50%;
+    transition: var(--transition-standard);
+}
+
+.switch input:checked + .slider {
+    background: var(--md-sys-color-primary);
+    border-color: var(--md-sys-color-primary);
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(20px) translateY(-50%);
+    background: var(--md-sys-color-on-primary);
+    width: 24px;
+    height: 24px;
+    left: 2px;
+}
+
 .lang-switch {
     display: flex;
     gap: 8px;
@@ -289,51 +341,6 @@ header p {
 
 .btn-secondary:hover {
     background: rgba(11, 87, 208, 0.08);
-}
-
-/* Switch / Toggle (MD3) */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 52px;
-    height: 32px;
-    margin-top: 8px;
-}
-
-.switch input { 
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: var(--md-sys-color-surface-variant);
-    transition: .3s;
-    border-radius: 34px;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 24px;
-    width: 24px;
-    left: 4px;
-    bottom: 4px;
-    background-color: var(--md-sys-color-on-surface-variant);
-    transition: .3s;
-    border-radius: 50%;
-}
-
-input:checked + .slider {
-    background-color: var(--md-sys-color-primary);
-}
-
-input:checked + .slider:before {
-    transform: translateX(20px);
-    background-color: var(--md-sys-color-on-primary);
 }
 
 /* Forms */
