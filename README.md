@@ -52,7 +52,13 @@ Toute la configuration se fait depuis l'interface Web (Dashboard), sans jamais a
   - **Ne pas envoyer à l'IA** : Liste des expéditeurs ultra-sensibles. Ils seront toujours classés en "Attention requise" et leur contenu ne sera jamais envoyé à Gemini.
   - **Ignorer** : Liste des expéditeurs de type "Newsletter" qui finiront automatiquement en "Aucune action".
 
-### 4. Rapports quotidiens (Digest)
+### 4. Méthodologie au quotidien (Inbox Zero)
+Pour que l'outil soit efficace et que votre rapport quotidien ne se remplisse pas indéfiniment, suivez cette méthode simple :
+1. **Agir** : Ouvrez votre dossier/libellé `Action Rapide` et traitez les e-mails en attente.
+2. **Archiver** : Une fois l'e-mail traité, **enlevez-lui le libellé de couleur** ou **archivez l'e-mail**. S'il reste dans votre boîte de réception avec le libellé coloré, le script considérera qu'il est toujours "en attente de votre part".
+3. **Nettoyer** : Consultez de temps en temps le dossier `Aucune Action` en lisant en diagonale, puis archivez massivement.
+
+### 5. Rapports quotidiens (Digest)
 En activant le tri automatique, un email récapitulatif (Digest) vous sera envoyé tous les matins à 8h avec le résumé des actions rapides et attentions requises.
 
 ### 5. Sécurité
@@ -104,12 +110,18 @@ All configuration is done from the Web Interface (Dashboard), without ever needi
     > 3. Click the **Create API key** button and copy the generated string.
   - **VIP**: Enter addresses (e.g., `boss@company.com`) or domains (e.g., `@mydomain.com`) whose emails should always be flagged as "Quick Action" without using AI.
   - **Do not send to AI**: Ultra-sensitive senders list. They will always be flagged as "Attention required" and their content will never be sent to Gemini.
-  - **Ignore**: List of senders (e.g., newsletters) that will automatically end up in "No action".
+  - **Ignore**: Newsletters or receipts that should automatically go to "No Action".
 
-### 4. Daily Reports (Digest)
+### 4. Daily Workflow (Inbox Zero)
+For the tool to be effective and keep your daily digest clean, follow this simple routine:
+1. **Act**: Open your `Quick Action` label and process the pending emails.
+2. **Archive**: Once an email is processed, **remove its color label** or **archive the email**. If it stays in your inbox with the color label attached, the script will consider it still "pending".
+3. **Clean**: Briefly check the `No Action` folder, skim through, and bulk archive.
+
+### 5. Daily Reports (Digest)
 By enabling auto-sort, a summary email (Digest) will be sent to you every morning at 8 AM, listing quick actions and required attentions.
 
-### 5. Security
+### 6. Security
 - Your API key is encrypted and stored in Google's hidden `PropertiesService`.
 - Email content (body, attachments) is strictly injected as "untrusted data" to prevent social engineering attacks (Prompt Injection) originating from incoming emails.
 
