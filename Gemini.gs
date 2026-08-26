@@ -330,7 +330,6 @@ function appelerGemini_(donnees, apiKey, modele, deadline) {
 
     const schema = {
         type: 'object',
-        additionalProperties: false,
         properties: {
             action: {
                 type: 'string',
