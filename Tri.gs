@@ -8,10 +8,10 @@
  * Fonction appelée par le déclencheur one-off du Dashboard.
  * Supprime son propre déclencheur éphémère puis lance le tri.
  */
-function executerTriManuelBackground_() {
+function executerTriManuelBackground() {
     const triggers = ScriptApp.getProjectTriggers();
     triggers.forEach(trigger => {
-        if (trigger.getHandlerFunction() === 'executerTriManuelBackground_') {
+        if (trigger.getHandlerFunction() === 'executerTriManuelBackground') {
             ScriptApp.deleteTrigger(trigger);
         }
     });

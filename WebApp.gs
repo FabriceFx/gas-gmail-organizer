@@ -84,7 +84,7 @@ function saveSettings(settings) {
  */
 function lancerTriManuel() {
     try {
-        ScriptApp.newTrigger('executerTriManuelBackground_')
+        ScriptApp.newTrigger('executerTriManuelBackground')
             .timeBased()
             .after(100)
             .create();
