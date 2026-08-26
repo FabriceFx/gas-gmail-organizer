@@ -150,35 +150,13 @@
                     <h2 data-i18n="title_guide">Guide d'utilisation</h2>
                     <p data-i18n="subtitle_guide">Comprendre le fonctionnement du tri.</p>
                 </header>
-                
-                <div class="cards-grid">
+
+                <!-- Rangée 1 : catégories + clé API (2 cartes côte à côte) -->
+                <div class="cards-grid" style="margin-bottom: 24px;">
                     <div class="glass-card">
                         <div class="card-icon"><span class="material-symbols-outlined">category</span></div>
                         <h3 data-i18n="guide_labels_title">Les catégories de tri</h3>
                         <p data-i18n="guide_labels_desc">L'outil trie vos emails en 3 catégories principales : Action Rapide (réponse simple), Attention Requise (dossier complexe) et Aucune Action (informatif).</p>
-                    </div>
-
-                    <div class="glass-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(var(--md-sys-color-primary-rgb), 0.1), rgba(var(--md-sys-color-tertiary-rgb), 0.1)); border: 1px solid rgba(var(--md-sys-color-primary-rgb), 0.2);">
-                        <div class="card-icon" style="color: var(--md-sys-color-primary);"><span class="material-symbols-outlined">checklist</span></div>
-                        <h3 data-i18n="guide_workflow_title">🎯 Méthodologie au quotidien</h3>
-                        <p data-i18n="guide_workflow_desc">Pour garder une boîte mail propre (Inbox Zero), suivez ces 3 étapes :</p>
-                        <ul style="margin-top: 15px; margin-left: 5px; list-style-type: none; display: flex; flex-direction: column; gap: 10px;">
-                            <li style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 4px solid #F29900;" data-i18n="guide_workflow_step1"></li>
-                            <li style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 4px solid #EA4335;" data-i18n="guide_workflow_step2"></li>
-                            <li style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 4px solid #34A853;" data-i18n="guide_workflow_step3"></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="glass-card">
-                        <div class="card-icon"><span class="material-symbols-outlined">security</span></div>
-                        <h3 data-i18n="guide_security_title">Sécurité & IA</h3>
-                        <p data-i18n="guide_security_desc">Vos paramètres locaux (VIP, Ignorer) priment toujours. En cas de doute, l'email est envoyé à Gemini avec un prompt strictement verrouillé pour empêcher toute tentative de manipulation (Prompt Injection).</p>
-                    </div>
-                    
-                    <div class="glass-card">
-                        <div class="card-icon"><span class="material-symbols-outlined">mark_email_read</span></div>
-                        <h3 data-i18n="guide_digest_title">Le rapport quotidien</h3>
-                        <p data-i18n="guide_digest_desc">Lorsque le tri automatique est activé, un email récapitulatif (Digest) vous est envoyé chaque matin à 8h avec le résumé des tâches en attente.</p>
                     </div>
 
                     <div class="glass-card">
@@ -190,6 +168,33 @@
                             <li data-i18n="guide_apikey_step2"></li>
                             <li data-i18n="guide_apikey_step3"></li>
                         </ol>
+                    </div>
+                </div>
+
+                <!-- Rangée 2 : Méthodologie pleine largeur -->
+                <div class="glass-card" style="margin-bottom: 24px; background: linear-gradient(135deg, #e8f0fe, #fce8e6); border: 1px solid #c5d5f5;">
+                    <div class="card-icon" style="background: #d3e3fd; color: #0b57d0;"><span class="material-symbols-outlined">checklist</span></div>
+                    <h3 data-i18n="guide_workflow_title" style="color: #041e49;">🎯 Méthodologie au quotidien</h3>
+                    <p data-i18n="guide_workflow_desc" style="color: #444746;">Pour garder une boîte mail propre (Inbox Zero), suivez ces 3 étapes :</p>
+                    <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
+                        <div style="padding: 16px; background: rgba(255,255,255,0.7); border-radius: 12px; border-left: 4px solid #F29900;" data-i18n="guide_workflow_step1"></div>
+                        <div style="padding: 16px; background: rgba(255,255,255,0.7); border-radius: 12px; border-left: 4px solid #EA4335;" data-i18n="guide_workflow_step2"></div>
+                        <div style="padding: 16px; background: rgba(255,255,255,0.7); border-radius: 12px; border-left: 4px solid #34A853;" data-i18n="guide_workflow_step3"></div>
+                    </div>
+                </div>
+
+                <!-- Rangée 3 : Sécurité + Rapport quotidien -->
+                <div class="cards-grid">
+                    <div class="glass-card">
+                        <div class="card-icon"><span class="material-symbols-outlined">security</span></div>
+                        <h3 data-i18n="guide_security_title">Sécurité & IA</h3>
+                        <p data-i18n="guide_security_desc">Vos paramètres locaux (VIP, Ignorer) priment toujours. En cas de doute, l'email est envoyé à Gemini avec un prompt strictement verrouillé pour empêcher toute tentative de manipulation (Prompt Injection).</p>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-icon"><span class="material-symbols-outlined">mark_email_read</span></div>
+                        <h3 data-i18n="guide_digest_title">Le rapport quotidien</h3>
+                        <p data-i18n="guide_digest_desc">Lorsque le tri automatique est activé, un email récapitulatif (Digest) vous est envoyé chaque matin à 8h avec le résumé des tâches en attente.</p>
                     </div>
                 </div>
             </section>
