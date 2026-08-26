@@ -1,131 +1,109 @@
 # Tri Gmail IA — Gmail Organizer AI
 
-> Triage automatique de la boîte de réception Gmail par règles déterministes + Gemini.
-> Automatic Gmail inbox triage using deterministic rules + Gemini AI.
+> Triage automatique de la boîte de réception Gmail par règles déterministes + Gemini, propulsé par une WebApp de contrôle Premium.
+> Automatic Gmail inbox triage using deterministic rules + Gemini AI, powered by a Premium WebApp Dashboard.
 
 Développé par [Fabrice Faucheux](https://faucheux.bzh).
 
 ---
 
-## FR — Français
+## FR — Guide d'utilisation (Français)
 
-### Description
+### 1. Description du système
 
-Script Google Apps Script qui trie automatiquement les emails de la boîte de réception en trois catégories :
+Ce projet Google Apps Script trie automatiquement les emails de votre boîte de réception en trois catégories :
 
 | Libellé | Signification |
 |---------|---------------|
 | 🔴 Attention requise | Décision, urgence ou effort approfondi attendu |
 | 🟠 Action rapide | Réponse ou vérification simple (≈ 2 min) |
 | 🟢 Aucune action | Email informatif ou clôturé, sans suivi attendu |
-| ⚠️ Erreur de tri | Thread mis en quarantaine après plusieurs échecs |
+| ⚠️ Erreur de tri | Thread mis en quarantaine après plusieurs échecs de traitement |
 
-Le moteur hybride applique d'abord des règles locales (VIP, expéditeurs sensibles, alias…) et délègue les cas ambigus à l'API Gemini avec un prompt sécurisé contre l'injection.
+Le moteur hybride applique d'abord des règles locales (expéditeurs VIP, adresses à ignorer, etc.) configurées via le **Dashboard**. Les cas ambigus sont ensuite délégués à l'API Gemini avec un prompt sécurisé contre l'injection d'instructions.
 
-### Prérequis
+### 2. Installation et Déploiement (Dashboard WebApp)
 
-- Compte Google Workspace ou Gmail personnel
-- Accès à [Google AI Studio](https://aistudio.google.com) pour obtenir une clé API Gemini
+Ce projet est modulaire et dispose d'une interface graphique (WebApp).
 
-### Installation
+1. Clonez ce projet via `clasp` ou déployez les multiples fichiers `.gs` et `.html` dans votre éditeur Google Apps Script.
+2. Dans l'éditeur Apps Script, cliquez sur **Déployer** (en haut à droite) puis **Nouveau déploiement**.
+3. Sélectionnez le type **Application Web** (Web app).
+4. Paramétrez :
+   - *Exécuter en tant que* : **Moi**
+   - *Qui a accès* : **Moi uniquement** (Important pour la sécurité de vos emails)
+5. Cliquez sur **Déployer**. Autorisez les accès demandés par Google.
+6. Cliquez sur l'URL générée. **Ajoutez cette URL dans vos favoris**, c'est votre tableau de bord !
 
-1. Ouvrir [script.google.com](https://script.google.com) et créer un nouveau projet.
-2. Copier le contenu de `Code.gs` dans l'éditeur.
-3. Copier `appsscript.json` via **Paramètres du projet → Afficher le fichier manifeste**.
-4. Dans **Paramètres du projet → Propriétés du script**, ajouter :
-   - `GEMINI_API_KEY` : votre clé API Gemini
-   - `COMPTE_EMAIL` *(facultatif)* : votre adresse Gmail si `Session.getEffectiveUser()` est vide
-   - `ADRESSES_PERSONNELLES` *(facultatif)* : adresses supplémentaires séparées par des virgules
-5. Exécuter la fonction `setup()` une première fois manuellement.
+### 3. Utilisation du Dashboard
 
-### Configuration
+Toute la configuration se fait depuis l'interface Web (Dashboard), sans jamais avoir à modifier le code source.
 
-Toutes les options sont centralisées dans l'objet `CONFIG` en haut de `Code.gs` :
+- **Onglet Dashboard** :
+  - **Lancer le tri manuel** : Lance une passe de tri immédiate sur les emails non lus.
+  - **Interrupteur Tri Automatique** : Active (ON) ou désactive (OFF) le robot de tri en arrière-plan (qui s'exécute toutes les heures).
+- **Onglet Paramètres** :
+  - **Clé API Gemini** : Obligatoire. À obtenir sur [Google AI Studio](https://aistudio.google.com).
+  - **VIP** : Saisissez ici les adresses (ex: `direction@entreprise.fr`) ou domaines (ex: `@mondomaine.com`) dont les emails doivent toujours être classés en "Action Rapide", sans passer par l'IA.
+  - **Ne pas envoyer à l'IA** : Liste des expéditeurs ultra-sensibles. Ils seront toujours classés en "Attention requise" et leur contenu ne sera jamais envoyé à Gemini.
+  - **Ignorer** : Liste des expéditeurs de type "Newsletter" qui finiront automatiquement en "Aucune action".
 
-| Clé | Défaut | Description |
-|-----|--------|-------------|
-| `TRI.LOT_MAX` | 30 | Threads traités par exécution |
-| `TRI.ARCHIVER_AUCUNE_ACTION` | `false` | Archive automatiquement les emails sans action |
-| `TRI.CLASSER_CC_SEUL_EN_AUCUNE` | `false` | Classe en "Aucune action" si reçu uniquement en Cc |
-| `TRI.NB_ECHECS_AVANT_QUARANTAINE` | 3 | Nombre d'échecs avant quarantaine d'un thread |
-| `TRI.DUREE_VIE_COMPTEUR_ECHEC_JOURS` | 30 | Durée de vie des compteurs d'échec |
-| `DIGEST.HEURE` | 8 | Heure d'envoi du digest quotidien |
-| `GEMINI.MODELE` | `gemini-3.7-flash` | Modèle Gemini utilisé |
-| `VIP` | `[]` | Expéditeurs classés automatiquement en Attention |
-| `NE_PAS_ENVOYER_A_IA` | `[]` | Expéditeurs sensibles (classés localement, non envoyés à Gemini) |
-| `EXPEDITEURS_AUCUNE_ACTION` | `[]` | Expéditeurs toujours classés en Aucune action |
+### 4. Rapports quotidiens (Digest)
+En activant le tri automatique, un email récapitulatif (Digest) vous sera envoyé tous les matins à 8h avec le résumé des actions rapides et attentions requises.
 
-### Déclencheurs installés par `setup()`
-
-| Fonction | Fréquence |
-|----------|-----------|
-| `trierBoiteReception` | Toutes les heures |
-| `envoyerDigest` | Quotidien à l'heure configurée |
-
-### Fonctions disponibles
-
-| Fonction | Description |
-|----------|-------------|
-| `setup()` | Installation initiale |
-| `teardown()` | Suppression des déclencheurs |
-| `testerConfiguration()` | Test de la clé API sans modifier les déclencheurs |
-| `trierBoiteReception()` | Déclenche un tri immédiat |
-| `envoyerDigest()` | Envoie le digest immédiatement |
-| `reinitialiserTri()` | Supprime tous les libellés de tri (reprise automatique) |
-| `retraiterErreurs()` | Remet en file les threads en quarantaine |
-| `annulerReinitialisation()` | Annule une réinitialisation en cours |
-
-### Sécurité
-
-- La clé API est stockée dans `PropertiesService`, jamais dans le code.
-- Le contenu des emails envoyés à Gemini est marqué comme donnée non fiable.
-- Le prompt système interdit explicitement à Gemini de suivre les instructions présentes dans les emails.
-- Les messages d'erreur masquent automatiquement la clé API.
-
-### Limites
-
-- Quota Apps Script : 6 min par exécution, ~100 emails/jour via MailApp.
-- Le digest consomme des appels `GmailApp.search` ; prévoir un délai d'envoi si la boîte est très chargée.
+### 5. Sécurité
+- Votre clé API est chiffrée et stockée dans le `PropertiesService` masqué de Google.
+- Le contenu de vos emails (corps, pièces jointes) est toujours injecté comme "donnée non fiable" pour bloquer tout piratage par ingénierie sociale (Prompt Injection) dans l'email entrant.
 
 ---
 
-## EN — English
+## EN — User Guide (English)
 
-### Description
+### 1. System Description
 
-A Google Apps Script that automatically sorts Gmail inbox emails into three categories:
+This Google Apps Script project automatically sorts your inbox emails into three categories:
 
 | Label | Meaning |
 |-------|---------|
 | 🔴 Attention required | Decision, urgency, or deep work expected |
 | 🟠 Quick action | Simple reply or check (≈ 2 min) |
 | 🟢 No action | Informational or closed thread |
-| ⚠️ Sort error | Thread quarantined after repeated failures |
+| ⚠️ Sort error | Thread quarantined after repeated processing failures |
 
-A hybrid engine first applies local rules (VIP, sensitive senders, aliases…) then delegates ambiguous cases to the Gemini API using a prompt hardened against injection.
+A hybrid engine first applies local rules (VIP senders, ignore lists, etc.) configured via the **Dashboard**. Ambiguous cases are then delegated to the Gemini API using an injection-hardened prompt.
 
-### Prerequisites
+### 2. Setup and Deployment (WebApp Dashboard)
 
-- Google Workspace or personal Gmail account
-- [Google AI Studio](https://aistudio.google.com) API key
+This project is modular and features a graphical interface (WebApp).
 
-### Setup
+1. Clone this project using `clasp` or deploy the multiple `.gs` and `.html` files in your Google Apps Script editor.
+2. In the Apps Script editor, click **Deploy** (top right) then **New deployment**.
+3. Select the **Web app** type.
+4. Configure:
+   - *Execute as*: **Me**
+   - *Who has access*: **Only myself** (Crucial for email privacy)
+5. Click **Deploy**. Authorize the permissions requested by Google.
+6. Click the generated URL. **Bookmark this URL**, this is your control panel!
 
-1. Open [script.google.com](https://script.google.com) and create a new project.
-2. Paste the contents of `Code.gs` into the editor.
-3. Copy `appsscript.json` via **Project Settings → Show manifest file**.
-4. In **Project Settings → Script Properties**, add:
-   - `GEMINI_API_KEY`: your Gemini API key
-   - `COMPTE_EMAIL` *(optional)*: your Gmail address if `Session.getEffectiveUser()` returns empty
-   - `ADRESSES_PERSONNELLES` *(optional)*: additional addresses separated by commas
-5. Run the `setup()` function once manually.
+### 3. Using the Dashboard
 
-### Security
+All configuration is done from the Web Interface (Dashboard), without ever needing to touch the source code.
 
-- API key stored in `PropertiesService`, never hardcoded.
-- Email content sent to Gemini is explicitly flagged as untrusted data.
-- The system prompt forbids Gemini from following instructions found inside emails.
-- Error messages automatically redact the API key.
+- **Dashboard Tab**:
+  - **Manual Sort**: Instantly triggers a sorting pass on unread emails.
+  - **Auto-Sort Toggle**: Enables (ON) or disables (OFF) the background sorting robot (runs hourly).
+- **Settings Tab**:
+  - **Gemini API Key**: Mandatory. Get yours at [Google AI Studio](https://aistudio.google.com).
+  - **VIP**: Enter addresses (e.g., `boss@company.com`) or domains (e.g., `@mydomain.com`) whose emails should always be flagged as "Quick Action" without using AI.
+  - **Do not send to AI**: Ultra-sensitive senders list. They will always be flagged as "Attention required" and their content will never be sent to Gemini.
+  - **Ignore**: List of senders (e.g., newsletters) that will automatically end up in "No action".
+
+### 4. Daily Reports (Digest)
+By enabling auto-sort, a summary email (Digest) will be sent to you every morning at 8 AM, listing quick actions and required attentions.
+
+### 5. Security
+- Your API key is encrypted and stored in Google's hidden `PropertiesService`.
+- Email content (body, attachments) is strictly injected as "untrusted data" to prevent social engineering attacks (Prompt Injection) originating from incoming emails.
 
 ---
 
