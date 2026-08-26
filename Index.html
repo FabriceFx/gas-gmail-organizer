@@ -34,6 +34,10 @@
                     <span class="material-symbols-outlined">settings</span>
                     <span class="nav-text" data-i18n="nav_settings">Paramètres</span>
                 </li>
+                <li data-target="guide">
+                    <span class="material-symbols-outlined">menu_book</span>
+                    <span class="nav-text" data-i18n="nav_guide">Guide</span>
+                </li>
                 <li data-target="about">
                     <span class="material-symbols-outlined">info</span>
                     <span class="nav-text" data-i18n="nav_about">À propos</span>
@@ -125,6 +129,34 @@
                             <span class="material-symbols-outlined">save</span>
                             <span data-i18n="btn_save">Enregistrer</span>
                         </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SECTION: Guide -->
+            <section id="guide" class="page-section">
+                <header>
+                    <h2 data-i18n="title_guide">Guide d'utilisation</h2>
+                    <p data-i18n="subtitle_guide">Comprendre le fonctionnement du tri.</p>
+                </header>
+                
+                <div class="cards-grid">
+                    <div class="glass-card">
+                        <div class="card-icon"><span class="material-symbols-outlined">category</span></div>
+                        <h3 data-i18n="guide_labels_title">Les catégories de tri</h3>
+                        <p data-i18n="guide_labels_desc">L'outil trie vos emails en 3 catégories principales : Action Rapide (réponse simple), Attention Requise (dossier complexe) et Aucune Action (informatif).</p>
+                    </div>
+                    
+                    <div class="glass-card">
+                        <div class="card-icon"><span class="material-symbols-outlined">security</span></div>
+                        <h3 data-i18n="guide_security_title">Sécurité & IA</h3>
+                        <p data-i18n="guide_security_desc">Vos paramètres locaux (VIP, Ignorer) priment toujours. En cas de doute, l'email est envoyé à Gemini avec un prompt strictement verrouillé pour empêcher toute tentative de manipulation (Prompt Injection).</p>
+                    </div>
+                    
+                    <div class="glass-card">
+                        <div class="card-icon"><span class="material-symbols-outlined">mark_email_read</span></div>
+                        <h3 data-i18n="guide_digest_title">Le rapport quotidien</h3>
+                        <p data-i18n="guide_digest_desc">Lorsque le tri automatique est activé, un email récapitulatif (Digest) vous est envoyé chaque matin à 8h avec le résumé des tâches en attente.</p>
                     </div>
                 </div>
             </section>
