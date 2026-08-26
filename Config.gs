@@ -36,6 +36,15 @@ function _loadArrayProp(key, defaultArr) {
     }
 }
 
+function _loadBooleanProp(key, defaultVal) {
+    try {
+        const val = PropertiesService.getScriptProperties().getProperty(key);
+        return val !== null ? (val === 'true') : defaultVal;
+    } catch (e) {
+        return defaultVal;
+    }
+}
+
 
 const CONFIG = Object.freeze({
     LABELS: Object.freeze({
@@ -92,6 +101,7 @@ const CONFIG = Object.freeze({
     }),
 
     GEMINI: Object.freeze({
+        IS_FREE_TIER: _loadBooleanProp('TRI_GMAIL_API_FREE_TIER', true),
         MODELE: 'gemini-3.7-flash',
         NIVEAU_REFLEXION: 'low',
         MAX_OUTPUT_TOKENS: 512,
@@ -150,6 +160,7 @@ const CONFIG = Object.freeze({
         PREFIXE_ECHEC_THREAD: 'TRI_GMAIL_ECHEC_THREAD_',
         
         // Clés pour la configuration WebApp
+        API_KEY_FREE_TIER: 'TRI_GMAIL_API_FREE_TIER',
         VIP: 'TRI_GMAIL_VIP',
         NO_IA: 'TRI_GMAIL_NO_IA',
         AUCUNE: 'TRI_GMAIL_AUCUNE'

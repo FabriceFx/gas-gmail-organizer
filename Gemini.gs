@@ -398,6 +398,7 @@ function appelerGemini_(donnees, apiKey, modele, deadline) {
     return validerAnalyseGemini_(texte);
 }
 
+let dernierAppelGeminiMs_ = 0;
 
 function executerRequeteGeminiAvecRetry_(url, options, deadline) {
     let derniereErreur = null;
@@ -421,7 +422,18 @@ function executerRequeteGeminiAvecRetry_(url, options, deadline) {
         let response;
 
         try {
+            if (CONFIG.GEMINI.IS_FREE_TIER) {
+                const maintenant = Date.now();
+                const delaiEcoule = maintenant - dernierAppelGeminiMs_;
+                const delaiRequis = 4000; // ~15 requêtes par minute
+                
+                if (delaiEcoule < delaiRequis) {
+                    Utilities.sleep(delaiRequis - delaiEcoule);
+                }
+            }
+
             response = UrlFetchApp.fetch(url, options);
+            dernierAppelGeminiMs_ = Date.now();
         } catch (e) {
             derniereErreur = creerErreurTri_(
                 `Appel réseau Gemini impossible : ${nettoyerMessageErreur_(e)}`,

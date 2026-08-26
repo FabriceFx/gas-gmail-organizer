@@ -35,6 +35,7 @@ function getSettings() {
     const props = PropertiesService.getScriptProperties();
     return {
         apiKey: props.getProperty(CONFIG.PROPRIETES.API_KEY) || '',
+        isFreeTier: _loadBooleanProp(CONFIG.PROPRIETES.API_KEY_FREE_TIER, true),
         vip: _loadArrayProp(CONFIG.PROPRIETES.VIP, []),
         noIa: _loadArrayProp(CONFIG.PROPRIETES.NO_IA, []),
         aucune: _loadArrayProp(CONFIG.PROPRIETES.AUCUNE, [])
@@ -58,6 +59,10 @@ function saveSettings(settings) {
         } else {
              props.setProperty(CONFIG.PROPRIETES.API_KEY, settings.apiKey.trim());
         }
+    }
+    
+    if (settings.isFreeTier !== undefined) {
+        props.setProperty(CONFIG.PROPRIETES.API_KEY_FREE_TIER, String(settings.isFreeTier));
     }
     
     // Nettoyage et sauvegarde des tableaux

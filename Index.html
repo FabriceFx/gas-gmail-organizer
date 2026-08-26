@@ -106,6 +106,17 @@
                         <small data-i18n="help_api_key">Laissez vide pour conserver la clé actuelle. Entrez __CLEAR__ pour la supprimer.</small>
                     </div>
                     
+                    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 8px;">
+                        <div>
+                            <label for="toggle-free-tier" style="margin-bottom: 2px;" data-i18n="label_free_tier">Clé API Gratuite</label>
+                            <small data-i18n="help_free_tier" style="display: block; opacity: 0.8; font-size: 11px;">Limite la vitesse à 15 requêtes/min pour éviter de bloquer votre compte AI Studio.</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-free-tier">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="input-vip">VIP (Une adresse/domaine par ligne)</label>
                         <textarea id="input-vip" rows="3" placeholder="direction@entreprise.fr\n@mondomaine.com"></textarea>

@@ -21,6 +21,8 @@ const DICT = {
         title_settings: "Configuration",
         subtitle_settings: "Ajustez vos préférences et clés d'API.",
         help_api_key: "Laissez vide pour conserver la clé actuelle. Entrez __CLEAR__ pour la supprimer.",
+        label_free_tier: "Clé API Gratuite",
+        help_free_tier: "Limite la vitesse à 15 requêtes/min pour éviter de bloquer votre compte AI Studio.",
         help_vip: "Emails toujours classés en Action Rapide sans passer par l'IA.",
         help_no_ia: "Emails sensibles (classés en Attention Requise localement).",
         help_aucune: "Emails toujours classés en Aucune Action (Info).",
@@ -60,10 +62,12 @@ const DICT = {
         btn_run: "Run now",
         info_auto: "Auto Sort",
         info_auto_desc: "The background trigger is active. Your inbox is monitored.",
-        title_settings: "Configuration",
+        title_settings: "Settings",
         subtitle_settings: "Adjust your preferences and API keys.",
-        help_api_key: "Leave blank to keep current key. Enter __CLEAR__ to remove.",
-        help_vip: "Emails always classified as Quick Action without AI.",
+        help_api_key: "Leave empty to keep the current key. Enter __CLEAR__ to remove it.",
+        label_free_tier: "Free API Key",
+        help_free_tier: "Limits speed to 15 requests/min to prevent your AI Studio account from being blocked.",
+        help_vip: "Emails always flagged as Quick Action without AI.",
         help_no_ia: "Sensitive emails (classified as Needs Attention locally).",
         help_aucune: "Emails always classified as No Action (Info).",
         btn_save: "Save",
@@ -193,6 +197,7 @@ function fetchSettings() {
     google.script.run
         .withSuccessHandler((settings) => {
             document.getElementById('input-api-key').value = '';
+            document.getElementById('toggle-free-tier').checked = settings.isFreeTier;
             document.getElementById('input-vip').value = settings.vip.join('\n');
             document.getElementById('input-no-ia').value = settings.noIa.join('\n');
             document.getElementById('input-aucune').value = settings.aucune.join('\n');
@@ -243,6 +248,7 @@ function onSaveSettings() {
     
     const settings = {
         apiKey: document.getElementById('input-api-key').value,
+        isFreeTier: document.getElementById('toggle-free-tier').checked,
         vip: document.getElementById('input-vip').value.split('\n'),
         noIa: document.getElementById('input-no-ia').value.split('\n'),
         aucune: document.getElementById('input-aucune').value.split('\n')
