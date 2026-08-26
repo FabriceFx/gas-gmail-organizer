@@ -43,7 +43,11 @@ Toute la configuration se fait depuis l'interface Web (Dashboard), sans jamais a
   - **Lancer le tri manuel** : Lance une passe de tri immédiate sur les emails non lus.
   - **Interrupteur Tri Automatique** : Active (ON) ou désactive (OFF) le robot de tri en arrière-plan (qui s'exécute toutes les heures).
 - **Onglet Paramètres** :
-  - **Clé API Gemini** : Obligatoire. À obtenir sur [Google AI Studio](https://aistudio.google.com).
+  - **Clé API Gemini** : Obligatoire.
+    > **Comment obtenir une clé API ? (Gratuit)**
+    > 1. Allez sur [Google AI Studio](https://aistudio.google.com) et connectez-vous.
+    > 2. Dans le menu de gauche, cliquez sur **Get API key**.
+    > 3. Cliquez sur le bouton **Create API key** et copiez la longue chaîne de caractères.
   - **VIP** : Saisissez ici les adresses (ex: `direction@entreprise.fr`) ou domaines (ex: `@mondomaine.com`) dont les emails doivent toujours être classés en "Action Rapide", sans passer par l'IA.
   - **Ne pas envoyer à l'IA** : Liste des expéditeurs ultra-sensibles. Ils seront toujours classés en "Attention requise" et leur contenu ne sera jamais envoyé à Gemini.
   - **Ignorer** : Liste des expéditeurs de type "Newsletter" qui finiront automatiquement en "Aucune action".
@@ -93,7 +97,11 @@ All configuration is done from the Web Interface (Dashboard), without ever needi
   - **Manual Sort**: Instantly triggers a sorting pass on unread emails.
   - **Auto-Sort Toggle**: Enables (ON) or disables (OFF) the background sorting robot (runs hourly).
 - **Settings Tab**:
-  - **Gemini API Key**: Mandatory. Get yours at [Google AI Studio](https://aistudio.google.com).
+  - **Gemini API Key**: Mandatory. 
+    > **How to get an API key? (Free)**
+    > 1. Go to [Google AI Studio](https://aistudio.google.com) and sign in.
+    > 2. In the left menu, click **Get API key**.
+    > 3. Click the **Create API key** button and copy the generated string.
   - **VIP**: Enter addresses (e.g., `boss@company.com`) or domains (e.g., `@mydomain.com`) whose emails should always be flagged as "Quick Action" without using AI.
   - **Do not send to AI**: Ultra-sensitive senders list. They will always be flagged as "Attention required" and their content will never be sent to Gemini.
   - **Ignore**: List of senders (e.g., newsletters) that will automatically end up in "No action".
