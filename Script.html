@@ -29,7 +29,8 @@ const DICT = {
         about_desc: "Outil de tri intelligent propulsé par Gemini. Développé pour automatiser et optimiser la gestion de votre boîte de réception.",
         msg_loading: "Chargement en cours...",
         msg_saving: "Sauvegarde en cours...",
-        msg_sorting: "Analyse des emails en cours...",
+        msg_sorting: "Lancement du tri...",
+        msg_sort_bg: "Le tri a été lancé en arrière-plan ! Tes e-mails seront classés dans quelques instants (tu peux fermer cette page).",
         msg_save_success: "Paramètres sauvegardés avec succès !",
         msg_save_error: "Erreur lors de la sauvegarde.",
         msg_fetch_error: "Erreur de récupération des données.",
@@ -70,9 +71,10 @@ const DICT = {
         about_desc: "Intelligent sorting tool powered by Gemini. Developed to automate and optimize your inbox management.",
         msg_loading: "Loading...",
         msg_saving: "Saving...",
-        msg_sorting: "Analyzing emails...",
+        msg_sorting: "Starting sort...",
+        msg_sort_bg: "Sort launched in background! Your emails will be classified in a few moments (you can close this page).",
         msg_save_success: "Settings saved successfully!",
-        msg_save_error: "Error while saving.",
+        msg_save_error: "Error saving settings.",
         msg_fetch_error: "Error fetching data.",
         nav_guide: "Guide",
         title_guide: "User Guide",
@@ -266,7 +268,8 @@ function onTriggerSort() {
         .withSuccessHandler((result) => {
             hideLoader();
             if (result.success) {
-                showSnackbar(result.message);
+                const msg = result.messageKey ? DICT[currentLang][result.messageKey] : result.message;
+                showSnackbar(msg);
             } else {
                 showSnackbar(result.message, true);
             }

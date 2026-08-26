@@ -5,6 +5,21 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
+ * Fonction appelée par le déclencheur one-off du Dashboard.
+ * Supprime son propre déclencheur éphémère puis lance le tri.
+ */
+function executerTriManuelBackground_() {
+    const triggers = ScriptApp.getProjectTriggers();
+    triggers.forEach(trigger => {
+        if (trigger.getHandlerFunction() === 'executerTriManuelBackground_') {
+            ScriptApp.deleteTrigger(trigger);
+        }
+    });
+    
+    trierBoiteReception();
+}
+
+/**
  * Déclenche le triage de la boîte de réception.
  * Acquiert un verrou pour éviter les exécutions concurrentes.
  * @returns {{ok: boolean, stats?: Object, dureeMs?: number, ignore?: boolean, raison?: string}}

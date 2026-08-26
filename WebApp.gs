@@ -79,8 +79,11 @@ function saveSettings(settings) {
  */
 function lancerTriManuel() {
     try {
-        trierBoiteReception();
-        return { success: true, message: "Tri terminé avec succès." };
+        ScriptApp.newTrigger('executerTriManuelBackground_')
+            .timeBased()
+            .after(100)
+            .create();
+        return { success: true, messageKey: "msg_sort_bg" };
     } catch (e) {
         journaliser_('Erreur lors du tri manuel depuis l\'UI : ' + e.message, true);
         return { success: false, message: e.message };
