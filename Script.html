@@ -69,9 +69,11 @@ document.addEventListener("DOMContentLoaded", () => {
     initNavigation();
     initTranslations();
     fetchSettings();
+    fetchAutoSortStatus();
     
     document.getElementById('btn-save-settings').addEventListener('click', onSaveSettings);
     document.getElementById('btn-trigger-sort').addEventListener('click', onTriggerSort);
+    document.getElementById('toggle-auto-sort').addEventListener('change', onToggleAutoSort);
 });
 
 function initNavigation() {
@@ -171,6 +173,39 @@ function fetchSettings() {
             showSnackbar(DICT[currentLang].msg_fetch_error + " " + error.message, true);
         })
         .getSettings();
+}
+
+function fetchAutoSortStatus() {
+    google.script.run
+        .withSuccessHandler((isActive) => {
+            document.getElementById('toggle-auto-sort').checked = isActive;
+        })
+        .withFailureHandler((error) => {
+            console.error("Failed to fetch auto sort status", error);
+        })
+        .getAutoSortStatus();
+}
+
+function onToggleAutoSort(e) {
+    showLoader('msg_saving');
+    const isEnabled = e.target.checked;
+    
+    google.script.run
+        .withSuccessHandler((result) => {
+            hideLoader();
+            if (result.success) {
+                showSnackbar(result.message);
+            } else {
+                showSnackbar(result.message, true);
+                e.target.checked = !isEnabled; // Revert visually
+            }
+        })
+        .withFailureHandler((error) => {
+            hideLoader();
+            showSnackbar(error.message, true);
+            e.target.checked = !isEnabled; // Revert visually
+        })
+        .toggleAutoSort(isEnabled);
 }
 
 function onSaveSettings() {

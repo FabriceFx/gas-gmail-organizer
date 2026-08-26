@@ -88,6 +88,37 @@ function lancerTriManuel() {
 }
 
 /**
+ * Vérifie si le déclencheur de tri automatique est actif.
+ */
+function getAutoSortStatus() {
+    const triggers = ScriptApp.getProjectTriggers();
+    for (let i = 0; i < triggers.length; i++) {
+        if (triggers[i].getHandlerFunction() === 'trierBoiteReception') {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Active ou désactive le tri automatique (déclencheurs).
+ */
+function toggleAutoSort(enable) {
+    try {
+        if (enable) {
+            setup();
+            return { success: true, message: "Tri automatique activé avec succès." };
+        } else {
+            teardown();
+            return { success: true, message: "Tri automatique désactivé." };
+        }
+    } catch (e) {
+        journaliser_('Erreur lors du toggle auto sort : ' + e.message, true);
+        return { success: false, message: e.message };
+    }
+}
+
+/**
  * Fonction utilitaire pour nettoyer les tableaux avant sauvegarde.
  */
 function cleanArray_(arr) {
