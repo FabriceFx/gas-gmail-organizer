@@ -44,9 +44,9 @@ const DICT = {
         guide_digest_desc: "Lorsque le tri automatique est activé, un email récapitulatif (Digest) vous est envoyé chaque matin à 8h avec le résumé des tâches en attente.",
         guide_apikey_title: "Obtenir la clé API Gemini",
         guide_apikey_desc: "La clé API est indispensable. Pour l'obtenir (gratuitement) :",
-        guide_apikey_step1: "Allez sur Google AI Studio.",
-        guide_apikey_step2: "Connectez-vous et cliquez sur Get API key à gauche.",
-        guide_apikey_step3: "Cliquez sur Create API key et copiez la clé."
+        guide_apikey_step1: 'Allez sur <a href="https://aistudio.google.com" target="_blank" style="color: var(--md-sys-color-primary); font-weight: 600;">Google AI Studio</a>.',
+        guide_apikey_step2: 'Connectez-vous et cliquez sur <b>Get API key</b> à gauche.',
+        guide_apikey_step3: 'Cliquez sur <b>Create API key</b> et copiez la clé.'
     },
     en: {
         nav_dashboard: "Dashboard",
@@ -85,9 +85,9 @@ const DICT = {
         guide_digest_desc: "When auto-sort is enabled, a summary email (Digest) is sent to you every morning at 8 AM with the summary of pending tasks.",
         guide_apikey_title: "Get Gemini API Key",
         guide_apikey_desc: "The API key is required. To get it (for free):",
-        guide_apikey_step1: "Go to Google AI Studio.",
-        guide_apikey_step2: "Sign in and click Get API key on the left.",
-        guide_apikey_step3: "Click Create API key and copy the key."
+        guide_apikey_step1: 'Go to <a href="https://aistudio.google.com" target="_blank" style="color: var(--md-sys-color-primary); font-weight: 600;">Google AI Studio</a>.',
+        guide_apikey_step2: 'Sign in and click <b>Get API key</b> on the left.',
+        guide_apikey_step3: 'Click <b>Create API key</b> and copy the key.'
     }
 };
 
@@ -155,7 +155,7 @@ function applyTranslations() {
     elements.forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (dict[key]) {
-            el.textContent = dict[key];
+            el.innerHTML = dict[key];
         }
     });
 }
