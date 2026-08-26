@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <?!= include('Styles'); ?>
+</head>
+<body>
+    <!-- Background Elements for Glassmorphism -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar glass-panel">
+            <div class="brand">
+                <span class="material-symbols-outlined">mail</span>
+                <h1>Gmail Organizer</h1>
+            </div>
+            
+            <ul class="nav-links">
+                <li class="active" data-target="dashboard">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="nav-text" data-i18n="nav_dashboard">Dashboard</span>
+                </li>
+                <li data-target="settings">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="nav-text" data-i18n="nav_settings">Paramètres</span>
+                </li>
+                <li data-target="about">
+                    <span class="material-symbols-outlined">info</span>
+                    <span class="nav-text" data-i18n="nav_about">À propos</span>
+                </li>
+            </ul>
+            
+            <div class="lang-switch">
+                <button id="btn-fr" class="lang-btn active">FR</button>
+                <button id="btn-en" class="lang-btn">EN</button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- SECTION: Dashboard -->
+            <section id="dashboard" class="page-section active">
+                <header>
+                    <h2 data-i18n="title_dashboard">Vue d'ensemble</h2>
+                    <p data-i18n="subtitle_dashboard">Gérez et lancez le tri de votre boîte de réception.</p>
+                </header>
+                
+                <div class="cards-grid">
+                    <div class="glass-card action-card">
+                        <div class="card-icon">
+                            <span class="material-symbols-outlined">play_arrow</span>
+                        </div>
+                        <h3 data-i18n="action_sort">Lancer le tri manuel</h3>
+                        <p data-i18n="action_sort_desc">Déclenche l'analyse immédiate des nouveaux emails par Gemini.</p>
+                        <button id="btn-trigger-sort" class="btn-primary">
+                            <span class="material-symbols-outlined">bolt</span>
+                            <span data-i18n="btn_run">Exécuter maintenant</span>
+                        </button>
+                    </div>
+                    
+                    <div class="glass-card info-card">
+                        <div class="card-icon">
+                            <span class="material-symbols-outlined">schedule</span>
+                        </div>
+                        <h3 data-i18n="info_auto">Tri Automatique</h3>
+                        <p data-i18n="info_auto_desc">Le déclencheur est actif en arrière-plan. La boîte est surveillée.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SECTION: Settings -->
+            <section id="settings" class="page-section">
+                <header>
+                    <h2 data-i18n="title_settings">Configuration</h2>
+                    <p data-i18n="subtitle_settings">Ajustez vos préférences et clés d'API.</p>
+                </header>
+                
+                <div class="settings-form glass-panel">
+                    
+                    <div class="form-group">
+                        <label for="input-api-key">Gemini API Key</label>
+                        <div class="input-with-icon">
+                            <span class="material-symbols-outlined">vpn_key</span>
+                            <input type="password" id="input-api-key" placeholder="••••••••••••••••" autocomplete="off">
+                        </div>
+                        <small data-i18n="help_api_key">Laissez vide pour conserver la clé actuelle. Entrez __CLEAR__ pour la supprimer.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="input-vip">VIP (Une adresse/domaine par ligne)</label>
+                        <textarea id="input-vip" rows="3" placeholder="direction@entreprise.fr\n@mondomaine.com"></textarea>
+                        <small data-i18n="help_vip">Emails toujours classés en Action Rapide sans passer par l'IA.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="input-no-ia">Ne pas envoyer à l'IA (Une adresse/domaine par ligne)</label>
+                        <textarea id="input-no-ia" rows="3" placeholder="confidentiel@"></textarea>
+                        <small data-i18n="help_no_ia">Emails sensibles (classés en Attention Requise localement).</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="input-aucune">Ignorer (Une adresse/domaine par ligne)</label>
+                        <textarea id="input-aucune" rows="3" placeholder="newsletter@"></textarea>
+                        <small data-i18n="help_aucune">Emails toujours classés en Aucune Action (Info).</small>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button id="btn-save-settings" class="btn-primary">
+                            <span class="material-symbols-outlined">save</span>
+                            <span data-i18n="btn_save">Enregistrer</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SECTION: About -->
+            <section id="about" class="page-section">
+                <header>
+                    <h2 data-i18n="title_about">À propos</h2>
+                </header>
+                <div class="glass-card about-card">
+                    <img src="https://ui-avatars.com/api/?name=Fabrice+Faucheux&background=random&color=fff&size=128" alt="Fabrice Faucheux" class="avatar">
+                    <h3>Fabrice Faucheux</h3>
+                    <p data-i18n="about_desc">Outil de tri intelligent propulsé par Gemini. Développé pour automatiser et optimiser la gestion de votre boîte de réception.</p>
+                    <a href="https://faucheux.bzh" target="_blank" class="btn-secondary">
+                        <span class="material-symbols-outlined">language</span>
+                        Visiter faucheux.bzh
+                    </a>
+                </div>
+            </section>
+            
+        </main>
+    </div>
+
+    <!-- Full Screen Loader Overlay -->
+    <div id="loader-overlay" class="loader-overlay hidden">
+        <div class="spinner"></div>
+        <p id="loader-message" data-i18n="msg_loading">Chargement en cours...</p>
+    </div>
+
+    <!-- Snackbar / Toast -->
+    <div id="snackbar" class="snackbar"></div>
+
+    <!-- Global Variables from Server -->
+    <script>
+        const INITIAL_LANG = "<?= lang ?>";
+    </script>
+    
+    <?!= include('Script'); ?>
+</body>
+</html>

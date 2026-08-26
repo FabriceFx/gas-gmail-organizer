@@ -1,0 +1,217 @@
+<script>
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * LOGIQUE FRONT-END & BILINGUISME
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+// Dictionnaire de traductions
+const DICT = {
+    fr: {
+        nav_dashboard: "Dashboard",
+        nav_settings: "Paramètres",
+        nav_about: "À propos",
+        title_dashboard: "Vue d'ensemble",
+        subtitle_dashboard: "Gérez et lancez le tri de votre boîte de réception.",
+        action_sort: "Lancer le tri manuel",
+        action_sort_desc: "Déclenche l'analyse immédiate des nouveaux emails par Gemini.",
+        btn_run: "Exécuter maintenant",
+        info_auto: "Tri Automatique",
+        info_auto_desc: "Le déclencheur est actif en arrière-plan. La boîte est surveillée.",
+        title_settings: "Configuration",
+        subtitle_settings: "Ajustez vos préférences et clés d'API.",
+        help_api_key: "Laissez vide pour conserver la clé actuelle. Entrez __CLEAR__ pour la supprimer.",
+        help_vip: "Emails toujours classés en Action Rapide sans passer par l'IA.",
+        help_no_ia: "Emails sensibles (classés en Attention Requise localement).",
+        help_aucune: "Emails toujours classés en Aucune Action (Info).",
+        btn_save: "Enregistrer",
+        title_about: "À propos",
+        about_desc: "Outil de tri intelligent propulsé par Gemini. Développé pour automatiser et optimiser la gestion de votre boîte de réception.",
+        msg_loading: "Chargement en cours...",
+        msg_saving: "Sauvegarde en cours...",
+        msg_sorting: "Analyse des emails en cours...",
+        msg_save_success: "Paramètres sauvegardés avec succès !",
+        msg_save_error: "Erreur lors de la sauvegarde.",
+        msg_fetch_error: "Erreur de récupération des données."
+    },
+    en: {
+        nav_dashboard: "Dashboard",
+        nav_settings: "Settings",
+        nav_about: "About",
+        title_dashboard: "Overview",
+        subtitle_dashboard: "Manage and trigger your inbox sorting.",
+        action_sort: "Run Manual Sort",
+        action_sort_desc: "Triggers immediate analysis of new emails by Gemini.",
+        btn_run: "Run now",
+        info_auto: "Auto Sort",
+        info_auto_desc: "The background trigger is active. Your inbox is monitored.",
+        title_settings: "Configuration",
+        subtitle_settings: "Adjust your preferences and API keys.",
+        help_api_key: "Leave blank to keep current key. Enter __CLEAR__ to remove.",
+        help_vip: "Emails always classified as Quick Action without AI.",
+        help_no_ia: "Sensitive emails (classified as Needs Attention locally).",
+        help_aucune: "Emails always classified as No Action (Info).",
+        btn_save: "Save",
+        title_about: "About",
+        about_desc: "Intelligent sorting tool powered by Gemini. Developed to automate and optimize your inbox management.",
+        msg_loading: "Loading...",
+        msg_saving: "Saving...",
+        msg_sorting: "Analyzing emails...",
+        msg_save_success: "Settings saved successfully!",
+        msg_save_error: "Error while saving.",
+        msg_fetch_error: "Error fetching data."
+    }
+};
+
+let currentLang = INITIAL_LANG === 'en' ? 'en' : 'fr';
+
+document.addEventListener("DOMContentLoaded", () => {
+    initNavigation();
+    initTranslations();
+    fetchSettings();
+    
+    document.getElementById('btn-save-settings').addEventListener('click', onSaveSettings);
+    document.getElementById('btn-trigger-sort').addEventListener('click', onTriggerSort);
+});
+
+function initNavigation() {
+    const navItems = document.querySelectorAll('.nav-links li');
+    const sections = document.querySelectorAll('.page-section');
+    
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            // Update Active Nav
+            navItems.forEach(n => n.classList.remove('active'));
+            item.classList.add('active');
+            
+            // Show Section
+            const targetId = item.getAttribute('data-target');
+            sections.forEach(s => s.classList.remove('active'));
+            document.getElementById(targetId).classList.add('active');
+        });
+    });
+}
+
+function initTranslations() {
+    // Boutons de langue
+    const btnFr = document.getElementById('btn-fr');
+    const btnEn = document.getElementById('btn-en');
+    
+    if(currentLang === 'en') {
+        btnFr.classList.remove('active');
+        btnEn.classList.add('active');
+    }
+    
+    btnFr.addEventListener('click', () => setLang('fr'));
+    btnEn.addEventListener('click', () => setLang('en'));
+    
+    applyTranslations();
+}
+
+function setLang(lang) {
+    if (lang !== 'fr' && lang !== 'en') return;
+    currentLang = lang;
+    
+    document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    
+    applyTranslations();
+}
+
+function applyTranslations() {
+    const elements = document.querySelectorAll('[data-i18n]');
+    const dict = DICT[currentLang];
+    
+    elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+            el.textContent = dict[key];
+        }
+    });
+}
+
+function showLoader(messageKey = 'msg_loading') {
+    const overlay = document.getElementById('loader-overlay');
+    const msgEl = document.getElementById('loader-message');
+    msgEl.textContent = DICT[currentLang][messageKey] || "Loading...";
+    overlay.classList.remove('hidden');
+}
+
+function hideLoader() {
+    document.getElementById('loader-overlay').classList.add('hidden');
+}
+
+function showSnackbar(message, isError = false) {
+    const snackbar = document.getElementById('snackbar');
+    snackbar.textContent = message;
+    
+    if (isError) {
+        snackbar.classList.add('error');
+    } else {
+        snackbar.classList.remove('error');
+    }
+    
+    snackbar.classList.add('show');
+    setTimeout(() => {
+        snackbar.classList.remove('show');
+    }, 4000);
+}
+
+function fetchSettings() {
+    google.script.run
+        .withSuccessHandler((settings) => {
+            document.getElementById('input-api-key').value = '';
+            document.getElementById('input-vip').value = settings.vip.join('\n');
+            document.getElementById('input-no-ia').value = settings.noIa.join('\n');
+            document.getElementById('input-aucune').value = settings.aucune.join('\n');
+            hideLoader();
+        })
+        .withFailureHandler((error) => {
+            hideLoader();
+            showSnackbar(DICT[currentLang].msg_fetch_error + " " + error.message, true);
+        })
+        .getSettings();
+}
+
+function onSaveSettings() {
+    showLoader('msg_saving');
+    
+    const settings = {
+        apiKey: document.getElementById('input-api-key').value,
+        vip: document.getElementById('input-vip').value.split('\n'),
+        noIa: document.getElementById('input-no-ia').value.split('\n'),
+        aucune: document.getElementById('input-aucune').value.split('\n')
+    };
+    
+    google.script.run
+        .withSuccessHandler(() => {
+            hideLoader();
+            showSnackbar(DICT[currentLang].msg_save_success);
+            document.getElementById('input-api-key').value = ''; // Reset password field
+        })
+        .withFailureHandler((error) => {
+            hideLoader();
+            showSnackbar(DICT[currentLang].msg_save_error + " " + error.message, true);
+        })
+        .saveSettings(settings);
+}
+
+function onTriggerSort() {
+    showLoader('msg_sorting');
+    
+    google.script.run
+        .withSuccessHandler((result) => {
+            hideLoader();
+            if (result.success) {
+                showSnackbar(result.message);
+            } else {
+                showSnackbar(result.message, true);
+            }
+        })
+        .withFailureHandler((error) => {
+            hideLoader();
+            showSnackbar(error.message, true);
+        })
+        .lancerTriManuel();
+}
+</script>

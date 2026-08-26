@@ -27,6 +27,16 @@
  *   locale. Utilisez NE_PAS_ENVOYER_A_IA pour les expéditeurs sensibles.
  */
 
+function _loadArrayProp(key, defaultArr) {
+    try {
+        const val = PropertiesService.getScriptProperties().getProperty(key);
+        return val ? JSON.parse(val) : defaultArr;
+    } catch (e) {
+        return defaultArr;
+    }
+}
+
+
 const CONFIG = Object.freeze({
     LABELS: Object.freeze({
         RAPIDE: '🟠 Action rapide',
@@ -43,27 +53,19 @@ const CONFIG = Object.freeze({
      *   - 'direction@' ou 'direction@*' : tout email commençant ainsi
      *   - 'domaine.fr' : domaine exact
      */
-    VIP: [
-        // 'direction@',
-        // '@entreprise.fr'
-    ],
+    VIP: _loadArrayProp('TRI_GMAIL_VIP', []),
 
     /**
      * Ces expéditeurs sont classés ATTENTION localement.
      * Leur sujet, corps et pièces jointes ne sont jamais envoyés à Gemini.
      */
-    NE_PAS_ENVOYER_A_IA: [
-        // '@cabinet-avocats.fr',
-        // 'rh@entreprise.fr'
-    ],
+    NE_PAS_ENVOYER_A_IA: _loadArrayProp('TRI_GMAIL_NO_IA', []),
 
     /**
      * Liste blanche explicite d'expéditeurs toujours sans action.
      * N'ajoutez ici que des sources réellement sûres et connues.
      */
-    EXPEDITEURS_AUCUNE_ACTION: [
-        // 'newsletter@fournisseur.fr'
-    ],
+    EXPEDITEURS_AUCUNE_ACTION: _loadArrayProp('TRI_GMAIL_AUCUNE', []),
 
     TRI: Object.freeze({
         LOT_MAX: 30,
@@ -145,7 +147,12 @@ const CONFIG = Object.freeze({
         RESET_TOTAL: 'TRI_GMAIL_RESET_TOTAL',
 
         DERNIERE_ALERTE: 'TRI_GMAIL_DERNIERE_ALERTE',
-        PREFIXE_ECHEC_THREAD: 'TRI_GMAIL_ECHEC_THREAD_'
+        PREFIXE_ECHEC_THREAD: 'TRI_GMAIL_ECHEC_THREAD_',
+        
+        // Clés pour la configuration WebApp
+        VIP: 'TRI_GMAIL_VIP',
+        NO_IA: 'TRI_GMAIL_NO_IA',
+        AUCUNE: 'TRI_GMAIL_AUCUNE'
     })
 });
 
