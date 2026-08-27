@@ -378,6 +378,32 @@ function appelerGemini_(donnees, apiKey, modele, deadline) {
         '}'
     ].join('\n');
 
+    const schema = {
+        type: 'object',
+        properties: {
+            action: {
+                type: 'string',
+                enum: ENUM_ACTION_,
+                description: 'Nature de l’action attendue du destinataire.'
+            },
+            effort: {
+                type: 'string',
+                enum: ENUM_EFFORT_,
+                description: 'Effort nécessaire pour traiter correctement le message.'
+            },
+            urgence: {
+                type: 'string',
+                enum: ENUM_URGENCE_,
+                description: 'Niveau d’urgence opérationnelle.'
+            },
+            raison: {
+                type: 'string',
+                description: 'Justification factuelle et concise en français.'
+            }
+        },
+        required: ['action', 'effort', 'urgence', 'raison']
+    };
+
     const payload = {
         systemInstruction: {
             parts: [
@@ -397,7 +423,8 @@ function appelerGemini_(donnees, apiKey, modele, deadline) {
                 thinkingLevel: CONFIG.GEMINI.NIVEAU_REFLEXION
             },
             maxOutputTokens: CONFIG.GEMINI.MAX_OUTPUT_TOKENS,
-            responseMimeType: 'application/json'
+            responseMimeType: 'application/json',
+            responseSchema: schema
         }
     };
 
