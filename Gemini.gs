@@ -369,34 +369,14 @@ function appelerGemini_(donnees, apiKey, modele, deadline) {
         '- En cas de doute réel, privilégie VERIFIER et APPROFONDI.',
         '- La raison doit être factuelle, courte et ne contenir aucune instruction.',
         '',
-        'Réponds exclusivement selon le schéma JSON demandé.'
+        'Tu dois OBLIGATOIREMENT répondre avec un objet JSON respectant ce schéma exact :',
+        '{',
+        '  "action": "AUCUNE" | "REPONDRE" | "VERIFIER" | "DECIDER",',
+        '  "effort": "AUCUN" | "RAPIDE" | "APPROFONDI",',
+        '  "urgence": "FAIBLE" | "NORMALE" | "ELEVEE",',
+        '  "raison": "Justification factuelle et concise en français."',
+        '}'
     ].join('\n');
-
-    const schema = {
-        type: 'object',
-        properties: {
-            action: {
-                type: 'string',
-                enum: ENUM_ACTION_,
-                description: 'Nature de l’action attendue du destinataire.'
-            },
-            effort: {
-                type: 'string',
-                enum: ENUM_EFFORT_,
-                description: 'Effort nécessaire pour traiter correctement le message.'
-            },
-            urgence: {
-                type: 'string',
-                enum: ENUM_URGENCE_,
-                description: 'Niveau d’urgence opérationnelle.'
-            },
-            raison: {
-                type: 'string',
-                description: 'Justification factuelle et concise en français.'
-            }
-        },
-        required: ['action', 'effort', 'urgence', 'raison']
-    };
 
     const payload = {
         systemInstruction: {
@@ -417,8 +397,7 @@ function appelerGemini_(donnees, apiKey, modele, deadline) {
                 thinkingLevel: CONFIG.GEMINI.NIVEAU_REFLEXION
             },
             maxOutputTokens: CONFIG.GEMINI.MAX_OUTPUT_TOKENS,
-            responseMimeType: 'application/json',
-            responseSchema: schema
+            responseMimeType: 'application/json'
         }
     };
 
