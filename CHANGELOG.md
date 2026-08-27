@@ -7,6 +7,29 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [3.6.0] — 2026-08-27
+
+### 🎯 Contre-intuitif & Terre promise : Inbox Zero sans ouvrir vos e-mails
+*On pense souvent que pour vider sa boîte mail, il faut passer des heures à chercher et ouvrir chaque message dans Gmail. C'est faux. Dès votre café du matin, un simple clic depuis le Digest quotidien suffit à archiver ou marquer comme traité un e-mail en attente. Et sur votre Dashboard, le graphique d'activité sur 7 jours vous montre noir sur blanc les heures de travail que vous économisez chaque semaine.*
+
+### ✨ Ajouté / Added
+- **⚡ Actions rapides 1-clic dans le Digest quotidien** :
+  - Liens directs sécurisés `[📥 Archiver]` et `[✅ Fait]` sur chaque e-mail dans le tableau du rapport matinal.
+  - Traitement instantané via la WebApp (`doGet`) et affichage d'une page de confirmation épurée en Material Design 3.
+- **📊 Analytics & Graphique d'activité sur 7 jours dans le Dashboard** :
+  - Historique roulant des 7 derniers jours : volumes triés, répartition visuelle (vert/jaune/rouge/bordeaux).
+  - KPIs d'impact clés : *Total e-mails triés (7j)*, *Temps économisé estimé (ex: 4h 15min)*, *Taux de traitement instantané*.
+  - Graphique en barres empilées interactif et adaptatif en CSS pur.
+- **🎭 Gestion des règles par Alias & Destinataires multiples (To / Cc)** :
+  - Définition de règles de routage direct selon l'adresse de réception (`support@domaine.com:RAPIDE`, `compta@domaine.com:AUCUNE`).
+  - Classement local immédiat sans consommation de quota d'IA.
+- **🛡️ Précision et sécurité renforcée de la détection Newsletter** :
+  - Protection des en-têtes `List-Unsubscribe` : les e-mails d'alerte, de sécurité ou demandant une action explicite continuent vers Gemini au lieu d'être court-circuités.
+  - Respect strict des frontières de mots (`contientUnMotCle_`).
+  - Cache utilisateur (`CacheService`) sur les suggestions d'expéditeurs pour des temps de chargement ultra-rapides.
+
+---
+
 ## [3.5.0] — 2026-08-27
 
 ### 🎯 Terre promise : Zéro jeton gaspillé, des règles configurées en un battement de cil

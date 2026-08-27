@@ -50,7 +50,9 @@ const CLES_PROPRIETES_ = Object.freeze({
     DERNIER_TRI_INFO: 'TRI_GMAIL_DERNIER_TRI_INFO',
     MOTS_CLES_AUCUNE: 'TRI_GMAIL_MOTS_CLES_AUCUNE',
     MOTS_CLES_RAPIDE: 'TRI_GMAIL_MOTS_CLES_RAPIDE',
-    DETECTER_NEWSLETTERS: 'TRI_GMAIL_DETECTER_NEWSLETTERS'
+    DETECTER_NEWSLETTERS: 'TRI_GMAIL_DETECTER_NEWSLETTERS',
+    HISTORIQUE_7J: 'TRI_GMAIL_HISTORIQUE_7J',
+    REGLES_ALIAS: 'TRI_GMAIL_REGLES_ALIAS'
 });
 
 let _PROPS_SNAPSHOT_ = null;
@@ -135,6 +137,12 @@ const CONFIG = Object.freeze({
      * N'ajoutez ici que des sources réellement sûres et connues.
      */
     get EXPEDITEURS_AUCUNE_ACTION() { return _loadArrayProp(CLES_PROPRIETES_.AUCUNE, []); },
+
+    /**
+     * Règles spécifiques selon l'alias ou l'adresse destinataire (To/Cc).
+     * Format: ['support@domaine.com:RAPIDE', 'compta@domaine.com:AUCUNE']
+     */
+    get REGLES_ALIAS() { return _loadArrayProp(CLES_PROPRIETES_.REGLES_ALIAS, []); },
 
     TRI: Object.freeze({
         LOT_MAX: 30,

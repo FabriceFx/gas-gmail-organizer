@@ -157,6 +157,45 @@
                         <!-- Rempli dynamiquement -->
                     </div>
                 </div>
+
+                <!-- Section Analytics & Activité 7 jours -->
+                <div class="glass-card" id="card-analytics" style="margin-top: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="card-icon" style="margin-bottom: 0; width: 40px; height: 40px; background: rgba(11, 87, 208, 0.12); color: var(--md-sys-color-primary);">
+                                <span class="material-symbols-outlined">insights</span>
+                            </div>
+                            <div>
+                                <h3 style="margin-bottom: 0; font-size: 1.15rem;" data-i18n="title_analytics">Activité &amp; Temps gagné (7 jours)</h3>
+                                <small style="color: var(--md-sys-color-on-surface-variant);" data-i18n="desc_analytics">Impact et historique du tri automatique.</small>
+                            </div>
+                        </div>
+                        <div>
+                            <span id="badge-analytics-rate" style="background: rgba(24, 128, 56, 0.12); color: #137333; font-weight: 600; padding: 4px 12px; border-radius: 100px; font-size: 0.8rem;">⚡ 100% auto</span>
+                        </div>
+                    </div>
+
+                    <!-- Grille de métriques Analytics -->
+                    <div class="analytics-metrics-grid">
+                        <div class="analytics-metric-box">
+                            <div class="analytics-metric-title" data-i18n="metric_total_7d">E-mails triés (7j)</div>
+                            <div class="analytics-metric-value" id="stat-analytics-total">0</div>
+                        </div>
+                        <div class="analytics-metric-box">
+                            <div class="analytics-metric-title" data-i18n="metric_time_saved">Temps économisé</div>
+                            <div class="analytics-metric-value" id="stat-analytics-time" style="color: #137333;">0 min</div>
+                        </div>
+                        <div class="analytics-metric-box">
+                            <div class="analytics-metric-title" data-i18n="metric_auto_rate">Traitement instantané</div>
+                            <div class="analytics-metric-value" id="stat-analytics-auto">100%</div>
+                        </div>
+                    </div>
+
+                    <!-- Graphique en barres 7 jours -->
+                    <div id="analytics-chart-container" class="analytics-chart-container" style="margin-top: 20px;">
+                        <!-- Rempli dynamiquement -->
+                    </div>
+                </div>
             </section>
             
             <!-- SECTION: Settings -->
@@ -232,7 +271,7 @@ Reçu
 Confirmation de commande
 Avis d'expédition
 [Newsletter]"></textarea>
-                        <small data-i18n="help_kw_aucune">Si l'objet de l'e-mail contient l'un de ces mots-clés, il est immédiatement classé en <b>Aucune Action</b> sans appel à l'IA. Un mot-clé par ligne.</small>
+                        <small data-i18n="help_kw_aucune">Si l'objet de l'e-mail contient l'un de ces mots-clés (mot entier), il est immédiatement classé en <b>Aucune Action</b> sans appel à l'IA. Un mot-clé par ligne.</small>
                     </div>
 
                     <!-- Mots-clés dans l'objet pour Action rapide -->
@@ -241,7 +280,16 @@ Avis d'expédition
                         <textarea id="input-mots-cles-rapide" rows="3" placeholder="À valider
 Signature requise
 Demande de confirmation"></textarea>
-                        <small data-i18n="help_kw_rapide">Si l'objet contient l'un de ces termes, il est immédiatement classé en <b>Action Rapide</b> sans appel à l'IA. Un mot-clé par ligne.</small>
+                        <small data-i18n="help_kw_rapide">Si l'objet contient l'un de ces termes (mot entier), il est immédiatement classé en <b>Action Rapide</b> sans appel à l'IA. Un mot-clé par ligne.</small>
+                    </div>
+
+                    <!-- Règles par Alias & Destinataire (To / Cc) -->
+                    <div class="form-group">
+                        <label for="input-regles-alias" data-i18n="label_alias_rules">Règles par Alias ou Destinataire (To / Cc)</label>
+                        <textarea id="input-regles-alias" rows="3" placeholder="support@monentreprise.com:RAPIDE
+compta@monentreprise.com:AUCUNE
+direction@*:ATTENTION"></textarea>
+                        <small data-i18n="help_alias_rules">Applique automatiquement une catégorie dès qu'un e-mail est reçu sur cette adresse. Format : <code>adresse@domaine.fr:CATEGORIE</code> (CATEGORIE = RAPIDE, ATTENTION ou AUCUNE). Une règle par ligne.</small>
                     </div>
                     
                     <div class="form-group">

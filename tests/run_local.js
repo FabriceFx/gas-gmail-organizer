@@ -46,7 +46,13 @@ const context = {
         createLabel: () => ({}),
         search: () => [],
         getMessagesForThreads: () => [],
-        sendEmail: () => {}
+        sendEmail: () => {},
+        getThreadById: (id) => ({
+            getId: () => id,
+            getFirstMessageSubject: () => 'Test Sujet',
+            moveToArchive: () => {},
+            removeLabel: () => {}
+        })
     },
     LockService: {
         getScriptLock: () => ({
@@ -68,6 +74,9 @@ const context = {
     })(),
     ScriptApp: {
         getProjectTriggers: () => [],
+        getService: () => ({
+            getUrl: () => 'https://script.google.com/macros/s/TEST/exec'
+        }),
         newTrigger: () => ({
             timeBased: () => ({
                 everyHours: () => ({ create: () => {} }),
@@ -76,8 +85,22 @@ const context = {
             })
         })
     },
+    HtmlService: {
+        createHtmlOutput: (html) => ({
+            setTitle: function(t) { this.title = t; return this; },
+            addMetaTag: function(k, v) { return this; },
+            getContent: () => html
+        }),
+        createTemplateFromFile: () => ({
+            evaluate: () => ({
+                setTitle: function(t) { this.title = t; return this; },
+                addMetaTag: function(k, v) { return this; }
+            })
+        })
+    },
     Utilities: {
-        sleep: () => {}
+        sleep: () => {},
+        formatDate: (date, tz, fmt) => '27/08 20:00'
     },
     UrlFetchApp: {
         fetch: () => ({})

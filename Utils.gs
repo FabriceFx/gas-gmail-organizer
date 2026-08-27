@@ -169,6 +169,62 @@ function estRegleValide_(regleBrute) {
 
 
 /**
+ * Analyse et valide une liste de règles d'alias au format 'adresse:CATEGORIE'.
+ * @param {string[]} reglesBrutes
+ * @returns {Array<{alias: string, categorie: string}>}
+ */
+function parseReglesAlias_(reglesBrutes) {
+    if (!Array.isArray(reglesBrutes)) return [];
+
+    const parsed = [];
+    reglesBrutes.forEach(brute => {
+        const str = String(brute || '').trim();
+        if (!str) return;
+
+        const sepIndex = str.indexOf(':') !== -1 ? str.indexOf(':') : str.indexOf('=');
+        if (sepIndex === -1) return;
+
+        const alias = str.slice(0, sepIndex).trim().toLowerCase();
+        const catBrute = str.slice(sepIndex + 1).trim().toUpperCase();
+
+        if (estRegleValide_(alias) && CATEGORIES_TRI_.includes(catBrute)) {
+            parsed.push({ alias, categorie: catBrute });
+        }
+    });
+
+    return parsed;
+}
+
+
+/**
+ * Vérifie si l'une des adresses destinataires (To/Cc) correspond à une règle d'alias.
+ * @param {string[]} adressesDestinataires
+ * @param {string[]|Array<{alias: string, categorie: string}>} reglesAlias
+ * @returns {{alias: string, categorie: string}|null}
+ */
+function trouverRegleAliasCorrespondante_(adressesDestinataires, reglesAlias) {
+    if (!Array.isArray(adressesDestinataires) || adressesDestinataires.length === 0) {
+        return null;
+    }
+
+    const regles = Array.isArray(reglesAlias) && reglesAlias.length > 0 && typeof reglesAlias[0] === 'object'
+        ? reglesAlias
+        : parseReglesAlias_(reglesAlias);
+
+    if (regles.length === 0) return null;
+
+    for (let i = 0; i < regles.length; i++) {
+        const regle = regles[i];
+        if (correspondAUneRegle_(adressesDestinataires, [regle.alias])) {
+            return regle;
+        }
+    }
+
+    return null;
+}
+
+
+/**
  * Vérifie si un texte (sujet d'email) contient l'un des mots-clés configurés,
  * avec respect des frontières de mots pour éviter les faux positifs (ex: "ok" vs "broker").
  * @param {string} texte
@@ -471,8 +527,69 @@ function enregistrerDernierTriInfo_(info) {
             CONFIG.PROPRIETES.DERNIER_TRI_INFO,
             JSON.stringify(info)
         );
+        enregistrerHistoriqueTri_(info);
     } catch (e) {
         // Enregistrement non bloquant
+    }
+}
+
+function enregistrerHistoriqueTri_(info) {
+    try {
+        if (!info || typeof info !== 'object' || !info.ok) return;
+
+        const props = PropertiesService.getScriptProperties();
+        const cle = CONFIG.PROPRIETES.HISTORIQUE_7J;
+        let historique = [];
+        try {
+            const raw = props.getProperty(cle);
+            if (raw) historique = JSON.parse(raw);
+        } catch (e) {
+            historique = [];
+        }
+
+        if (!Array.isArray(historique)) historique = [];
+
+        const dateIso = info.dateIso || new Date().toISOString();
+        const dateStr = dateIso.slice(0, 10);
+
+        let entree = historique.find(h => h.dateStr === dateStr);
+        if (!entree) {
+            entree = {
+                dateStr,
+                traites: 0,
+                rapide: 0,
+                attention: 0,
+                aucune: 0,
+                urgent: 0
+            };
+            historique.push(entree);
+        }
+
+        entree.traites += Number(info.traites || 0);
+        entree.rapide += Number(info.rapide || 0);
+        entree.attention += Number(info.attention || 0);
+        entree.aucune += Number(info.aucune || 0);
+        entree.urgent += Number(info.urgent || 0);
+
+        historique.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
+        if (historique.length > 7) {
+            historique = historique.slice(historique.length - 7);
+        }
+
+        props.setProperty(cle, JSON.stringify(historique));
+    } catch (e) {
+        // Non bloquant
+    }
+}
+
+function obtenirHistoriqueTri7j_() {
+    try {
+        const val = PropertiesService.getScriptProperties().getProperty(
+            CONFIG.PROPRIETES.HISTORIQUE_7J
+        );
+        return val ? JSON.parse(val) : [];
+    } catch (e) {
+        return [];
     }
 }
 
@@ -486,3 +603,4 @@ function obtenirDernierTriInfo_() {
         return null;
     }
 }
+

@@ -261,6 +261,82 @@ function executerTestsUnitaires() {
     const resClasserNews = classerThreadAvecIA_(mockThreadNews, [mockMsgNews], testIdentites, 'FAKE_KEY', 'model', Date.now() + 10000);
     affirmer(resClasserNews.categorie === 'AUCUNE' && resClasserNews.source === 'REGLE', 'classerThreadAvecIA_ classe par en-tête newsletter sans appel IA');
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // 12. TESTS LOT 3 (ACTIONS 1-CLIC, ANALYTICS 7J & RÈGLES D'ALIAS)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // A. Parsing des règles d'alias
+    const reglesBrutesAlias = [
+        'support@entreprise.com:RAPIDE',
+        'compta@entreprise.com:AUCUNE',
+        'direction@*:ATTENTION',
+        'invalid_rule',
+        'test@domaine.fr:CATEGORIE_INVALIDE'
+    ];
+    const parsedAlias = parseReglesAlias_(reglesBrutesAlias);
+    affirmer(parsedAlias.length === 3, 'parseReglesAlias_ filtre les règles invalides (obtenu: ' + parsedAlias.length + ')');
+    affirmer(parsedAlias[0].alias === 'support@entreprise.com' && parsedAlias[0].categorie === 'RAPIDE', 'parseReglesAlias_ extrait alias et catégorie');
+
+    // B. Correspondance règle d'alias
+    const matchAlias = trouverRegleAliasCorrespondante_(['support@entreprise.com'], parsedAlias);
+    affirmer(matchAlias && matchAlias.categorie === 'RAPIDE', 'trouverRegleAliasCorrespondante_ trouve la règle correspondante');
+
+    const matchAliasNul = trouverRegleAliasCorrespondante_(['inconnu@autre.com'], parsedAlias);
+    affirmer(matchAliasNul === null, 'trouverRegleAliasCorrespondante_ renvoie null si aucune règle');
+
+    // C. Classification par alias dans classerThreadAvecIA_
+    saveSettings({
+        reglesAlias: ['support@entreprise.com:RAPIDE']
+    });
+    const mockThreadAlias = { getFirstMessageSubject: () => 'Demande de dépannage' };
+    const mockMsgAlias = {
+        getFrom: () => 'client@externe.fr',
+        getTo: () => 'support@entreprise.com',
+        getCc: () => '',
+        getSubject: () => 'Demande de dépannage',
+        getHeader: () => null
+    };
+    const resClasserAlias = classerThreadAvecIA_(mockThreadAlias, [mockMsgAlias], testIdentites, 'FAKE_KEY', 'model', Date.now() + 10000);
+    affirmer(resClasserAlias.categorie === 'RAPIDE' && resClasserAlias.source === 'REGLE', 'classerThreadAvecIA_ classe par règle d’alias sans appel IA');
+
+    // D. Gestion de l'historique sur 7 jours (Analytics)
+    enregistrerHistoriqueTri_({
+        ok: true,
+        dateIso: '2026-08-25T10:00:00Z',
+        traites: 15,
+        rapide: 5,
+        attention: 2,
+        aucune: 8,
+        urgent: 1
+    });
+    enregistrerHistoriqueTri_({
+        ok: true,
+        dateIso: '2026-08-25T14:00:00Z',
+        traites: 10,
+        rapide: 2,
+        attention: 1,
+        aucune: 7,
+        urgent: 0
+    });
+    const hist = obtenirHistoriqueTri7j_();
+    const entry25 = hist.find(e => e.dateStr === '2026-08-25');
+    affirmer(entry25 && entry25.traites === 25, 'enregistrerHistoriqueTri_ cumule les exécutions du même jour (obtenu: ' + (entry25 ? entry25.traites : 0) + ')');
+    affirmer(entry25 && entry25.aucune === 15, 'enregistrerHistoriqueTri_ cumule les catégories');
+
+    // E. Statut Dashboard avec Analytics
+    const dashStatusLot3 = getDashboardStatus();
+    affirmer(dashStatusLot3.success === true, 'getDashboardStatus retourne un statut avec succès (Lot 3)');
+    affirmer(dashStatusLot3.analytics && dashStatusLot3.analytics.total7j >= 25, 'getDashboardStatus inclut analytics.total7j');
+    affirmer(dashStatusLot3.analytics && typeof dashStatusLot3.analytics.tempsGagneFormatte === 'string', 'getDashboardStatus inclut tempsGagneFormatte');
+
+    // F. Exécution d'actions 1-clic directes WebApp (executerActionRapideWeb_)
+    const resArchiver = executerActionRapideWeb_('archiver', 'mock-thread-id-1');
+    affirmer(resArchiver && typeof resArchiver.getContent === 'function', 'executerActionRapideWeb_(archiver) renvoie une sortie HTML');
+    const resTraite = executerActionRapideWeb_('traite', 'mock-thread-id-2');
+    affirmer(resTraite && typeof resTraite.getContent === 'function', 'executerActionRapideWeb_(traite) renvoie une sortie HTML');
+    const resActionInvalide = executerActionRapideWeb_('invalide', 'mock-thread-id-3');
+    affirmer(resActionInvalide && resActionInvalide.title === 'Erreur', 'executerActionRapideWeb_ gère les actions inconnues');
+
     // Log récapitulatif
     console.log(`[TESTS] ${resultats.reussis}/${resultats.total} tests réussis (${resultats.echecs} échecs).`);
     resultats.details.forEach(d => console.log(d));

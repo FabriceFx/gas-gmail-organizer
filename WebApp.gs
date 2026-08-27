@@ -10,6 +10,10 @@
  * Point d'entrée de la WebApp.
  */
 function doGet(e) {
+    if (e && e.parameter && e.parameter.action) {
+        return executerActionRapideWeb_(e.parameter.action, e.parameter.id || e.parameter.threadId);
+    }
+
     const template = HtmlService.createTemplateFromFile('Index');
     
     // Langue par défaut avec liste blanche stricte
@@ -18,6 +22,161 @@ function doGet(e) {
     
     return template.evaluate()
         .setTitle('Tri Gmail — Configuration')
+        .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+/**
+ * Exécute une action rapide 1-clic reçue depuis le Digest (Archiver / Fait)
+ * et renvoie une page de confirmation épurée Material Design 3.
+ */
+function executerActionRapideWeb_(action, threadId) {
+    let messageResultat = '';
+    let success = false;
+    let titreSujet = '';
+
+    try {
+        if (!threadId || !/^[a-zA-Z0-9_-]+$/.test(String(threadId).trim())) {
+            throw new Error("Identifiant de thread invalide.");
+        }
+
+        const idPropre = String(threadId).trim();
+        const thread = GmailApp.getThreadById(idPropre);
+        if (!thread) {
+            throw new Error("E-mail introuvable ou déjà supprimé.");
+        }
+
+        titreSujet = thread.getFirstMessageSubject() || '(sans objet)';
+
+        // Retirer tous les libellés de tri colorés
+        const libellesRetirer = [
+            CONFIG.LABELS.RAPIDE,
+            CONFIG.LABELS.ATTENTION,
+            CONFIG.LABELS.AUCUNE,
+            CONFIG.LABELS.URGENT,
+            CONFIG.LABELS.ERREUR
+        ];
+
+        libellesRetirer.forEach(nom => {
+            try {
+                const l = GmailApp.getUserLabelByName(nom);
+                if (l) thread.removeLabel(l);
+            } catch (e) {}
+        });
+
+        if (action === 'archiver') {
+            thread.moveToArchive();
+            messageResultat = "L'e-mail a été archivé et ses libellés de tri ont été retirés.";
+            success = true;
+        } else if (action === 'traite') {
+            messageResultat = "L'e-mail a été marqué comme traité (libellés de tri retirés). Il reste dans votre boîte de réception.";
+            success = true;
+        } else {
+            throw new Error(`Action non reconnue : "${action}".`);
+        }
+    } catch (e) {
+        success = false;
+        messageResultat = e.message;
+    }
+
+    let webAppUrl = '#';
+    try {
+        webAppUrl = ScriptApp.getService().getUrl() || '#';
+    } catch (e) {}
+
+    const htmlOutput = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Tri Gmail — ${success ? 'Action confirmée' : 'Erreur'}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        <style>
+            :root {
+                --primary: #0b57d0;
+                --surface: #f8fafd;
+                --text: #1f1f1f;
+                --text-secondary: #444746;
+                --success: #137333;
+                --error: #c5221f;
+            }
+            body {
+                font-family: 'Outfit', sans-serif;
+                background: linear-gradient(135deg, #f0f4f9 0%, #e1e9f4 100%);
+                color: var(--text);
+                margin: 0;
+                padding: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 90vh;
+            }
+            .card {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(12px);
+                border-radius: 24px;
+                padding: 36px 32px;
+                max-width: 480px;
+                width: 100%;
+                text-align: center;
+                box-shadow: 0 16px 40px rgba(11, 87, 208, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.8);
+            }
+            .icon-circle {
+                width: 72px;
+                height: 72px;
+                border-radius: 50%;
+                margin: 0 auto 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 36px;
+                background: ${success ? 'rgba(24, 128, 56, 0.12)' : 'rgba(217, 48, 37, 0.12)'};
+                color: ${success ? 'var(--success)' : 'var(--error)'};
+            }
+            h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; }
+            .subject { font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 16px; background: rgba(0,0,0,0.03); padding: 8px 12px; border-radius: 8px; word-break: break-word; }
+            p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 24px; }
+            .btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 12px 24px;
+                background: var(--primary);
+                color: #ffffff;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 0.9rem;
+                border-radius: 100px;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(11, 87, 208, 0.25);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <div class="icon-circle">
+                <span class="material-symbols-outlined">${success ? 'check_circle' : 'error'}</span>
+            </div>
+            <h1>${success ? (action === 'archiver' ? 'E-mail archivé !' : 'Marqué comme traité !') : 'Une erreur est survenue'}</h1>
+            ${titreSujet ? `<div class="subject">${escapeHtml_(titreSujet)}</div>` : ''}
+            <p>${escapeHtml_(messageResultat)}</p>
+            <a href="${escapeHtml_(webAppUrl)}" class="btn">
+                <span class="material-symbols-outlined">dashboard</span>
+                Ouvrir le Dashboard
+            </a>
+        </div>
+    </body>
+    </html>
+    `;
+
+    return HtmlService.createHtmlOutput(htmlOutput)
+        .setTitle(success ? 'Action confirmée' : 'Erreur')
         .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
@@ -43,6 +202,7 @@ function getSettings() {
         detecterNewsletters: _loadBooleanProp(CONFIG.PROPRIETES.DETECTER_NEWSLETTERS, true),
         motsClesAucune: _loadArrayProp(CONFIG.PROPRIETES.MOTS_CLES_AUCUNE, []),
         motsClesRapide: _loadArrayProp(CONFIG.PROPRIETES.MOTS_CLES_RAPIDE, []),
+        reglesAlias: _loadArrayProp(CONFIG.PROPRIETES.REGLES_ALIAS, []),
         vip: _loadArrayProp(CONFIG.PROPRIETES.VIP, []),
         noIa: _loadArrayProp(CONFIG.PROPRIETES.NO_IA, []),
         aucune: _loadArrayProp(CONFIG.PROPRIETES.AUCUNE, [])
@@ -96,6 +256,12 @@ function saveSettings(settings) {
         const mots = settings.motsClesRapide.map(m => String(m || '').trim()).filter(m => m.length >= 2);
         props.setProperty(CONFIG.PROPRIETES.MOTS_CLES_RAPIDE, JSON.stringify(mots));
     }
+
+    if (Array.isArray(settings.reglesAlias)) {
+        const parsed = parseReglesAlias_(settings.reglesAlias);
+        const formatees = parsed.map(r => `${r.alias}:${r.categorie}`);
+        props.setProperty(CONFIG.PROPRIETES.REGLES_ALIAS, JSON.stringify(formatees));
+    }
     
     const reglesRejetees = [];
 
@@ -145,6 +311,43 @@ function getDashboardStatus() {
 
         const suggestions = getSenderSuggestions_();
 
+        // Calculs analytiques sur 7 jours
+        const historique7j = obtenirHistoriqueTri7j_();
+        let total7j = 0;
+        let rapide7j = 0;
+        let attention7j = 0;
+        let aucune7j = 0;
+        let urgent7j = 0;
+
+        historique7j.forEach(j => {
+            total7j += Number(j.traites || 0);
+            rapide7j += Number(j.rapide || 0);
+            attention7j += Number(j.attention || 0);
+            aucune7j += Number(j.aucune || 0);
+            urgent7j += Number(j.urgent || 0);
+        });
+
+        const tempsGagneMin = total7j * 2;
+        const heures = Math.floor(tempsGagneMin / 60);
+        const minutes = tempsGagneMin % 60;
+        const tempsGagneFormatte = heures > 0
+            ? `${heures}h ${minutes > 0 ? (minutes < 10 ? '0' : '') + minutes + 'min' : ''}`.trim()
+            : `${minutes}min`;
+
+        const totalAuto = rapide7j + aucune7j;
+        const tauxAuto = total7j > 0 ? Math.round((totalAuto / total7j) * 100) : 100;
+
+        const analytics = {
+            historique: historique7j,
+            total7j,
+            tempsGagneFormatte,
+            tauxAuto,
+            rapide7j,
+            attention7j,
+            aucune7j,
+            urgent7j
+        };
+
         return {
             success: true,
             dernierTri,
@@ -152,6 +355,7 @@ function getDashboardStatus() {
             autoSortActive,
             resetEnCours,
             suggestions,
+            analytics,
             hasApiKey: Boolean(cleApi && cleApi.trim().length > 0)
         };
     } catch (e) {

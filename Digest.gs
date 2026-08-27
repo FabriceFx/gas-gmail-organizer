@@ -40,6 +40,13 @@ function envoyerDigest() {
             ''
         ];
 
+        let webAppUrl = '';
+        try {
+            webAppUrl = ScriptApp.getService().getUrl() || '';
+        } catch (e) {
+            webAppUrl = '';
+        }
+
         let totalGlobal = 0;
 
         sections.forEach(section => {
@@ -105,18 +112,28 @@ function envoyerDigest() {
 
                 const lien = thread.getPermalink();
 
+                const actionsHtml = webAppUrl
+                    ? [
+                        '<td style="padding:7px 8px;vertical-align:top;white-space:nowrap;text-align:right">',
+                        `<a href="${escapeHtml_(webAppUrl)}?action=archiver&id=${escapeHtml_(thread.getId())}" target="_blank" style="display:inline-block;padding:3px 7px;font-size:11px;font-weight:600;color:#137333;background:#e6f4ea;border-radius:4px;text-decoration:none;margin-right:4px">📥 Archiver</a>`,
+                        `<a href="${escapeHtml_(webAppUrl)}?action=traite&id=${escapeHtml_(thread.getId())}" target="_blank" style="display:inline-block;padding:3px 7px;font-size:11px;font-weight:600;color:#1a73e8;background:#e8f0fe;border-radius:4px;text-decoration:none">✅ Fait</a>`,
+                        '</td>'
+                    ].join('')
+                    : '';
+
                 html += [
                     '<tr style="border-bottom:1px solid #e8eaed">',
                     '<td style="padding:7px 8px;white-space:nowrap;color:#5f6368;vertical-align:top">',
-                    escapeHtml_(tronquer_(expediteur, 30)),
+                    escapeHtml_(tronquer_(expediteur, 28)),
                     '<br><span style="font-size:11px;color:#9aa0a6">',
                     escapeHtml_(formaterDateHeureCourte_(dateMessage)),
                     '</span></td>',
                     '<td style="padding:7px 8px;vertical-align:top">',
                     `<a href="${escapeHtml_(lien)}" `,
                     'style="color:#1a73e8;text-decoration:none">',
-                    escapeHtml_(tronquer_(sujet || '(sans objet)', 90)),
+                    escapeHtml_(tronquer_(sujet || '(sans objet)', 80)),
                     '</a></td>',
+                    actionsHtml,
                     '</tr>'
                 ].join('');
 

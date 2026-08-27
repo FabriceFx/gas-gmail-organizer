@@ -43,7 +43,8 @@ Toute la configuration et le suivi se font depuis l'interface Web (Dashboard), s
 - **Onglet Dashboard (Vue d'ensemble)** :
   - **État du service** : Activez / désactivez la surveillance horaire en arrière-plan en un clic.
   - **Bilan du dernier tri** : Date, volume d'emails traités, répartition par catégorie et urgence, temps d'exécution.
-  - **Suggestions de règles 1-clic** : Détection des expéditeurs récurrents non configurés avec boutons d'ajout direct (`+ VIP`, `+ Ignorer`, `+ Ne pas envoyer à l'IA`).
+  - **📊 Analytics & Activité (7 jours)** : Suivi des volumes quotidiens avec graphique en barres empilées, calcul du temps économisé (*ex: 4h 15min*) et du taux de traitement instantané.
+  - **💡 Suggestions de règles 1-clic** : Détection des expéditeurs récurrents non configurés avec boutons d'ajout direct (`+ VIP`, `+ Ignorer`, `+ Ne pas envoyer à l'IA`).
   - **Quarantaine & Retraitement** : Compteur d'e-mails en quarantaine avec bouton de relance immédiate.
   - **Diagnostic Gemini** : Testez la validité de votre clé API et mesurez la latence réseau en temps réel.
   - **Lancer le tri manuel** : Déclenche l'analyse immédiate des nouveaux emails.
@@ -51,6 +52,7 @@ Toute la configuration et le suivi se font depuis l'interface Web (Dashboard), s
   - **Périmètre d'analyse** : Choisissez la fenêtre temporelle (30 jours par défaut) et l'exclusion des onglets secondaires (`category:primary`).
   - **Détection native des Newsletters** : Analyse automatique des en-têtes standard (`List-Unsubscribe`, `Precedence: bulk`) pour classer en *Aucune action* sans consommer de quota IA.
   - **Mots-clés dans l'objet** : Définissez des termes pour classement direct en *Aucune action* (factures, reçus) ou *Action rapide* sans appel Gemini.
+  - **Règles par Alias & Destinataire** : Règles de routage direct selon l'adresse de réception (`support@domaine.com:RAPIDE`, `compta@domaine.com:AUCUNE`).
   - **Clé API Gemini** : Clé Google AI Studio (masquée et sécurisée).
   - **Contacts VIP** : Expéditeurs classés en "Attention requise" (🔴) sans appel IA.
   - **Ne pas envoyer à l'IA** : Expéditeurs ultra-sensibles traités localement.
@@ -59,11 +61,14 @@ Toute la configuration et le suivi se font depuis l'interface Web (Dashboard), s
 ### 4. Méthodologie au quotidien (Inbox Zero)
 Pour que l'outil soit efficace et que votre rapport quotidien ne se remplisse pas indéfiniment, suivez cette méthode simple :
 1. **Agir** : Ouvrez votre dossier/libellé `Action Rapide` et traitez les e-mails en attente.
-2. **Archiver** : Une fois l'e-mail traité, **enlevez-lui le libellé de couleur** ou **archivez l'e-mail**. S'il reste dans votre boîte de réception avec le libellé coloré, le script considérera qu'il est toujours "en attente de votre part".
+2. **Archiver** : Une fois l'e-mail traité, **enlevez-lui le libellé de couleur** ou **archivez l'e-mail**.
 3. **Nettoyer** : Consultez de temps en temps le dossier `Aucune Action` en lisant en diagonale, puis archivez massivement.
 
-### 5. Rapports quotidiens (Digest)
+### 5. Rapports quotidiens (Digest) & Actions rapides 1-clic
 En activant le tri automatique, un email récapitulatif (Digest) vous sera envoyé tous les matins à 8h avec le résumé des actions rapides et attentions requises, priorisant les e-mails urgents.
+Chaque e-mail dans le rapport dispose de boutons directs :
+- **`[📥 Archiver]`** : Archive l'e-mail et retire ses libellés de tri en un clic depuis votre messagerie.
+- **`[✅ Fait]`** : Retire les libellés de tri sans déplacer l'e-mail.
 
 ### 6. Sécurité
 - Votre clé API est chiffrée et stockée dans le `PropertiesService` masqué de Google (jamais exposée au navigateur).
@@ -87,7 +92,7 @@ This Google Apps Script project automatically sorts your inbox emails into clear
 | ⏰ Urgent | High priority badge (critical decision or high urgency) |
 | ⚠️ Sort error | Thread quarantined after repeated processing failures |
 
-A hybrid engine first applies local rules (VIP senders, ignore lists, keyword patterns, RFC newsletter headers). Ambiguous cases are then delegated to the Gemini API using an injection-hardened prompt.
+A hybrid engine first applies local rules (VIP senders, ignore lists, keyword patterns, alias rules, RFC newsletter headers). Ambiguous cases are then delegated to the Gemini API using an injection-hardened prompt.
 
 ### 2. Setup and Deployment (WebApp Dashboard)
 
@@ -109,7 +114,8 @@ All configuration and monitoring is done from the Web Interface (Dashboard), wit
 - **Dashboard Tab (Overview)**:
   - **Service Status**: Toggle hourly background monitoring in one click.
   - **Last Run Metrics**: Date, total sorted emails, category & urgency breakdown, execution time.
-  - **1-Click Rule Suggestions**: Detects frequent unconfigured inbox senders with direct action buttons (`+ VIP`, `+ Ignore`, `+ Do not send to AI`).
+  - **📊 Analytics & Activity (7 days)**: Daily triage volumes with interactive stacked bar chart, estimated time saved (*e.g., 4h 15min*), and automation rate.
+  - **💡 1-Click Rule Suggestions**: Detects frequent unconfigured inbox senders with direct action buttons (`+ VIP`, `+ Ignore`, `+ Do not send to AI`).
   - **Quarantine & Retry**: Quarantined count with instant retry action button.
   - **Gemini Diagnostics**: Test API key validity and measure network latency.
   - **Manual Sort**: Trigger immediate analysis of new incoming emails.
@@ -117,6 +123,7 @@ All configuration and monitoring is done from the Web Interface (Dashboard), wit
   - **Search Scope**: Choose time window (30 days by default) and exclude secondary tabs (`category:primary`).
   - **Native Newsletter Detection**: Automatic RFC header parsing (`List-Unsubscribe`, `Precedence: bulk`) to sort into *No Action* without consuming AI quota.
   - **Subject Keywords**: Configure keyword patterns for direct sorting into *No Action* or *Quick Action* without calling Gemini.
+  - **Alias & Recipient Rules**: Route directly based on destination address (`support@domain.com:RAPIDE`, `billing@domain.com:AUCUNE`).
   - **Gemini API Key**: Securely stored AI Studio key.
   - **VIP Contacts**: Always classified as "Attention required" (🔴) without AI.
   - **Do not send to AI**: Sensitive senders processed locally.
@@ -128,8 +135,11 @@ For the tool to be effective and keep your daily digest clean, follow this simpl
 2. **Archive**: Once an email is processed, **remove its color label** or **archive the email**.
 3. **Clean**: Briefly check the `No Action` folder, skim through, and bulk archive.
 
-### 5. Daily Reports (Digest)
+### 5. Daily Reports (Digest) & 1-Click Quick Actions
 By enabling auto-sort, a summary email (Digest) will be sent to you every morning at 8 AM, listing quick actions and required attentions, highlighting urgent items.
+Each email in the report features direct 1-click action buttons:
+- **`[📥 Archiver]`**: Archives the email and removes triage labels in 1 click from your email client.
+- **`[✅ Fait]`**: Removes triage labels without moving the email.
 
 ### 6. Security
 - Your API key is encrypted and stored in Google's hidden `PropertiesService` (never exposed to client browser).

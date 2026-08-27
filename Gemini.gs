@@ -92,6 +92,17 @@ function classerThreadAvecIA_(
         }
     }
 
+    // ── Règles par Alias & Adresse de réception (To / Cc) ──
+    const destinataires = [].concat(adressesTo, adressesCc);
+    const regleAlias = trouverRegleAliasCorrespondante_(destinataires, CONFIG.REGLES_ALIAS);
+    if (regleAlias) {
+        return {
+            categorie: regleAlias.categorie,
+            source: 'REGLE',
+            raison: `Règle d’alias destinataire active ("${regleAlias.alias}" ➜ ${regleAlias.categorie}).`
+        };
+    }
+
     const compteDansTo = contientUneIdentite_(adressesTo, identites);
     const compteDansCc = contientUneIdentite_(adressesCc, identites);
     const uniquementEnCc = !compteDansTo && compteDansCc;

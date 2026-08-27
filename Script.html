@@ -47,9 +47,21 @@ const DICT = {
         label_detect_newsletters: "Détection native des Newsletters & e-mails automatiques",
         help_detect_newsletters: "Classe automatiquement en Aucune Action les e-mails comportant un en-tête List-Unsubscribe ou Precedence: bulk sans consommer de quota IA.",
         label_kw_aucune: "Mots-clés dans l'objet (Aucune Action)",
-        help_kw_aucune: "Si l'objet de l'e-mail contient l'un de ces mots-clés, il est immédiatement classé en Aucune Action sans appel à l'IA. Un mot-clé par ligne.",
+        help_kw_aucune: "Si l'objet de l'e-mail contient l'un de ces mots-clés (mot entier), il est immédiatement classé en Aucune Action sans appel à l'IA. Un mot-clé par ligne.",
         label_kw_rapide: "Mots-clés dans l'objet (Action Rapide)",
-        help_kw_rapide: "Si l'objet contient l'un de ces termes, il est immédiatement classé en Action Rapide sans appel à l'IA. Un mot-clé par ligne.",
+        help_kw_rapide: "Si l'objet contient l'un de ces termes (mot entier), il est immédiatement classé en Action Rapide sans appel à l'IA. Un mot-clé par ligne.",
+        label_alias_rules: "Règles par Alias ou Destinataire (To / Cc)",
+        help_alias_rules: "Applique automatiquement une catégorie dès qu'un e-mail est reçu sur cette adresse. Format : adresse@domaine.fr:CATEGORIE (CATEGORIE = RAPIDE, ATTENTION ou AUCUNE). Une règle par ligne.",
+        title_analytics: "Activité & Temps gagné (7 jours)",
+        desc_analytics: "Impact et historique du tri automatique.",
+        metric_total_7d: "E-mails triés (7j)",
+        metric_time_saved: "Temps économisé",
+        metric_auto_rate: "Traitement instantané",
+        chart_no_data: "Aucune activité enregistrée sur les 7 derniers jours.",
+        legend_aucune: "Aucune action",
+        legend_rapide: "Action rapide",
+        legend_attention: "Attention requise",
+        legend_urgent: "Urgent",
         help_vip: "Ces expéditeurs sont toujours classés en Attention Requise sans passer par l'IA.",
         help_no_ia: "Emails sensibles (classés en Attention Requise localement).",
         help_aucune: "Emails toujours classés en Aucune Action (Info).",
@@ -133,9 +145,21 @@ const DICT = {
         label_detect_newsletters: "Native Newsletter & automated email detection",
         help_detect_newsletters: "Automatically classifies emails with List-Unsubscribe or Precedence: bulk header as No Action without using AI quota.",
         label_kw_aucune: "Subject Keywords (No Action)",
-        help_kw_aucune: "If email subject contains any of these keywords, it is instantly classified as No Action without calling AI. One per line.",
+        help_kw_aucune: "If email subject contains any of these keywords (full word), it is instantly classified as No Action without calling AI. One per line.",
         label_kw_rapide: "Subject Keywords (Quick Action)",
-        help_kw_rapide: "If email subject contains any of these keywords, it is instantly classified as Quick Action without calling AI. One per line.",
+        help_kw_rapide: "If email subject contains any of these keywords (full word), it is instantly classified as Quick Action without calling AI. One per line.",
+        label_alias_rules: "Rules by Alias or Recipient (To / Cc)",
+        help_alias_rules: "Automatically applies a category when an email is received on this address. Format: address@domain.com:CATEGORY (CATEGORY = RAPIDE, ATTENTION or AUCUNE). One per line.",
+        title_analytics: "Activity & Time Saved (7 days)",
+        desc_analytics: "Impact and automated sorting history.",
+        metric_total_7d: "Sorted emails (7d)",
+        metric_time_saved: "Time saved",
+        metric_auto_rate: "Instant sorting",
+        chart_no_data: "No sorting activity recorded in the last 7 days.",
+        legend_aucune: "No action",
+        legend_rapide: "Quick action",
+        legend_attention: "Needs attention",
+        legend_urgent: "Urgent",
         help_vip: "These senders are always flagged as Needs Attention without AI.",
         help_no_ia: "Sensitive emails (classified as Needs Attention locally).",
         help_aucune: "Emails always classified as No Action (Info).",
@@ -181,7 +205,7 @@ const DICT = {
     }
 };
 
-let currentLang = INITIAL_LANG === 'en' ? 'en' : 'fr';
+let currentLang = 'fr';
 
 document.addEventListener("DOMContentLoaded", () => {
     initNavigation();
@@ -189,18 +213,48 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchSettings();
     fetchDashboardStatus();
     
-    document.getElementById('btn-save-settings').addEventListener('click', onSaveSettings);
-    document.getElementById('btn-trigger-sort').addEventListener('click', onTriggerSort);
+    const btnSave = document.getElementById('btn-save-settings');
+    if (btnSave) btnSave.addEventListener('click', onSaveSettings);
+
+    const btnTrigger = document.getElementById('btn-trigger-sort');
+    if (btnTrigger) btnTrigger.addEventListener('click', onTriggerSort);
+
     const btnRetryErrors = document.getElementById('btn-retry-errors');
-    if (btnRetryErrors) {
-        btnRetryErrors.addEventListener('click', onTriggerRetryErrors);
-    }
+    if (btnRetryErrors) btnRetryErrors.addEventListener('click', onTriggerRetryErrors);
+
     const btnTestApi = document.getElementById('btn-test-api');
-    if (btnTestApi) {
-        btnTestApi.addEventListener('click', onTestApiConnection);
-    }
-    document.getElementById('toggle-auto-sort').addEventListener('change', onToggleAutoSort);
+    if (btnTestApi) btnTestApi.addEventListener('click', onTestApiConnection);
+
+    const toggleAuto = document.getElementById('toggle-auto-sort');
+    if (toggleAuto) toggleAuto.addEventListener('change', onToggleAutoSort);
 });
+
+function initTranslations() {
+    const btnFr = document.getElementById('btn-fr');
+    const btnEn = document.getElementById('btn-en');
+    
+    if (btnFr) btnFr.addEventListener('click', () => setLanguage('fr'));
+    if (btnEn) btnEn.addEventListener('click', () => setLanguage('en'));
+    
+    setLanguage(currentLang);
+}
+
+function setLanguage(lang) {
+    if (!DICT[lang]) return;
+    currentLang = lang;
+    
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (DICT[lang][key]) {
+            el.innerHTML = DICT[lang][key];
+        }
+    });
+    
+    const btnFr = document.getElementById('btn-fr');
+    const btnEn = document.getElementById('btn-en');
+    if (btnFr) btnFr.classList.toggle('active', lang === 'fr');
+    if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+}
 
 function initNavigation() {
     const navItems = document.querySelectorAll('.nav-links li');
@@ -237,45 +291,7 @@ function initNavigation() {
     });
 }
 
-function initTranslations() {
-    const btnFr = document.getElementById('btn-fr');
-    const btnEn = document.getElementById('btn-en');
-    
-    if (currentLang === 'en') {
-        btnFr.classList.remove('active');
-        btnEn.classList.add('active');
-    }
-    
-    btnFr.addEventListener('click', () => setLang('fr'));
-    btnEn.addEventListener('click', () => setLang('en'));
-    
-    applyTranslations();
-}
-
-function setLang(lang) {
-    if (lang !== 'fr' && lang !== 'en') return;
-    currentLang = lang;
-    
-    document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
-    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
-    
-    applyTranslations();
-    fetchDashboardStatus();
-}
-
-function applyTranslations() {
-    const elements = document.querySelectorAll('[data-i18n]');
-    const dict = DICT[currentLang];
-    
-    elements.forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (dict[key]) {
-            el.innerHTML = dict[key];
-        }
-    });
-}
-
-function showLoader(messageKey = 'msg_loading') {
+function showLoader(messageKey) {
     const overlay = document.getElementById('loader-overlay');
     const msgEl = document.getElementById('loader-message');
     msgEl.textContent = DICT[currentLang][messageKey] || "Loading...";
@@ -369,11 +385,89 @@ function fetchDashboardStatus() {
 
             // Suggestions de règles
             renderSuggestions(status.suggestions);
+
+            // Analytics 7 jours
+            renderAnalytics(status.analytics);
         })
         .withFailureHandler((err) => {
             console.error('Erreur chargement statut dashboard', err);
         })
         .getDashboardStatus();
+}
+
+function renderAnalytics(analytics) {
+    if (!analytics) return;
+
+    const totalEl = document.getElementById('stat-analytics-total');
+    const timeEl = document.getElementById('stat-analytics-time');
+    const rateEl = document.getElementById('stat-analytics-auto');
+    const badgeEl = document.getElementById('badge-analytics-rate');
+    const chartContainer = document.getElementById('analytics-chart-container');
+
+    if (totalEl) totalEl.textContent = String(analytics.total7j || 0);
+    if (timeEl) timeEl.textContent = analytics.tempsGagneFormatte || '0 min';
+    if (rateEl) rateEl.textContent = (analytics.tauxAuto !== undefined ? analytics.tauxAuto : 100) + '%';
+    if (badgeEl) badgeEl.textContent = `⚡ ${(analytics.tauxAuto !== undefined ? analytics.tauxAuto : 100)}% auto`;
+
+    if (!chartContainer) return;
+
+    const historique = Array.isArray(analytics.historique) ? analytics.historique : [];
+    if (historique.length === 0) {
+        chartContainer.innerHTML = `<p style="color: var(--md-sys-color-on-surface-variant); text-align: center; font-style: italic; margin: 12px 0;">${escapeHtml(DICT[currentLang].chart_no_data || 'Aucune activité sur les 7 derniers jours.')}</p>`;
+        return;
+    }
+
+    let maxJour = 1;
+    historique.forEach(j => {
+        const t = Number(j.traites || 0);
+        if (t > maxJour) maxJour = t;
+    });
+
+    let barsHtml = '<div class="chart-bars-wrap">';
+    historique.forEach(j => {
+        const total = Number(j.traites || 0);
+        const aucune = Number(j.aucune || 0);
+        const rapide = Number(j.rapide || 0);
+        const attention = Number(j.attention || 0);
+        const urgent = Number(j.urgent || 0);
+
+        const dateObj = new Date(j.dateStr);
+        const dateLabel = isNaN(dateObj.getTime())
+            ? j.dateStr
+            : dateObj.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'fr-FR', { weekday: 'short', day: 'numeric' });
+
+        const barHeightPx = Math.max(8, Math.round((total / maxJour) * 110));
+
+        const pctAucune = total > 0 ? (aucune / total) * 100 : 0;
+        const pctRapide = total > 0 ? (rapide / total) * 100 : 0;
+        const pctAttention = total > 0 ? (attention / total) * 100 : 0;
+        const pctUrgent = total > 0 ? (urgent / total) * 100 : 0;
+
+        barsHtml += `
+            <div class="chart-col">
+                <span class="chart-col-count">${total}</span>
+                <div class="chart-bar-stack" style="height: ${barHeightPx}px;" title="${dateLabel} : ${total} (${aucune} aucune, ${rapide} rapide, ${attention} attention, ${urgent} urgent)">
+                    ${pctAucune > 0 ? `<div class="chart-segment segment-aucune" style="height: ${pctAucune}%;"></div>` : ''}
+                    ${pctRapide > 0 ? `<div class="chart-segment segment-rapide" style="height: ${pctRapide}%;"></div>` : ''}
+                    ${pctAttention > 0 ? `<div class="chart-segment segment-attention" style="height: ${pctAttention}%;"></div>` : ''}
+                    ${pctUrgent > 0 ? `<div class="chart-segment segment-urgent" style="height: ${pctUrgent}%;"></div>` : ''}
+                </div>
+                <span class="chart-col-date">${escapeHtml(dateLabel)}</span>
+            </div>
+        `;
+    });
+    barsHtml += '</div>';
+
+    const legendHtml = `
+        <div class="chart-legend">
+            <div class="legend-item"><span class="legend-dot segment-aucune"></span> <span>${escapeHtml(DICT[currentLang].legend_aucune || 'Aucune action')}</span></div>
+            <div class="legend-item"><span class="legend-dot segment-rapide"></span> <span>${escapeHtml(DICT[currentLang].legend_rapide || 'Action rapide')}</span></div>
+            <div class="legend-item"><span class="legend-dot segment-attention"></span> <span>${escapeHtml(DICT[currentLang].legend_attention || 'Attention requise')}</span></div>
+            <div class="legend-item"><span class="legend-dot segment-urgent"></span> <span>${escapeHtml(DICT[currentLang].legend_urgent || 'Urgent')}</span></div>
+        </div>
+    `;
+
+    chartContainer.innerHTML = barsHtml + legendHtml;
 }
 
 function renderSuggestions(suggestions) {
@@ -477,6 +571,7 @@ function fetchSettings() {
             
             document.getElementById('input-mots-cles-aucune').value = Array.isArray(settings.motsClesAucune) ? settings.motsClesAucune.join('\n') : '';
             document.getElementById('input-mots-cles-rapide').value = Array.isArray(settings.motsClesRapide) ? settings.motsClesRapide.join('\n') : '';
+            document.getElementById('input-regles-alias').value = Array.isArray(settings.reglesAlias) ? settings.reglesAlias.join('\n') : '';
 
             document.getElementById('input-vip').value = settings.vip.join('\n');
             document.getElementById('input-no-ia').value = settings.noIa.join('\n');
@@ -490,29 +585,6 @@ function fetchSettings() {
         .getSettings();
 }
 
-function onToggleAutoSort(e) {
-    showLoader('msg_saving');
-    const isEnabled = e.target.checked;
-    
-    google.script.run
-        .withSuccessHandler((result) => {
-            hideLoader();
-            if (result.success) {
-                showSnackbar(result.message);
-                fetchDashboardStatus();
-            } else {
-                showSnackbar(result.message, true);
-                e.target.checked = !isEnabled; // Revert visually
-            }
-        })
-        .withFailureHandler((error) => {
-            hideLoader();
-            showSnackbar(error.message, true);
-            e.target.checked = !isEnabled; // Revert visually
-        })
-        .toggleAutoSort(isEnabled);
-}
-
 function onSaveSettings() {
     showLoader('msg_saving');
     
@@ -524,6 +596,7 @@ function onSaveSettings() {
         fenetreJours: Number(document.getElementById('select-fenetre-jours').value),
         motsClesAucune: document.getElementById('input-mots-cles-aucune').value.split('\n'),
         motsClesRapide: document.getElementById('input-mots-cles-rapide').value.split('\n'),
+        reglesAlias: document.getElementById('input-regles-alias').value.split('\n'),
         vip: document.getElementById('input-vip').value.split('\n'),
         noIa: document.getElementById('input-no-ia').value.split('\n'),
         aucune: document.getElementById('input-aucune').value.split('\n')
@@ -548,33 +621,6 @@ function onSaveSettings() {
             showSnackbar(DICT[currentLang].msg_save_error + " " + error.message, true);
         })
         .saveSettings(settings);
-}
-
-function onTestApiConnection() {
-    showLoader('msg_testing_api');
-    
-    google.script.run
-        .withSuccessHandler((result) => {
-            hideLoader();
-            const descEl = document.getElementById('desc-api-status');
-            if (result.success) {
-                const msg = currentLang === 'en'
-                    ? `Connected (${result.modele}, ${result.latenceMs} ms)`
-                    : `Connecté (${result.modele}, ${result.latenceMs} ms)`;
-                descEl.textContent = msg;
-                descEl.style.color = '#188038';
-                showSnackbar(msg);
-            } else {
-                descEl.textContent = result.message || 'Erreur de connexion';
-                descEl.style.color = '#c5221f';
-                showSnackbar(result.message, true);
-            }
-        })
-        .withFailureHandler((error) => {
-            hideLoader();
-            showSnackbar(error.message, true);
-        })
-        .testerConnexionGemini();
 }
 
 function onTriggerSort() {
@@ -617,5 +663,55 @@ function onTriggerRetryErrors() {
             showSnackbar(error.message, true);
         })
         .lancerRetraitementErreurs();
+}
+
+function onToggleAutoSort(e) {
+    showLoader('msg_saving');
+    const isEnabled = e.target.checked;
+    
+    google.script.run
+        .withSuccessHandler((result) => {
+            hideLoader();
+            if (result.success) {
+                showSnackbar(result.message);
+                fetchDashboardStatus();
+            } else {
+                showSnackbar(result.message, true);
+                e.target.checked = !isEnabled;
+            }
+        })
+        .withFailureHandler((error) => {
+            hideLoader();
+            showSnackbar(error.message, true);
+            e.target.checked = !isEnabled;
+        })
+        .toggleAutoSort(isEnabled);
+}
+
+function onTestApiConnection() {
+    showLoader('msg_testing_api');
+    
+    google.script.run
+        .withSuccessHandler((result) => {
+            hideLoader();
+            const descEl = document.getElementById('desc-api-status');
+            if (result.success) {
+                const msg = currentLang === 'en'
+                    ? `Connected (${result.modele}, ${result.latenceMs} ms)`
+                    : `Connecté (${result.modele}, ${result.latenceMs} ms)`;
+                descEl.textContent = msg;
+                descEl.style.color = '#188038';
+                showSnackbar(msg);
+            } else {
+                descEl.textContent = result.message || 'Erreur de connexion';
+                descEl.style.color = '#c5221f';
+                showSnackbar(result.message, true);
+            }
+        })
+        .withFailureHandler((error) => {
+            hideLoader();
+            showSnackbar(error.message, true);
+        })
+        .testerConnexionGemini();
 }
 </script>
