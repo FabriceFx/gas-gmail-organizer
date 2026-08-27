@@ -45,6 +45,7 @@ const context = {
         getUserLabelByName: () => null,
         createLabel: () => ({}),
         search: () => [],
+        getMessagesForThreads: () => [],
         sendEmail: () => {}
     },
     LockService: {

@@ -159,6 +159,89 @@ function executerTestsUnitaires() {
     const dashStatus = getDashboardStatus();
     affirmer(dashStatus && dashStatus.success === true, 'getDashboardStatus retourne un statut avec succès');
 
+    // ── 11. Tests des nouveautés Lot 2 (Mots-clés, En-têtes, Ajout rapide) ──
+    // A. Mots-clés dans le sujet
+    const motsTest = ['Facture', 'Reçu', 'Confirmation'];
+    const match1 = contientUnMotCle_('Votre facture n°12345 est disponible', motsTest);
+    affirmer(match1 && match1.match === true && match1.motCle === 'Facture', 'contientUnMotCle_ détecte le mot-clé Facture');
+    const match2 = contientUnMotCle_('CONFIRMATION DE COMMANDE #998', motsTest);
+    affirmer(match2 && match2.match === true && match2.motCle === 'Confirmation', 'contientUnMotCle_ insensible à la casse');
+    const matchNul = contientUnMotCle_('Bonjour, réunion urgente demain', motsTest);
+    affirmer(matchNul === null, 'contientUnMotCle_ retourne null en l\'absence de mot-clé');
+
+    // B. Détection des en-têtes RFC Newsletter
+    const mockMsgNewsletter = {
+        getHeader: (h) => h === 'List-Unsubscribe' ? '<mailto:unsubscribe@domain.com>' : null
+    };
+    const resNews = estUneNewsletterOuAuto_(mockMsgNewsletter);
+    affirmer(resNews && resNews.isAuto === true, 'estUneNewsletterOuAuto_ détecte List-Unsubscribe');
+
+    const mockMsgBulk = {
+        getHeader: (h) => h === 'Precedence' ? 'bulk' : null
+    };
+    const resBulk = estUneNewsletterOuAuto_(mockMsgBulk);
+    affirmer(resBulk && resBulk.isAuto === true, 'estUneNewsletterOuAuto_ détecte Precedence: bulk');
+
+    const mockMsgAuto = {
+        getHeader: (h) => h === 'Auto-Submitted' ? 'auto-generated' : null
+    };
+    const resAuto = estUneNewsletterOuAuto_(mockMsgAuto);
+    affirmer(resAuto && resAuto.isAuto === true, 'estUneNewsletterOuAuto_ détecte Auto-Submitted: auto-generated');
+
+    const mockMsgNormal = {
+        getHeader: () => null
+    };
+    affirmer(estUneNewsletterOuAuto_(mockMsgNormal) === null, 'estUneNewsletterOuAuto_ ignore un email normal');
+
+    // C. Ajout rapide de règle (quickAddRule)
+    const quickResVip = quickAddRule('vip', 'president@directoire.com');
+    affirmer(quickResVip && quickResVip.success === true, 'quickAddRule ajoute une règle VIP');
+    const quickResAucune = quickAddRule('aucune', '@alertes-automatiques.fr');
+    affirmer(quickResAucune && quickResAucune.success === true, 'quickAddRule ajoute une règle Aucune Action');
+    
+    let quickErreur = false;
+    try {
+        quickAddRule('vip', 'not an email');
+    } catch (e) {
+        quickErreur = true;
+    }
+    affirmer(quickErreur, 'quickAddRule rejette un pattern invalide');
+
+    // D. Sauvegarde et chargement des paramètres Lot 2
+    saveSettings({
+        detecterNewsletters: true,
+        motsClesAucune: ['Facture', 'Newsletter', 'Reçu'],
+        motsClesRapide: ['À signer', 'Urgent']
+    });
+    const s = getSettings();
+    affirmer(s.detecterNewsletters === true, 'getSettings restitue detecterNewsletters');
+    affirmer(s.motsClesAucune.includes('Facture'), 'getSettings restitue motsClesAucune');
+    affirmer(s.motsClesRapide.includes('À signer'), 'getSettings restitue motsClesRapide');
+
+    // E. Classification déterministe via classerThreadAvecIA_
+    const testIdentites = new Set(['me@example.com']);
+    const mockThreadKw = { getFirstMessageSubject: () => 'Votre facture SFR' };
+    const mockMsgKw = {
+        getFrom: () => 'service-client@sfr.fr',
+        getTo: () => 'me@example.com',
+        getCc: () => '',
+        getSubject: () => 'Votre facture SFR',
+        getHeader: () => null
+    };
+    const resClasserKw = classerThreadAvecIA_(mockThreadKw, [mockMsgKw], testIdentites, 'FAKE_KEY', 'model', Date.now() + 10000);
+    affirmer(resClasserKw.categorie === 'AUCUNE' && resClasserKw.source === 'REGLE', 'classerThreadAvecIA_ classe par mot-clé objet sans appel IA');
+
+    const mockThreadNews = { getFirstMessageSubject: () => 'Offres de la semaine' };
+    const mockMsgNews = {
+        getFrom: () => 'marketing@eshop.com',
+        getTo: () => 'me@example.com',
+        getCc: () => '',
+        getSubject: () => 'Offres de la semaine',
+        getHeader: (h) => h === 'List-Unsubscribe' ? '<mailto:unsub@eshop.com>' : null
+    };
+    const resClasserNews = classerThreadAvecIA_(mockThreadNews, [mockMsgNews], testIdentites, 'FAKE_KEY', 'model', Date.now() + 10000);
+    affirmer(resClasserNews.categorie === 'AUCUNE' && resClasserNews.source === 'REGLE', 'classerThreadAvecIA_ classe par en-tête newsletter sans appel IA');
+
     // Log récapitulatif
     console.log(`[TESTS] ${resultats.reussis}/${resultats.total} tests réussis (${resultats.echecs} échecs).`);
     resultats.details.forEach(d => console.log(d));

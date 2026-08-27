@@ -7,6 +7,26 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [3.5.0] — 2026-08-27
+
+### 🎯 Terre promise : Zéro jeton gaspillé, des règles configurées en un battement de cil
+*Votre boîte mail contient des dizaines de newsletters, factures et confirmations qui n'ont pas besoin de mobiliser une IA pour être comprises. Vos quotas d'API restent intacts grâce à la détection native des en-têtes et des mots-clés d'objet. Et dès qu'un expéditeur régulier apparaît dans votre boîte, un simple clic dans votre Dashboard l'ajoute à vos règles sans jamais avoir à taper une seule adresse.*
+
+### ✨ Ajouté / Added
+- **Règles déterministes par mots-clés dans l'objet** :
+  - Configuration de listes de termes pour classement immédiat en 🟢 *Aucune action* (ex: `Facture`, `Reçu`, `Confirmation`) ou 🟠 *Action rapide* sans appel à Gemini.
+  - Évaluation instantanée et insensible à la casse / aux espaces.
+- **Détection native des Newsletters & e-mails automatiques (En-têtes RFC)** :
+  - Détection automatique basée sur les en-têtes `List-Unsubscribe`, `Precedence: bulk/list/junk` et `Auto-Submitted: auto-generated`.
+  - Option activable/désactivable dans les Paramètres (activée par défaut).
+- **Assistant de règles & suggestions 1-clic dans le Dashboard** :
+  - Détection intelligente des expéditeurs fréquents non encore catégorisés dans la boîte de réception.
+  - Boutons d'action instantanés dans l'interface Web : `+ VIP`, `+ Ignorer`, `+ Ne pas envoyer à l'IA`.
+- **Réactivité instantanée de la configuration (Getters dynamiques)** :
+  - Accès aux propriétés en temps réel sans blocage par snapshot figé.
+
+---
+
 ## [3.4.0] — 2026-08-27
 
 ### 🎯 Terre promise : La clarté instantanée et la maîtrise absolue du tri

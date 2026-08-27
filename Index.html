@@ -139,6 +139,24 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Suggestions de règles intelligentes -->
+                <div class="glass-card" id="card-suggestions" style="margin-top: 24px; display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="card-icon" style="margin-bottom: 0; width: 40px; height: 40px; background: rgba(232, 113, 10, 0.15); color: #e8710a;">
+                                <span class="material-symbols-outlined">lightbulb</span>
+                            </div>
+                            <div>
+                                <h3 style="margin-bottom: 0; font-size: 1.15rem;" data-i18n="title_suggestions">Suggestions de règles rapides</h3>
+                                <small style="color: var(--md-sys-color-on-surface-variant);" data-i18n="desc_suggestions">Expéditeurs récurrents détectés dans votre boîte.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="suggestions-list" class="suggestions-list">
+                        <!-- Rempli dynamiquement -->
+                    </div>
+                </div>
             </section>
             
             <!-- SECTION: Settings -->
@@ -192,6 +210,38 @@
                             <option value="0" data-i18n="opt_window_all">Tout l'historique non classé</option>
                         </select>
                         <small data-i18n="help_time_window">Limite l'analyse aux emails récents pour préserver votre quota au premier lancement.</small>
+                    </div>
+
+                    <!-- Détection automatique des Newsletters par en-têtes RFC -->
+                    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.04); border-radius: 8px;">
+                        <div>
+                            <label for="toggle-detecter-newsletters" style="margin-bottom: 2px;" data-i18n="label_detect_newsletters">Détection native des Newsletters &amp; e-mails automatiques</label>
+                            <small data-i18n="help_detect_newsletters" style="display: block; opacity: 0.8; font-size: 11px;">Classe automatiquement en <b>Aucune Action</b> les e-mails comportant un en-tête List-Unsubscribe ou Precedence: bulk sans consommer de quota IA.</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-detecter-newsletters">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Mots-clés dans l'objet pour Aucune action -->
+                    <div class="form-group">
+                        <label for="input-mots-cles-aucune" data-i18n="label_kw_aucune">Mots-clés dans l'objet (Aucune Action)</label>
+                        <textarea id="input-mots-cles-aucune" rows="3" placeholder="Facture
+Reçu
+Confirmation de commande
+Avis d'expédition
+[Newsletter]"></textarea>
+                        <small data-i18n="help_kw_aucune">Si l'objet de l'e-mail contient l'un de ces mots-clés, il est immédiatement classé en <b>Aucune Action</b> sans appel à l'IA. Un mot-clé par ligne.</small>
+                    </div>
+
+                    <!-- Mots-clés dans l'objet pour Action rapide -->
+                    <div class="form-group">
+                        <label for="input-mots-cles-rapide" data-i18n="label_kw_rapide">Mots-clés dans l'objet (Action Rapide)</label>
+                        <textarea id="input-mots-cles-rapide" rows="3" placeholder="À valider
+Signature requise
+Demande de confirmation"></textarea>
+                        <small data-i18n="help_kw_rapide">Si l'objet contient l'un de ces termes, il est immédiatement classé en <b>Action Rapide</b> sans appel à l'IA. Un mot-clé par ligne.</small>
                     </div>
                     
                     <div class="form-group">

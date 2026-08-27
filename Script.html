@@ -25,6 +25,11 @@ const DICT = {
         btn_retry: "Retraiter",
         info_auto: "Tri Automatique",
         info_auto_desc: "Surveillance horaire en arrière-plan.",
+        title_suggestions: "Suggestions de règles rapides",
+        desc_suggestions: "Expéditeurs récurrents détectés dans votre boîte.",
+        btn_add_vip: "+ VIP",
+        btn_add_ignore: "+ Ignorer",
+        btn_add_noia: "+ Ne pas envoyer à l'IA",
         title_settings: "Configuration",
         subtitle_settings: "Ajustez vos préférences et règles de tri.",
         help_api_key: "Laissez vide pour conserver la clé actuelle. Entrez __CLEAR__ pour la supprimer.",
@@ -39,6 +44,12 @@ const DICT = {
         opt_window_30: "30 derniers jours (newer_than:30d — recommandé)",
         opt_window_90: "90 derniers jours (newer_than:90d)",
         opt_window_all: "Tout l'historique non classé",
+        label_detect_newsletters: "Détection native des Newsletters & e-mails automatiques",
+        help_detect_newsletters: "Classe automatiquement en Aucune Action les e-mails comportant un en-tête List-Unsubscribe ou Precedence: bulk sans consommer de quota IA.",
+        label_kw_aucune: "Mots-clés dans l'objet (Aucune Action)",
+        help_kw_aucune: "Si l'objet de l'e-mail contient l'un de ces mots-clés, il est immédiatement classé en Aucune Action sans appel à l'IA. Un mot-clé par ligne.",
+        label_kw_rapide: "Mots-clés dans l'objet (Action Rapide)",
+        help_kw_rapide: "Si l'objet contient l'un de ces termes, il est immédiatement classé en Action Rapide sans appel à l'IA. Un mot-clé par ligne.",
         help_vip: "Ces expéditeurs sont toujours classés en Attention Requise sans passer par l'IA.",
         help_no_ia: "Emails sensibles (classés en Attention Requise localement).",
         help_aucune: "Emails toujours classés en Aucune Action (Info).",
@@ -52,6 +63,7 @@ const DICT = {
         msg_sorting: "Lancement du tri...",
         msg_retrying: "Lancement du retraitement...",
         msg_testing_api: "Test de connexion Gemini...",
+        msg_rule_added: "Règle ajoutée avec succès !",
         msg_sort_bg: "Le tri a été lancé en arrière-plan ! Tes e-mails seront classés dans quelques instants (tu peux fermer cette page).",
         msg_retry_errors_bg: "Le retraitement des erreurs a été lancé en arrière-plan !",
         msg_save_success: "Paramètres sauvegardés avec succès !",
@@ -99,6 +111,11 @@ const DICT = {
         btn_retry: "Retry",
         info_auto: "Auto Sort",
         info_auto_desc: "Hourly background monitoring.",
+        title_suggestions: "Quick Rule Suggestions",
+        desc_suggestions: "Frequent unclassified senders in your inbox.",
+        btn_add_vip: "+ VIP",
+        btn_add_ignore: "+ Ignore",
+        btn_add_noia: "+ Do not send to AI",
         title_settings: "Settings",
         subtitle_settings: "Adjust your preferences and sorting rules.",
         help_api_key: "Leave empty to keep the current key. Enter __CLEAR__ to remove it.",
@@ -113,6 +130,12 @@ const DICT = {
         opt_window_30: "Last 30 days (newer_than:30d — recommended)",
         opt_window_90: "Last 90 days (newer_than:90d)",
         opt_window_all: "All unclassified history",
+        label_detect_newsletters: "Native Newsletter & automated email detection",
+        help_detect_newsletters: "Automatically classifies emails with List-Unsubscribe or Precedence: bulk header as No Action without using AI quota.",
+        label_kw_aucune: "Subject Keywords (No Action)",
+        help_kw_aucune: "If email subject contains any of these keywords, it is instantly classified as No Action without calling AI. One per line.",
+        label_kw_rapide: "Subject Keywords (Quick Action)",
+        help_kw_rapide: "If email subject contains any of these keywords, it is instantly classified as Quick Action without calling AI. One per line.",
         help_vip: "These senders are always flagged as Needs Attention without AI.",
         help_no_ia: "Sensitive emails (classified as Needs Attention locally).",
         help_aucune: "Emails always classified as No Action (Info).",
@@ -126,6 +149,7 @@ const DICT = {
         msg_sorting: "Starting sort...",
         msg_retrying: "Starting retry...",
         msg_testing_api: "Testing Gemini connection...",
+        msg_rule_added: "Rule added successfully!",
         msg_sort_bg: "Sort launched in background! Your emails will be classified in a few moments (you can close this page).",
         msg_retry_errors_bg: "Error reprocessing launched in background!",
         msg_save_success: "Settings saved successfully!",
@@ -342,11 +366,100 @@ function fetchDashboardStatus() {
                 dateEl.textContent = currentLang === 'en' ? 'No recent sort' : 'Aucun tri récent';
                 countEl.textContent = '0 ' + (currentLang === 'en' ? 'emails' : 'e-mails');
             }
+
+            // Suggestions de règles
+            renderSuggestions(status.suggestions);
         })
         .withFailureHandler((err) => {
             console.error('Erreur chargement statut dashboard', err);
         })
         .getDashboardStatus();
+}
+
+function renderSuggestions(suggestions) {
+    const cardEl = document.getElementById('card-suggestions');
+    const listEl = document.getElementById('suggestions-list');
+    if (!cardEl || !listEl) return;
+
+    if (!Array.isArray(suggestions) || suggestions.length === 0) {
+        cardEl.style.display = 'none';
+        listEl.innerHTML = '';
+        return;
+    }
+
+    cardEl.style.display = 'block';
+    listEl.innerHTML = '';
+
+    suggestions.forEach(item => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'suggestion-item';
+
+        const infoEl = document.createElement('div');
+        infoEl.className = 'suggestion-info';
+        infoEl.innerHTML = `
+            <span class="suggestion-name">${escapeHtml(item.nom || item.email)} <small style="font-weight: normal; opacity: 0.7;">(${item.count} ${currentLang === 'en' ? 'emails' : 'e-mails'})</small></span>
+            <span class="suggestion-email">${escapeHtml(item.email)}</span>
+        `;
+
+        const actionsEl = document.createElement('div');
+        actionsEl.className = 'suggestion-actions';
+
+        // Bouton + VIP
+        const btnVip = document.createElement('button');
+        btnVip.className = 'btn-chip btn-chip-vip';
+        btnVip.textContent = DICT[currentLang].btn_add_vip;
+        btnVip.title = "Classer systématiquement en Attention";
+        btnVip.addEventListener('click', () => onQuickAddRule('vip', item.email));
+
+        // Bouton + Ignorer
+        const btnIgnorer = document.createElement('button');
+        btnIgnorer.className = 'btn-chip btn-chip-aucune';
+        btnIgnorer.textContent = DICT[currentLang].btn_add_ignore;
+        btnIgnorer.title = "Classer systématiquement en Aucune Action";
+        btnIgnorer.addEventListener('click', () => onQuickAddRule('aucune', item.email));
+
+        // Bouton + No IA
+        const btnNoIa = document.createElement('button');
+        btnNoIa.className = 'btn-chip btn-chip-noia';
+        btnNoIa.textContent = DICT[currentLang].btn_add_noia;
+        btnNoIa.title = "Classer en Attention sans envoyer à Gemini";
+        btnNoIa.addEventListener('click', () => onQuickAddRule('noIa', item.email));
+
+        actionsEl.appendChild(btnVip);
+        actionsEl.appendChild(btnIgnorer);
+        actionsEl.appendChild(btnNoIa);
+
+        itemEl.appendChild(infoEl);
+        itemEl.appendChild(actionsEl);
+        listEl.appendChild(itemEl);
+    });
+}
+
+function escapeHtml(str) {
+    return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function onQuickAddRule(type, pattern) {
+    showLoader('msg_saving');
+    
+    google.script.run
+        .withSuccessHandler((res) => {
+            hideLoader();
+            if (res && res.success) {
+                showSnackbar(DICT[currentLang].msg_rule_added + ` (${res.pattern})`);
+                renderSuggestions(res.suggestions);
+                fetchSettings();
+            }
+        })
+        .withFailureHandler((err) => {
+            hideLoader();
+            showSnackbar(err.message, true);
+        })
+        .quickAddRule(type, pattern);
 }
 
 function fetchSettings() {
@@ -359,7 +472,12 @@ function fetchSettings() {
                 : (DICT[currentLang].placeholder_api_key_empty || 'Entrez votre clé API Gemini');
             document.getElementById('toggle-free-tier').checked = settings.isFreeTier;
             document.getElementById('toggle-category-primary').checked = settings.categoryPrimaryOnly !== false;
+            document.getElementById('toggle-detecter-newsletters').checked = settings.detecterNewsletters !== false;
             document.getElementById('select-fenetre-jours').value = String(settings.fenetreJours !== undefined ? settings.fenetreJours : 30);
+            
+            document.getElementById('input-mots-cles-aucune').value = Array.isArray(settings.motsClesAucune) ? settings.motsClesAucune.join('\n') : '';
+            document.getElementById('input-mots-cles-rapide').value = Array.isArray(settings.motsClesRapide) ? settings.motsClesRapide.join('\n') : '';
+
             document.getElementById('input-vip').value = settings.vip.join('\n');
             document.getElementById('input-no-ia').value = settings.noIa.join('\n');
             document.getElementById('input-aucune').value = settings.aucune.join('\n');
@@ -402,7 +520,10 @@ function onSaveSettings() {
         apiKey: document.getElementById('input-api-key').value,
         isFreeTier: document.getElementById('toggle-free-tier').checked,
         categoryPrimaryOnly: document.getElementById('toggle-category-primary').checked,
+        detecterNewsletters: document.getElementById('toggle-detecter-newsletters').checked,
         fenetreJours: Number(document.getElementById('select-fenetre-jours').value),
+        motsClesAucune: document.getElementById('input-mots-cles-aucune').value.split('\n'),
+        motsClesRapide: document.getElementById('input-mots-cles-rapide').value.split('\n'),
         vip: document.getElementById('input-vip').value.split('\n'),
         noIa: document.getElementById('input-no-ia').value.split('\n'),
         aucune: document.getElementById('input-aucune').value.split('\n')
@@ -420,6 +541,7 @@ function onSaveSettings() {
                 showSnackbar(DICT[currentLang].msg_save_success);
             }
             fetchSettings();
+            fetchDashboardStatus();
         })
         .withFailureHandler((error) => {
             hideLoader();

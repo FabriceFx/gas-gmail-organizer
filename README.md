@@ -43,11 +43,14 @@ Toute la configuration et le suivi se font depuis l'interface Web (Dashboard), s
 - **Onglet Dashboard (Vue d'ensemble)** :
   - **État du service** : Activez / désactivez la surveillance horaire en arrière-plan en un clic.
   - **Bilan du dernier tri** : Date, volume d'emails traités, répartition par catégorie et urgence, temps d'exécution.
+  - **Suggestions de règles 1-clic** : Détection des expéditeurs récurrents non configurés avec boutons d'ajout direct (`+ VIP`, `+ Ignorer`, `+ Ne pas envoyer à l'IA`).
   - **Quarantaine & Retraitement** : Compteur d'e-mails en quarantaine avec bouton de relance immédiate.
   - **Diagnostic Gemini** : Testez la validité de votre clé API et mesurez la latence réseau en temps réel.
   - **Lancer le tri manuel** : Déclenche l'analyse immédiate des nouveaux emails.
 - **Onglet Paramètres** :
-  - **Périmètre d'analyse** : Choisissez la fenêtre temporelle (30 jours par défaut) et l'exclusion des onglets secondaires (`category:primary`). *Note : par défaut, les e-mails de plus de 30 jours et les onglets Promotions / Réseaux sociaux / Forums sont ignorés pour préserver vos quotas ; vous pouvez désactiver ces filtres ici à tout moment pour un tri exhaustif.*
+  - **Périmètre d'analyse** : Choisissez la fenêtre temporelle (30 jours par défaut) et l'exclusion des onglets secondaires (`category:primary`).
+  - **Détection native des Newsletters** : Analyse automatique des en-têtes standard (`List-Unsubscribe`, `Precedence: bulk`) pour classer en *Aucune action* sans consommer de quota IA.
+  - **Mots-clés dans l'objet** : Définissez des termes pour classement direct en *Aucune action* (factures, reçus) ou *Action rapide* sans appel Gemini.
   - **Clé API Gemini** : Clé Google AI Studio (masquée et sécurisée).
   - **Contacts VIP** : Expéditeurs classés en "Attention requise" (🔴) sans appel IA.
   - **Ne pas envoyer à l'IA** : Expéditeurs ultra-sensibles traités localement.
@@ -84,7 +87,7 @@ This Google Apps Script project automatically sorts your inbox emails into clear
 | ⏰ Urgent | High priority badge (critical decision or high urgency) |
 | ⚠️ Sort error | Thread quarantined after repeated processing failures |
 
-A hybrid engine first applies local rules (VIP senders, ignore lists, etc.) configured via the **Dashboard**. Ambiguous cases are then delegated to the Gemini API using an injection-hardened prompt.
+A hybrid engine first applies local rules (VIP senders, ignore lists, keyword patterns, RFC newsletter headers). Ambiguous cases are then delegated to the Gemini API using an injection-hardened prompt.
 
 ### 2. Setup and Deployment (WebApp Dashboard)
 
@@ -106,11 +109,14 @@ All configuration and monitoring is done from the Web Interface (Dashboard), wit
 - **Dashboard Tab (Overview)**:
   - **Service Status**: Toggle hourly background monitoring in one click.
   - **Last Run Metrics**: Date, total sorted emails, category & urgency breakdown, execution time.
+  - **1-Click Rule Suggestions**: Detects frequent unconfigured inbox senders with direct action buttons (`+ VIP`, `+ Ignore`, `+ Do not send to AI`).
   - **Quarantine & Retry**: Quarantined count with instant retry action button.
   - **Gemini Diagnostics**: Test API key validity and measure network latency.
   - **Manual Sort**: Trigger immediate analysis of new incoming emails.
 - **Settings Tab**:
-  - **Search Scope**: Choose time window (30 days by default) and exclude secondary tabs (`category:primary`). *Note: older emails (> 30d) and secondary tabs (Promotions, Social) are skipped by default to preserve API quota; toggle or adjust these options here anytime for comprehensive sorting.*
+  - **Search Scope**: Choose time window (30 days by default) and exclude secondary tabs (`category:primary`).
+  - **Native Newsletter Detection**: Automatic RFC header parsing (`List-Unsubscribe`, `Precedence: bulk`) to sort into *No Action* without consuming AI quota.
+  - **Subject Keywords**: Configure keyword patterns for direct sorting into *No Action* or *Quick Action* without calling Gemini.
   - **Gemini API Key**: Securely stored AI Studio key.
   - **VIP Contacts**: Always classified as "Attention required" (🔴) without AI.
   - **Do not send to AI**: Sensitive senders processed locally.

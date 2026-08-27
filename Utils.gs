@@ -168,6 +168,70 @@ function estRegleValide_(regleBrute) {
 }
 
 
+/**
+ * Vérifie si un texte (sujet d'email) contient l'un des mots-clés configurés.
+ * @param {string} texte
+ * @param {string[]} listeMotsCles
+ * @returns {{match: boolean, motCle: string}|null}
+ */
+function contientUnMotCle_(texte, listeMotsCles) {
+    if (!texte || !Array.isArray(listeMotsCles) || listeMotsCles.length === 0) {
+        return null;
+    }
+
+    const sujetNorm = String(texte).trim().toLowerCase();
+    if (!sujetNorm) return null;
+
+    for (let i = 0; i < listeMotsCles.length; i++) {
+        const motCle = String(listeMotsCles[i] || '').trim();
+        if (motCle.length === 0) continue;
+
+        const motCleNorm = motCle.toLowerCase();
+        if (sujetNorm.includes(motCleNorm)) {
+            return { match: true, motCle };
+        }
+    }
+
+    return null;
+}
+
+
+/**
+ * Analyse les en-têtes RFC standards d'un message pour détecter s'il s'agit d'une newsletter ou d'un envoi automatisé.
+ * @param {GoogleAppsScript.Gmail.GmailMessage} message
+ * @returns {{isAuto: boolean, entete: string}|null}
+ */
+function estUneNewsletterOuAuto_(message) {
+    if (!message || typeof message.getHeader !== 'function') {
+        return null;
+    }
+
+    try {
+        // 1. En-tête de désinscription (présent sur 99% des newsletters et campagnes marketing)
+        const listUnsubscribe = message.getHeader('List-Unsubscribe');
+        if (listUnsubscribe && String(listUnsubscribe).trim().length > 0) {
+            return { isAuto: true, entete: 'List-Unsubscribe' };
+        }
+
+        // 2. En-tête de priorité en masse
+        const precedence = String(message.getHeader('Precedence') || '').trim().toLowerCase();
+        if (precedence === 'bulk' || precedence === 'list' || precedence === 'junk') {
+            return { isAuto: true, entete: 'Precedence: ' + precedence };
+        }
+
+        // 3. En-tête de génération automatique (RFC 3834)
+        const autoSubmitted = String(message.getHeader('Auto-Submitted') || '').trim().toLowerCase();
+        if (autoSubmitted.includes('auto-generated') || autoSubmitted.includes('auto-replied')) {
+            return { isAuto: true, entete: 'Auto-Submitted: ' + autoSubmitted };
+        }
+    } catch (e) {
+        // En cas d'erreur de lecture d'en-tête, continuer normalement
+    }
+
+    return null;
+}
+
+
 // ═══════════════════════════════════════════════════════════════════════════
 // UTILITAIRES D'AFFICHAGE, JOURNAL ET ERREURS
 // ═══════════════════════════════════════════════════════════════════════════

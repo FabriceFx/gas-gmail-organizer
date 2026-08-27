@@ -59,6 +59,39 @@ function classerThreadAvecIA_(
         };
     }
 
+    // ── Mots-clés dans l'objet ──
+    const sujet = String(dernier.getSubject() || thread.getFirstMessageSubject() || '');
+    
+    const matchMotCleAucune = contientUnMotCle_(sujet, CONFIG.TRI.MOTS_CLES_AUCUNE);
+    if (matchMotCleAucune) {
+        return {
+            categorie: 'AUCUNE',
+            source: 'REGLE',
+            raison: `Mot-clé d’objet détecté : "${matchMotCleAucune.motCle}".`
+        };
+    }
+
+    const matchMotCleRapide = contientUnMotCle_(sujet, CONFIG.TRI.MOTS_CLES_RAPIDE);
+    if (matchMotCleRapide) {
+        return {
+            categorie: 'RAPIDE',
+            source: 'REGLE',
+            raison: `Mot-clé d’objet détecté : "${matchMotCleRapide.motCle}".`
+        };
+    }
+
+    // ── Détection des Newsletters & e-mails automatiques par en-têtes RFC ──
+    if (CONFIG.TRI.DETECTER_NEWSLETTERS) {
+        const auto = estUneNewsletterOuAuto_(dernier);
+        if (auto) {
+            return {
+                categorie: 'AUCUNE',
+                source: 'REGLE',
+                raison: `Newsletter ou message automatique détecté (${auto.entete}).`
+            };
+        }
+    }
+
     const compteDansTo = contientUneIdentite_(adressesTo, identites);
     const compteDansCc = contientUneIdentite_(adressesCc, identites);
     const uniquementEnCc = !compteDansTo && compteDansCc;
