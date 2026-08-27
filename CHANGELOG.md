@@ -7,6 +7,32 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [3.3.0] — 2026-08-27
+
+### 🎯 Terre promise : Zéro blocage, zéro fuite, fluidité absolue
+*Même au retour de congés face à des centaines d'e-mails en attente, le moteur rattrape automatiquement son retard sans intervention manuelle. Vos requêtes sortantes sont verrouillées par plateforme vers Google, et vos quarantaines sont purgées de façon fluide et accessible.*
+
+### 🔒 Sécurité & Durcissement / Security & Hardening
+- **Whitelist d'URL sortantes (`urlFetchWhitelist`)** : restriction plateforme dans `appsscript.json` vers `https://generativelanguage.googleapis.com/` uniquement (garantie qu'aucune donnée d'e-mail ne peut s'échapper).
+- **Garde anti-concurrence `setup()`** : blocage d'installation si une réinitialisation est en cours pour éviter l'annulation silencieuse d'un nettoyage.
+- **Whitelist de langue serveur** : normalisation stricte `['fr', 'en']` dans `doGet` pour la WebApp.
+
+### ⚡ Performance & Résilience / Performance & Resilience
+- **Drainage automatique du backlog** : auto-reprise rapide (à 1 min) si le lot maximum de 30 e-mails a été atteint ou en cas d'interruption chrono, pour rattraper immédiatement les grosses boîtes de réception.
+- **Snapshot `PropertiesService`** : chargement mémoïsé en un seul appel `getProperties()` au lieu de 4 requêtes réseau distinctes au démarrage du script.
+- **Déduplication du déclencheur manuel** : utilisation de `programmerRepriseUnique_` pour éviter l'accumulation de triggers en cas de clics répétés.
+- **Sortie de quarantaine automatisée** : déclencheur hebdomadaire planifié dans `setup()` + nouveau bouton d'action *"Retraiter les erreurs"* dans le Dashboard WebApp.
+
+### 🎨 UI/UX & Accessibilité / UI/UX & Accessibility
+- **Navigation au clavier** : support complet `tabindex="0"`, `role="tab"`, `aria-selected` et touches `Enter` / `Espace` sur les onglets.
+- **Bouton Retraiter les erreurs** : carte dédiée dans le Dashboard avec retour snackbar en arrière-plan.
+
+### 🧪 Tests & CI
+- **GitHub Actions CI** : workflow automatisé `.github/workflows/test.yml` exécutant la suite Node.js (35 tests) à chaque push.
+- **Résilience environnementale** : suite de tests exécutable sans interruption sur un script sans clé préalablement configurée.
+
+---
+
 ## [3.2.0] — 2026-08-27
 
 ### 🎯 Terre promise : La sérénité d'une boîte mail maîtrisée

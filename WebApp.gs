@@ -12,8 +12,9 @@
 function doGet(e) {
     const template = HtmlService.createTemplateFromFile('Index');
     
-    // Langue par défaut
-    template.lang = (e && e.parameter && e.parameter.lang || 'fr').toLowerCase();
+    // Langue par défaut avec liste blanche stricte
+    const langBrute = String(e && e.parameter && e.parameter.lang || 'fr').toLowerCase();
+    template.lang = ['fr', 'en'].includes(langBrute) ? langBrute : 'fr';
     
     return template.evaluate()
         .setTitle('Tri Gmail — Configuration')
@@ -86,17 +87,40 @@ function saveSettings(settings) {
 }
 
 /**
- * Lance un tri manuel depuis la WebApp (déclencheur one-off en arrière-plan).
+ * Lance un tri manuel depuis la WebApp (déclencheur unique en arrière-plan).
  */
 function lancerTriManuel() {
     try {
-        ScriptApp.newTrigger('executerTriManuelBackground')
-            .timeBased()
-            .after(100)
-            .create();
+        programmerRepriseUnique_('executerTriManuelBackground', 100);
         return { success: true, messageKey: "msg_sort_bg" };
     } catch (e) {
         journaliser_('ERREUR', 'Erreur lors du tri manuel depuis l\'UI : ' + e.message, { error: e.message });
+        return { success: false, message: e.message };
+    }
+}
+
+/**
+ * Lance le retraitement des erreurs/quarantaine depuis la WebApp.
+ */
+function lancerRetraitementErreurs() {
+    try {
+        programmerRepriseUnique_('retraiterErreurs', 100);
+        return { success: true, messageKey: "msg_retry_errors_bg" };
+    } catch (e) {
+        journaliser_('ERREUR', 'Erreur lors du retraitement des erreurs depuis l\'UI : ' + e.message, { error: e.message });
+        return { success: false, message: e.message };
+    }
+}
+
+/**
+ * Annule une réinitialisation en cours depuis la WebApp.
+ */
+function annulerReinitialisationTri() {
+    try {
+        annulerReinitialisation();
+        return { success: true, messageKey: "msg_reset_cancelled" };
+    } catch (e) {
+        journaliser_('ERREUR', 'Erreur lors de l\'annulation de la réinitialisation : ' + e.message, { error: e.message });
         return { success: false, message: e.message };
     }
 }

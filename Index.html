@@ -25,20 +25,20 @@
                 <h1>Gmail Organizer</h1>
             </div>
             
-            <ul class="nav-links">
-                <li class="active" data-target="dashboard">
+            <ul class="nav-links" role="tablist">
+                <li class="active" data-target="dashboard" role="tab" tabindex="0" aria-selected="true">
                     <span class="material-symbols-outlined">dashboard</span>
                     <span class="nav-text" data-i18n="nav_dashboard">Dashboard</span>
                 </li>
-                <li data-target="settings">
+                <li data-target="settings" role="tab" tabindex="0" aria-selected="false">
                     <span class="material-symbols-outlined">settings</span>
                     <span class="nav-text" data-i18n="nav_settings">Paramètres</span>
                 </li>
-                <li data-target="guide">
+                <li data-target="guide" role="tab" tabindex="0" aria-selected="false">
                     <span class="material-symbols-outlined">menu_book</span>
                     <span class="nav-text" data-i18n="nav_guide">Guide</span>
                 </li>
-                <li data-target="about">
+                <li data-target="about" role="tab" tabindex="0" aria-selected="false">
                     <span class="material-symbols-outlined">info</span>
                     <span class="nav-text" data-i18n="nav_about">À propos</span>
                 </li>
@@ -84,6 +84,18 @@
                             <input type="checkbox" id="toggle-auto-sort">
                             <span class="slider"></span>
                         </label>
+                    </div>
+
+                    <div class="glass-card action-card">
+                        <div class="card-icon" style="background: rgba(234, 67, 53, 0.1); color: #ea4335;">
+                            <span class="material-symbols-outlined">replay</span>
+                        </div>
+                        <h3 data-i18n="action_retry_errors">Retraiter les erreurs</h3>
+                        <p data-i18n="action_retry_errors_desc">Réanalyse les emails placés en quarantaine.</p>
+                        <button id="btn-retry-errors" class="btn-secondary" style="margin-top: auto;">
+                            <span class="material-symbols-outlined">refresh</span>
+                            <span data-i18n="btn_retry">Retraiter</span>
+                        </button>
                     </div>
                 </div>
             </section>

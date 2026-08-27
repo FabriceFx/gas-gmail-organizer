@@ -425,7 +425,7 @@ function executerRequeteGeminiAvecRetry_(url, options, deadline) {
             if (CONFIG.GEMINI.IS_FREE_TIER) {
                 const maintenant = Date.now();
                 const delaiEcoule = maintenant - dernierAppelGeminiMs_;
-                const delaiRequis = 4000; // ~15 requêtes par minute
+                const delaiRequis = CONFIG.GEMINI.DELAI_FREE_TIER_MS || 4000; // ~15 requêtes par minute
                 
                 if (delaiEcoule < delaiRequis) {
                     Utilities.sleep(delaiRequis - delaiEcoule);

@@ -12,6 +12,10 @@
  * @throws {Error} Si le verrou est occupé, la configuration est invalide ou la clé API absente.
  */
 function setup(options) {
+    if (reinitialisationEnCours_()) {
+        throw new Error('Réinitialisation en cours : réessayez quand elle sera terminée, ou annulez-la d’abord.');
+    }
+
     const opts = options || {};
     const lock = LockService.getScriptLock();
 
@@ -38,12 +42,19 @@ function setup(options) {
             .atHour(CONFIG.DIGEST.HEURE)
             .create();
 
+        ScriptApp.newTrigger('retraiterErreurs')
+            .timeBased()
+            .onWeekDay(ScriptApp.WeekDay.SUNDAY)
+            .atHour(3)
+            .create();
+
         journaliser_('INFO', 'Installation terminée.', {
             compte: validation.compte,
             modele: validation.modele,
             aliasEtAdresses: validation.nombreIdentites,
             fuseauHoraire: Session.getScriptTimeZone(),
-            noteDigest: 'Le déclencheur quotidien s’exécute dans la plage de l’heure configurée.'
+            noteDigest: 'Le déclencheur quotidien s’exécute dans la plage de l’heure configurée.',
+            noteQuarantaine: 'Retraitement hebdomadaire des erreurs configuré chaque dimanche à 3h.'
         });
 
         return validation;

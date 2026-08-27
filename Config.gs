@@ -47,9 +47,23 @@ const CLES_PROPRIETES_ = Object.freeze({
     AUCUNE: 'TRI_GMAIL_AUCUNE'
 });
 
+let _PROPS_SNAPSHOT_ = null;
+
+function _getPropsSnapshot_() {
+    if (!_PROPS_SNAPSHOT_) {
+        try {
+            _PROPS_SNAPSHOT_ = PropertiesService.getScriptProperties().getProperties() || {};
+        } catch (e) {
+            _PROPS_SNAPSHOT_ = {};
+        }
+    }
+    return _PROPS_SNAPSHOT_;
+}
+
 function _loadArrayProp(key, defaultArr) {
     try {
-        const val = PropertiesService.getScriptProperties().getProperty(key);
+        const props = _getPropsSnapshot_();
+        const val = props[key];
         return val ? JSON.parse(val) : defaultArr;
     } catch (e) {
         return defaultArr;
@@ -58,8 +72,9 @@ function _loadArrayProp(key, defaultArr) {
 
 function _loadBooleanProp(key, defaultVal) {
     try {
-        const val = PropertiesService.getScriptProperties().getProperty(key);
-        return val !== null ? (val === 'true') : defaultVal;
+        const props = _getPropsSnapshot_();
+        const val = props[key];
+        return val !== undefined && val !== null ? (val === 'true') : defaultVal;
     } catch (e) {
         return defaultVal;
     }
@@ -122,6 +137,7 @@ const CONFIG = Object.freeze({
 
     GEMINI: Object.freeze({
         IS_FREE_TIER: _loadBooleanProp(CLES_PROPRIETES_.API_KEY_FREE_TIER, true),
+        DELAI_FREE_TIER_MS: 4000,
         MODELE: 'gemini-3.7-flash',
         NIVEAU_REFLEXION: 'low',
         MAX_OUTPUT_TOKENS: 2048,

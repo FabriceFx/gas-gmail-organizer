@@ -16,6 +16,9 @@ const DICT = {
         action_sort: "Lancer le tri manuel",
         action_sort_desc: "Déclenche l'analyse immédiate des nouveaux emails par Gemini.",
         btn_run: "Exécuter maintenant",
+        action_retry_errors: "Retraiter les erreurs",
+        action_retry_errors_desc: "Réanalyse les emails placés en quarantaine (⚠️ Erreur de tri).",
+        btn_retry: "Retraiter",
         info_auto: "Tri Automatique",
         info_auto_desc: "Le déclencheur est actif en arrière-plan. La boîte est surveillée.",
         title_settings: "Configuration",
@@ -34,7 +37,9 @@ const DICT = {
         msg_loading: "Chargement en cours...",
         msg_saving: "Sauvegarde en cours...",
         msg_sorting: "Lancement du tri...",
+        msg_retrying: "Lancement du retraitement...",
         msg_sort_bg: "Le tri a été lancé en arrière-plan ! Tes e-mails seront classés dans quelques instants (tu peux fermer cette page).",
+        msg_retry_errors_bg: "Le retraitement des erreurs a été lancé en arrière-plan !",
         msg_save_success: "Paramètres sauvegardés avec succès !",
         msg_save_warning_rejected: "Paramètres sauvegardés (certaines règles invalides ont été ignorées)",
         msg_save_error: "Erreur lors de la sauvegarde.",
@@ -68,6 +73,9 @@ const DICT = {
         action_sort: "Run Manual Sort",
         action_sort_desc: "Triggers immediate analysis of new emails by Gemini.",
         btn_run: "Run now",
+        action_retry_errors: "Retry Errors",
+        action_retry_errors_desc: "Re-analyzes quarantined emails (⚠️ Sort error).",
+        btn_retry: "Retry",
         info_auto: "Auto Sort",
         info_auto_desc: "The background trigger is active. Your inbox is monitored.",
         title_settings: "Settings",
@@ -86,7 +94,9 @@ const DICT = {
         msg_loading: "Loading...",
         msg_saving: "Saving...",
         msg_sorting: "Starting sort...",
+        msg_retrying: "Starting retry...",
         msg_sort_bg: "Sort launched in background! Your emails will be classified in a few moments (you can close this page).",
+        msg_retry_errors_bg: "Error reprocessing launched in background!",
         msg_save_success: "Settings saved successfully!",
         msg_save_warning_rejected: "Settings saved (some invalid rules were ignored)",
         msg_save_error: "Error saving settings.",
@@ -123,6 +133,10 @@ document.addEventListener("DOMContentLoaded", () => {
     
     document.getElementById('btn-save-settings').addEventListener('click', onSaveSettings);
     document.getElementById('btn-trigger-sort').addEventListener('click', onTriggerSort);
+    const btnRetryErrors = document.getElementById('btn-retry-errors');
+    if (btnRetryErrors) {
+        btnRetryErrors.addEventListener('click', onTriggerRetryErrors);
+    }
     document.getElementById('toggle-auto-sort').addEventListener('change', onToggleAutoSort);
 });
 
@@ -130,16 +144,29 @@ function initNavigation() {
     const navItems = document.querySelectorAll('.nav-links li');
     const sections = document.querySelectorAll('.page-section');
     
+    function switchTab(item) {
+        navItems.forEach(n => {
+            n.classList.remove('active');
+            n.setAttribute('aria-selected', 'false');
+        });
+        item.classList.add('active');
+        item.setAttribute('aria-selected', 'true');
+        
+        const targetId = item.getAttribute('data-target');
+        sections.forEach(s => s.classList.remove('active'));
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) {
+            targetSection.classList.add('active');
+        }
+    }
+
     navItems.forEach(item => {
-        item.addEventListener('click', () => {
-            // Update Active Nav
-            navItems.forEach(n => n.classList.remove('active'));
-            item.classList.add('active');
-            
-            // Show Section
-            const targetId = item.getAttribute('data-target');
-            sections.forEach(s => s.classList.remove('active'));
-            document.getElementById(targetId).classList.add('active');
+        item.addEventListener('click', () => switchTab(item));
+        item.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                switchTab(item);
+            }
         });
     });
 }
@@ -312,5 +339,25 @@ function onTriggerSort() {
             showSnackbar(error.message, true);
         })
         .lancerTriManuel();
+}
+
+function onTriggerRetryErrors() {
+    showLoader('msg_retrying');
+    
+    google.script.run
+        .withSuccessHandler((result) => {
+            hideLoader();
+            if (result.success) {
+                const msg = result.messageKey ? DICT[currentLang][result.messageKey] : result.message;
+                showSnackbar(msg);
+            } else {
+                showSnackbar(result.message, true);
+            }
+        })
+        .withFailureHandler((error) => {
+            hideLoader();
+            showSnackbar(error.message, true);
+        })
+        .lancerRetraitementErreurs();
 }
 </script>

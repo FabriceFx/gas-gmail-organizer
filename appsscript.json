@@ -10,6 +10,9 @@
     "https://www.googleapis.com/auth/script.scriptapp",
     "https://www.googleapis.com/auth/userinfo.email"
   ],
+  "urlFetchWhitelist": [
+    "https://generativelanguage.googleapis.com/"
+  ],
   "webapp": {
     "executeAs": "USER_DEPLOYING",
     "access": "MYSELF"

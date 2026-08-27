@@ -208,6 +208,12 @@ function trierBoiteReceptionInterne_() {
             erreur: nettoyerMessageErreur_(erreurGlobale)
         });
         notifierErreurGlobale_(erreurGlobale);
+    } else if (stats.ARRET_TEMPS || stats.TROUVES === CONFIG.TRI.LOT_MAX) {
+        journaliser_('INFO', 'Backlog détecté : planification d’une reprise rapide dans 1 minute.', {
+            trouves: stats.TROUVES,
+            arretTemps: stats.ARRET_TEMPS
+        });
+        programmerRepriseUnique_('trierBoiteReception', 60 * 1000);
     }
 
     const purges = purgerAnciensCompteursEchec_();
