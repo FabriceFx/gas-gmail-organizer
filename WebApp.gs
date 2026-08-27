@@ -67,18 +67,31 @@ function saveSettings(settings) {
         props.setProperty(CONFIG.PROPRIETES.API_KEY_FREE_TIER, String(Boolean(settings.isFreeTier)));
     }
     
-    // Nettoyage et sauvegarde des tableaux avec validation syntaxique des règles
-    if (Array.isArray(settings.vip)) {
-        props.setProperty(CONFIG.PROPRIETES.VIP, JSON.stringify(cleanArray_(settings.vip)));
+    const reglesRejetees = [];
+
+    function traiterEtSauvegarderRegles(cle, entrees) {
+        if (!Array.isArray(entrees)) return;
+        const valides = [];
+        entrees.forEach(entree => {
+            const brute = String(entree || '').trim();
+            if (!brute) return;
+            if (estRegleValide_(brute)) {
+                valides.push(brute.toLowerCase());
+            } else {
+                reglesRejetees.push(brute);
+            }
+        });
+        props.setProperty(cle, JSON.stringify(valides));
     }
-    if (Array.isArray(settings.noIa)) {
-        props.setProperty(CONFIG.PROPRIETES.NO_IA, JSON.stringify(cleanArray_(settings.noIa)));
-    }
-    if (Array.isArray(settings.aucune)) {
-        props.setProperty(CONFIG.PROPRIETES.AUCUNE, JSON.stringify(cleanArray_(settings.aucune)));
-    }
+
+    traiterEtSauvegarderRegles(CONFIG.PROPRIETES.VIP, settings.vip);
+    traiterEtSauvegarderRegles(CONFIG.PROPRIETES.NO_IA, settings.noIa);
+    traiterEtSauvegarderRegles(CONFIG.PROPRIETES.AUCUNE, settings.aucune);
     
-    return true;
+    return {
+        success: true,
+        reglesRejetees
+    };
 }
 
 /**

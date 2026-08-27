@@ -109,14 +109,6 @@ function verifierConfiguration_(options) {
         );
     }
 
-    // Test canari : vérification de la syntaxe de recherche par libellé avec caractères spéciaux
-    try {
-        const queryCanari = `label:"${echapperRechercheGmail_(CONFIG.LABELS.MARQUEUR)}"`;
-        GmailApp.search(queryCanari, 0, 1);
-    } catch (e) {
-        journaliser_('AVERTISSEMENT', 'Le test canari de recherche par libellé a échoué.', { error: e.message });
-    }
-
     let testGemini = null;
 
     if (opts.testerGemini) {
@@ -149,19 +141,25 @@ function verifierConfiguration_(options) {
                 a: ['utilisateur@example.com'],
                 cc: [],
                 sujet: 'Confirmation reçue',
-                extraitsPiecesJointes: []
-            }],
-            dernierCorpsNettoye: 'Merci pour votre retour.',
-            instructionSysteme: 'REPONDRE_UNIQUEMENT_EN_JSON_STRICT'
+                corps: 'Merci, la demande est bien prise en compte. Aucune action attendue.',
+                piecesJointes: {
+                    nombre: 0,
+                    elements: []
+                }
+            }]
         };
 
-        const analyse = analyserEmailAvecGemini_(donneesTest, {
+        const analyse = appelerGemini_(
+            donneesTest,
+            apiKey,
             modele,
-            apiKey
-        });
+            Date.now() + 60 * 1000
+        );
 
         testGemini = {
-            succes: true,
+            action: analyse.action,
+            effort: analyse.effort,
+            urgence: analyse.urgence,
             categorieCalculee: mapperAnalyseVersCategorie_(analyse)
         };
     }

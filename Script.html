@@ -36,6 +36,7 @@ const DICT = {
         msg_sorting: "Lancement du tri...",
         msg_sort_bg: "Le tri a été lancé en arrière-plan ! Tes e-mails seront classés dans quelques instants (tu peux fermer cette page).",
         msg_save_success: "Paramètres sauvegardés avec succès !",
+        msg_save_warning_rejected: "Paramètres sauvegardés (certaines règles invalides ont été ignorées)",
         msg_save_error: "Erreur lors de la sauvegarde.",
         msg_fetch_error: "Erreur de récupération des données.",
         nav_guide: "Guide",
@@ -87,6 +88,7 @@ const DICT = {
         msg_sorting: "Starting sort...",
         msg_sort_bg: "Sort launched in background! Your emails will be classified in a few moments (you can close this page).",
         msg_save_success: "Settings saved successfully!",
+        msg_save_warning_rejected: "Settings saved (some invalid rules were ignored)",
         msg_save_error: "Error saving settings.",
         msg_fetch_error: "Error fetching data.",
         nav_guide: "Guide",
@@ -273,10 +275,17 @@ function onSaveSettings() {
     };
     
     google.script.run
-        .withSuccessHandler(() => {
+        .withSuccessHandler((res) => {
             hideLoader();
-            showSnackbar(DICT[currentLang].msg_save_success);
-            document.getElementById('input-api-key').value = ''; // Reset password field
+            if (res && res.reglesRejetees && res.reglesRejetees.length > 0) {
+                showSnackbar(
+                    DICT[currentLang].msg_save_warning_rejected + " (" + res.reglesRejetees.join(', ') + ")",
+                    true
+                );
+            } else {
+                showSnackbar(DICT[currentLang].msg_save_success);
+            }
+            fetchSettings();
         })
         .withFailureHandler((error) => {
             hideLoader();

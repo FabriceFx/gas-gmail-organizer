@@ -94,8 +94,16 @@ function executerTestsUnitaires() {
     affirmerEgal(tronquer_('Un texte beaucoup trop long pour la limite', 10), 'Un texte …', 'Tronquer texte long avec ellipse');
 
     // ── 6. Tests de parsing Retry-After (lireRetryAfterMs_) ──
-    const maintenant = 1700000000000;
-    affirmerEgal(lireRetryAfterMs_({ 'retry-after': '120' }, maintenant), 120000, 'Retry-After en secondes');
+    affirmerEgal(lireRetryAfterMs_({ 'retry-after': '120' }), 120000, 'Retry-After en secondes');
+
+    // ── 7. Tests de nettoyage de listes (cleanArray_) ──
+    const reglesTest = ['  jean@domaine.fr  ', 'INVALID STRING', '@valide.org', '', '  '];
+    const reglesNettoyees = cleanArray_(reglesTest);
+    affirmerEgal(reglesNettoyees.length, 2, 'cleanArray_ filtre les vides et les invalides');
+    // ── 8. Test d'intégrité de la configuration (verifierConfiguration_) ──
+    const configCheck = verifierConfiguration_({ testerGemini: false });
+    affirmer(configCheck && configCheck.ok === true, 'verifierConfiguration_ sans Gemini retourne ok=true');
+    affirmer(typeof configCheck.compte === 'string', 'verifierConfiguration_ extrait un compte email');
 
     // Log récapitulatif
     console.log(`[TESTS] ${resultats.reussis}/${resultats.total} tests réussis (${resultats.echecs} échecs).`);

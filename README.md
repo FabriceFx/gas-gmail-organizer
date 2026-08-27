@@ -64,7 +64,7 @@ En activant le tri automatique, un email récapitulatif (Digest) vous sera envoy
 ### 6. Sécurité
 - Votre clé API est chiffrée et stockée dans le `PropertiesService` masqué de Google (jamais exposée au navigateur).
 - Le contenu de vos emails (corps, pièces jointes) est toujours injecté comme "donnée non fiable" pour bloquer tout piratage par ingénierie sociale (Prompt Injection) dans l'email entrant.
-- Aucune dépendance externe ni fuite de données vers des services tiers.
+- Aucune dépendance hors services Google (Google Fonts / Google Apps Script).
 
 ---
 
@@ -125,7 +125,7 @@ By enabling auto-sort, a summary email (Digest) will be sent to you every mornin
 ### 6. Security
 - Your API key is encrypted and stored in Google's hidden `PropertiesService` (never exposed to client browser).
 - Email content (body, attachments) is strictly injected as "untrusted data" to prevent social engineering attacks (Prompt Injection) originating from incoming emails.
-- Zero external third-party tracking dependencies.
+- Zero third-party dependencies outside Google services (Google Fonts / Google Apps Script).
 
 ---
 
