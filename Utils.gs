@@ -133,6 +133,41 @@ function estEmailValide_(email) {
 }
 
 
+/**
+ * Vérifie si une règle d'adresse saisie (email, domaine, préfixe) est syntaxiquement valide.
+ * @param {string} regleBrute
+ * @returns {boolean}
+ */
+function estRegleValide_(regleBrute) {
+    const regle = String(regleBrute || '').trim().toLowerCase();
+    if (!regle || regle.length < 3) return false;
+
+    let r = regle;
+    if (r.startsWith('*@')) r = r.slice(1);
+    if (r.endsWith('@*')) r = r.slice(0, -1);
+
+    // 1. Domaine avec @: '@domaine.fr'
+    if (r.startsWith('@')) {
+        const dom = r.slice(1);
+        return /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/.test(dom);
+    }
+
+    // 2. Préfixe: 'direction@'
+    if (r.endsWith('@')) {
+        const prefix = r.slice(0, -1);
+        return /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(prefix);
+    }
+
+    // 3. Email complet: 'user@domaine.fr'
+    if (r.includes('@')) {
+        return /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/.test(r);
+    }
+
+    // 4. Domaine sans @: 'domaine.fr'
+    return /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/.test(r);
+}
+
+
 // ═══════════════════════════════════════════════════════════════════════════
 // UTILITAIRES D'AFFICHAGE, JOURNAL ET ERREURS
 // ═══════════════════════════════════════════════════════════════════════════

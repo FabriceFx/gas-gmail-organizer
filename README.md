@@ -40,7 +40,7 @@ Ce projet est modulaire et dispose d'une interface graphique (WebApp).
 Toute la configuration se fait depuis l'interface Web (Dashboard), sans jamais avoir à modifier le code source.
 
 - **Onglet Dashboard** :
-  - **Lancer le tri manuel** : Lance une passe de tri immédiate sur les emails non lus.
+  - **Lancer le tri manuel** : Lance une passe de tri immédiate sur les emails non analysés de la boîte de réception (`in:inbox -label:"· analysé"`).
   - **Interrupteur Tri Automatique** : Active (ON) ou désactive (OFF) le robot de tri en arrière-plan (qui s'exécute toutes les heures).
 - **Onglet Paramètres** :
   - **Clé API Gemini** : Obligatoire.
@@ -48,7 +48,7 @@ Toute la configuration se fait depuis l'interface Web (Dashboard), sans jamais a
     > 1. Allez sur [Google AI Studio](https://aistudio.google.com) et connectez-vous.
     > 2. Dans le menu de gauche, cliquez sur **Get API key**.
     > 3. Cliquez sur le bouton **Create API key** et copiez la longue chaîne de caractères.
-  - **VIP** : Saisissez ici les adresses (ex: `direction@entreprise.fr`) ou domaines (ex: `@mondomaine.com`) dont les emails doivent toujours être classés en "Action Rapide", sans passer par l'IA.
+  - **VIP** : Saisissez ici les adresses (ex: `direction@entreprise.fr`) ou domaines (ex: `@mondomaine.com`) dont les emails doivent toujours être classés en "Attention requise" (🔴), sans passer par l'IA.
   - **Ne pas envoyer à l'IA** : Liste des expéditeurs ultra-sensibles. Ils seront toujours classés en "Attention requise" et leur contenu ne sera jamais envoyé à Gemini.
   - **Ignorer** : Liste des expéditeurs de type "Newsletter" qui finiront automatiquement en "Aucune action".
 
@@ -61,9 +61,10 @@ Pour que l'outil soit efficace et que votre rapport quotidien ne se remplisse pa
 ### 5. Rapports quotidiens (Digest)
 En activant le tri automatique, un email récapitulatif (Digest) vous sera envoyé tous les matins à 8h avec le résumé des actions rapides et attentions requises.
 
-### 5. Sécurité
-- Votre clé API est chiffrée et stockée dans le `PropertiesService` masqué de Google.
+### 6. Sécurité
+- Votre clé API est chiffrée et stockée dans le `PropertiesService` masqué de Google (jamais exposée au navigateur).
 - Le contenu de vos emails (corps, pièces jointes) est toujours injecté comme "donnée non fiable" pour bloquer tout piratage par ingénierie sociale (Prompt Injection) dans l'email entrant.
+- Aucune dépendance externe ni fuite de données vers des services tiers.
 
 ---
 
@@ -100,7 +101,7 @@ This project is modular and features a graphical interface (WebApp).
 All configuration is done from the Web Interface (Dashboard), without ever needing to touch the source code.
 
 - **Dashboard Tab**:
-  - **Manual Sort**: Instantly triggers a sorting pass on unread emails.
+  - **Manual Sort**: Instantly triggers a sorting pass on unanalyzed inbox emails (`in:inbox -label:"· analysé"`).
   - **Auto-Sort Toggle**: Enables (ON) or disables (OFF) the background sorting robot (runs hourly).
 - **Settings Tab**:
   - **Gemini API Key**: Mandatory. 
@@ -108,7 +109,7 @@ All configuration is done from the Web Interface (Dashboard), without ever needi
     > 1. Go to [Google AI Studio](https://aistudio.google.com) and sign in.
     > 2. In the left menu, click **Get API key**.
     > 3. Click the **Create API key** button and copy the generated string.
-  - **VIP**: Enter addresses (e.g., `boss@company.com`) or domains (e.g., `@mydomain.com`) whose emails should always be flagged as "Quick Action" without using AI.
+  - **VIP**: Enter addresses (e.g., `boss@company.com`) or domains (e.g., `@mydomain.com`) whose emails should always be flagged as "Attention required" (🔴) without using AI.
   - **Do not send to AI**: Ultra-sensitive senders list. They will always be flagged as "Attention required" and their content will never be sent to Gemini.
   - **Ignore**: Newsletters or receipts that should automatically go to "No Action".
 
@@ -122,8 +123,9 @@ For the tool to be effective and keep your daily digest clean, follow this simpl
 By enabling auto-sort, a summary email (Digest) will be sent to you every morning at 8 AM, listing quick actions and required attentions.
 
 ### 6. Security
-- Your API key is encrypted and stored in Google's hidden `PropertiesService`.
+- Your API key is encrypted and stored in Google's hidden `PropertiesService` (never exposed to client browser).
 - Email content (body, attachments) is strictly injected as "untrusted data" to prevent social engineering attacks (Prompt Injection) originating from incoming emails.
+- Zero external third-party tracking dependencies.
 
 ---
 

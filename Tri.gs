@@ -210,10 +210,13 @@ function trierBoiteReceptionInterne_() {
         notifierErreurGlobale_(erreurGlobale);
     }
 
+    const purges = purgerAnciensCompteursEchec_();
+
     const resume = {
         ok: !erreurGlobale,
         stats,
         dureeMs: Date.now() - debut,
+        compteursEchecPurges: purges > 0 ? purges : undefined,
         modele
     };
 

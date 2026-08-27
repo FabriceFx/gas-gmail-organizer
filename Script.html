@@ -23,9 +23,11 @@ const DICT = {
         help_api_key: "Laissez vide pour conserver la clé actuelle. Entrez __CLEAR__ pour la supprimer.",
         label_free_tier: "Clé API Gratuite",
         help_free_tier: "Limite la vitesse à 15 requêtes/min pour éviter de bloquer votre compte AI Studio.",
-        help_vip: "Emails toujours classés en Action Rapide sans passer par l'IA.",
+        help_vip: "Ces expéditeurs sont toujours classés en Attention Requise sans passer par l'IA.",
         help_no_ia: "Emails sensibles (classés en Attention Requise localement).",
         help_aucune: "Emails toujours classés en Aucune Action (Info).",
+        placeholder_api_key_set: "•••••••••••••••• (Clé configurée)",
+        placeholder_api_key_empty: "Entrez votre clé API Gemini",
         btn_save: "Enregistrer",
         title_about: "À propos",
         about_desc: "Outil de tri intelligent propulsé par Gemini. Développé pour automatiser et optimiser la gestion de votre boîte de réception.",
@@ -72,9 +74,11 @@ const DICT = {
         help_api_key: "Leave empty to keep the current key. Enter __CLEAR__ to remove it.",
         label_free_tier: "Free API Key",
         help_free_tier: "Limits speed to 15 requests/min to prevent your AI Studio account from being blocked.",
-        help_vip: "Emails always flagged as Quick Action without AI.",
+        help_vip: "These senders are always flagged as Needs Attention without AI.",
         help_no_ia: "Sensitive emails (classified as Needs Attention locally).",
         help_aucune: "Emails always classified as No Action (Info).",
+        placeholder_api_key_set: "•••••••••••••••• (Key configured)",
+        placeholder_api_key_empty: "Enter your Gemini API key",
         btn_save: "Save",
         title_about: "About",
         about_desc: "Intelligent sorting tool powered by Gemini. Developed to automate and optimize your inbox management.",
@@ -206,7 +210,11 @@ function showSnackbar(message, isError = false) {
 function fetchSettings() {
     google.script.run
         .withSuccessHandler((settings) => {
-            document.getElementById('input-api-key').value = '';
+            const apiKeyInput = document.getElementById('input-api-key');
+            apiKeyInput.value = '';
+            apiKeyInput.placeholder = settings.hasApiKey
+                ? (DICT[currentLang].placeholder_api_key_set || '•••••••••••••••• (Clé configurée)')
+                : (DICT[currentLang].placeholder_api_key_empty || 'Entrez votre clé API Gemini');
             document.getElementById('toggle-free-tier').checked = settings.isFreeTier;
             document.getElementById('input-vip').value = settings.vip.join('\n');
             document.getElementById('input-no-ia').value = settings.noIa.join('\n');

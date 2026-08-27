@@ -170,9 +170,12 @@ function envoyerDigest() {
             }
         );
 
+        const purges = purgerAnciensCompteursEchec_();
+
         journaliser_('INFO', 'Digest envoyé.', {
             destinataire,
-            totalConnu: totalGlobal
+            totalConnu: totalGlobal,
+            compteursEchecPurges: purges > 0 ? purges : undefined
         });
 
         return {

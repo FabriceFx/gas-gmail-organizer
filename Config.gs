@@ -27,6 +27,26 @@
  *   locale. Utilisez NE_PAS_ENVOYER_A_IA pour les expéditeurs sensibles.
  */
 
+const CLES_PROPRIETES_ = Object.freeze({
+    API_KEY: 'GEMINI_API_KEY',
+    MODELE: 'GEMINI_MODEL',
+    COMPTE_EMAIL: 'COMPTE_EMAIL',
+    ADRESSES_PERSONNELLES: 'ADRESSES_PERSONNELLES',
+
+    RESET_ACTIF: 'TRI_GMAIL_RESET_ACTIF',
+    RESET_INDEX: 'TRI_GMAIL_RESET_INDEX',
+    RESET_TOTAL: 'TRI_GMAIL_RESET_TOTAL',
+
+    DERNIERE_ALERTE: 'TRI_GMAIL_DERNIERE_ALERTE',
+    PREFIXE_ECHEC_THREAD: 'TRI_GMAIL_ECHEC_THREAD_',
+
+    // Clés pour la configuration WebApp
+    API_KEY_FREE_TIER: 'TRI_GMAIL_API_FREE_TIER',
+    VIP: 'TRI_GMAIL_VIP',
+    NO_IA: 'TRI_GMAIL_NO_IA',
+    AUCUNE: 'TRI_GMAIL_AUCUNE'
+});
+
 function _loadArrayProp(key, defaultArr) {
     try {
         const val = PropertiesService.getScriptProperties().getProperty(key);
@@ -62,19 +82,19 @@ const CONFIG = Object.freeze({
      *   - 'direction@' ou 'direction@*' : tout email commençant ainsi
      *   - 'domaine.fr' : domaine exact
      */
-    VIP: _loadArrayProp('TRI_GMAIL_VIP', []),
+    VIP: _loadArrayProp(CLES_PROPRIETES_.VIP, []),
 
     /**
      * Ces expéditeurs sont classés ATTENTION localement.
      * Leur sujet, corps et pièces jointes ne sont jamais envoyés à Gemini.
      */
-    NE_PAS_ENVOYER_A_IA: _loadArrayProp('TRI_GMAIL_NO_IA', []),
+    NE_PAS_ENVOYER_A_IA: _loadArrayProp(CLES_PROPRIETES_.NO_IA, []),
 
     /**
      * Liste blanche explicite d'expéditeurs toujours sans action.
      * N'ajoutez ici que des sources réellement sûres et connues.
      */
-    EXPEDITEURS_AUCUNE_ACTION: _loadArrayProp('TRI_GMAIL_AUCUNE', []),
+    EXPEDITEURS_AUCUNE_ACTION: _loadArrayProp(CLES_PROPRIETES_.AUCUNE, []),
 
     TRI: Object.freeze({
         LOT_MAX: 30,
@@ -101,10 +121,10 @@ const CONFIG = Object.freeze({
     }),
 
     GEMINI: Object.freeze({
-        IS_FREE_TIER: _loadBooleanProp('TRI_GMAIL_API_FREE_TIER', true),
+        IS_FREE_TIER: _loadBooleanProp(CLES_PROPRIETES_.API_KEY_FREE_TIER, true),
         MODELE: 'gemini-3.7-flash',
         NIVEAU_REFLEXION: 'low',
-        MAX_OUTPUT_TOKENS: 512,
+        MAX_OUTPUT_TOKENS: 2048,
 
         NB_TENTATIVES: 4,
         DELAI_RETRY_INITIAL_MS: 600,
@@ -146,25 +166,7 @@ const CONFIG = Object.freeze({
         REPLACER_AUCUNE_ARCHIVEE_DANS_INBOX: false
     }),
 
-    PROPRIETES: Object.freeze({
-        API_KEY: 'GEMINI_API_KEY',
-        MODELE: 'GEMINI_MODEL',
-        COMPTE_EMAIL: 'COMPTE_EMAIL',
-        ADRESSES_PERSONNELLES: 'ADRESSES_PERSONNELLES',
-
-        RESET_ACTIF: 'TRI_GMAIL_RESET_ACTIF',
-        RESET_INDEX: 'TRI_GMAIL_RESET_INDEX',
-        RESET_TOTAL: 'TRI_GMAIL_RESET_TOTAL',
-
-        DERNIERE_ALERTE: 'TRI_GMAIL_DERNIERE_ALERTE',
-        PREFIXE_ECHEC_THREAD: 'TRI_GMAIL_ECHEC_THREAD_',
-        
-        // Clés pour la configuration WebApp
-        API_KEY_FREE_TIER: 'TRI_GMAIL_API_FREE_TIER',
-        VIP: 'TRI_GMAIL_VIP',
-        NO_IA: 'TRI_GMAIL_NO_IA',
-        AUCUNE: 'TRI_GMAIL_AUCUNE'
-    })
+    PROPRIETES: CLES_PROPRIETES_
 });
 
 const CATEGORIES_TRI_ = Object.freeze(['RAPIDE', 'ATTENTION', 'AUCUNE']);

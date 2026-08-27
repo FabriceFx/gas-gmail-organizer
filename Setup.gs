@@ -6,11 +6,13 @@
 
 /**
  * Installe les libellés et les déclencheurs.
- * La clé Gemini est testée avant toute création de déclencheur.
+ * La clé Gemini est testée avant toute création de déclencheur (sauf si testerGemini=false).
+ * @param {Object=} options Options d'installation (ex: { testerGemini: false })
  * @returns {{ok: boolean, compte: string, nombreIdentites: number, modele: string, testGemini: ?Object}}
  * @throws {Error} Si le verrou est occupé, la configuration est invalide ou la clé API absente.
  */
-function setup() {
+function setup(options) {
+    const opts = options || {};
     const lock = LockService.getScriptLock();
 
     if (!lock.tryLock(10000)) {
@@ -18,7 +20,8 @@ function setup() {
     }
 
     try {
-        const validation = verifierConfiguration_({ testerGemini: true });
+        const testerGemini = opts.testerGemini !== undefined ? Boolean(opts.testerGemini) : true;
+        const validation = verifierConfiguration_({ testerGemini });
 
         creerTousLesLibelles_();
         supprimerDeclencheursParFonctions_(HANDLERS_GERES_);
@@ -106,6 +109,14 @@ function verifierConfiguration_(options) {
         );
     }
 
+    // Test canari : vérification de la syntaxe de recherche par libellé avec caractères spéciaux
+    try {
+        const queryCanari = `label:"${echapperRechercheGmail_(CONFIG.LABELS.MARQUEUR)}"`;
+        GmailApp.search(queryCanari, 0, 1);
+    } catch (e) {
+        journaliser_('AVERTISSEMENT', 'Le test canari de recherche par libellé a échoué.', { error: e.message });
+    }
+
     let testGemini = null;
 
     if (opts.testerGemini) {
@@ -138,25 +149,19 @@ function verifierConfiguration_(options) {
                 a: ['utilisateur@example.com'],
                 cc: [],
                 sujet: 'Confirmation reçue',
-                corps: 'Merci, la demande est bien prise en compte. Aucune action attendue.',
-                piecesJointes: {
-                    nombre: 0,
-                    elements: []
-                }
-            }]
+                extraitsPiecesJointes: []
+            }],
+            dernierCorpsNettoye: 'Merci pour votre retour.',
+            instructionSysteme: 'REPONDRE_UNIQUEMENT_EN_JSON_STRICT'
         };
 
-        const analyse = appelerGemini_(
-            donneesTest,
-            apiKey,
+        const analyse = analyserEmailAvecGemini_(donneesTest, {
             modele,
-            Date.now() + 60 * 1000
-        );
+            apiKey
+        });
 
         testGemini = {
-            action: analyse.action,
-            effort: analyse.effort,
-            urgence: analyse.urgence,
+            succes: true,
             categorieCalculee: mapperAnalyseVersCategorie_(analyse)
         };
     }
