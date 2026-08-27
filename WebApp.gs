@@ -76,7 +76,8 @@ function saveSettings(settings) {
     
     if (settings.fenetreJours !== undefined) {
         const jours = Number(settings.fenetreJours);
-        props.setProperty(CONFIG.PROPRIETES.FENETRE_JOURS, String(!isNaN(jours) && jours >= 0 ? jours : 30));
+        const entierJours = Number.isFinite(jours) && jours >= 0 ? Math.floor(jours) : 30;
+        props.setProperty(CONFIG.PROPRIETES.FENETRE_JOURS, String(entierJours));
     }
     
     const reglesRejetees = [];
@@ -108,14 +109,17 @@ function getDashboardStatus() {
         const props = PropertiesService.getScriptProperties();
         const cleApi = props.getProperty(CONFIG.PROPRIETES.API_KEY);
         
-        let quarantaineCount = 0;
+        let quarantaineCount = '0';
         try {
+            const limiteQuarantaine = 50;
             const threadsErreur = GmailApp.search(
                 `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.ERREUR)}"`,
                 0,
-                50
+                limiteQuarantaine + 1
             );
-            quarantaineCount = threadsErreur.length;
+            quarantaineCount = threadsErreur.length > limiteQuarantaine
+                ? `${limiteQuarantaine}+`
+                : String(threadsErreur.length);
         } catch (e) {
             // Lecture non bloquante
         }

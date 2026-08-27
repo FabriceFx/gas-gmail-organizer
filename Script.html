@@ -305,8 +305,9 @@ function fetchDashboardStatus() {
 
             // Quarantaine badge
             const qBadge = document.getElementById('badge-quarantaine-count');
-            qBadge.textContent = status.quarantaineCount + (currentLang === 'en' ? ' quarantined' : ' en quarantaine');
-            qBadge.className = status.quarantaineCount > 0 ? 'status-badge warning' : 'status-badge inactive';
+            const estQuarantaineVide = status.quarantaineCount === '0' || status.quarantaineCount === 0 || !status.quarantaineCount;
+            qBadge.textContent = (status.quarantaineCount || '0') + (currentLang === 'en' ? ' quarantined' : ' en quarantaine');
+            qBadge.className = !estQuarantaineVide ? 'status-badge warning' : 'status-badge inactive';
 
             // Dernier tri
             const dernierTri = status.dernierTri;

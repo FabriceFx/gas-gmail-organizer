@@ -198,6 +198,9 @@ function envoyerDigest() {
 
 function construireSectionsDigest_() {
     const sections = [];
+    const exclusionUrgent = CONFIG.LABELS.URGENT
+        ? ` -label:"${echapperRechercheGmail_(CONFIG.LABELS.URGENT)}"`
+        : '';
 
     if (CONFIG.LABELS.URGENT) {
         sections.push({
@@ -222,14 +225,14 @@ function construireSectionsDigest_() {
             titreTexte: 'Attention requise',
             couleur: '#C5221F',
             requete:
-                `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.ATTENTION)}"`
+                `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.ATTENTION)}"${exclusionUrgent}`
         },
         {
             titre: '&#x1F7E0; Actions rapides',
             titreTexte: 'Actions rapides',
             couleur: '#E8710A',
             requete:
-                `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.RAPIDE)}"`
+                `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.RAPIDE)}"${exclusionUrgent}`
         }
     );
 

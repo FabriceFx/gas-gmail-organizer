@@ -47,7 +47,7 @@ Toute la configuration et le suivi se font depuis l'interface Web (Dashboard), s
   - **Diagnostic Gemini** : Testez la validité de votre clé API et mesurez la latence réseau en temps réel.
   - **Lancer le tri manuel** : Déclenche l'analyse immédiate des nouveaux emails.
 - **Onglet Paramètres** :
-  - **Périmètre d'analyse** : Choisissez la fenêtre temporelle (ex: 30 jours) et l'exclusion des onglets secondaires (`category:primary`).
+  - **Périmètre d'analyse** : Choisissez la fenêtre temporelle (30 jours par défaut) et l'exclusion des onglets secondaires (`category:primary`). *Note : par défaut, les e-mails de plus de 30 jours et les onglets Promotions / Réseaux sociaux / Forums sont ignorés pour préserver vos quotas ; vous pouvez désactiver ces filtres ici à tout moment pour un tri exhaustif.*
   - **Clé API Gemini** : Clé Google AI Studio (masquée et sécurisée).
   - **Contacts VIP** : Expéditeurs classés en "Attention requise" (🔴) sans appel IA.
   - **Ne pas envoyer à l'IA** : Expéditeurs ultra-sensibles traités localement.
@@ -110,7 +110,7 @@ All configuration and monitoring is done from the Web Interface (Dashboard), wit
   - **Gemini Diagnostics**: Test API key validity and measure network latency.
   - **Manual Sort**: Trigger immediate analysis of new incoming emails.
 - **Settings Tab**:
-  - **Search Scope**: Choose time window (e.g. 30 days) and exclude secondary tabs (`category:primary`).
+  - **Search Scope**: Choose time window (30 days by default) and exclude secondary tabs (`category:primary`). *Note: older emails (> 30d) and secondary tabs (Promotions, Social) are skipped by default to preserve API quota; toggle or adjust these options here anytime for comprehensive sorting.*
   - **Gemini API Key**: Securely stored AI Studio key.
   - **VIP Contacts**: Always classified as "Attention required" (🔴) without AI.
   - **Do not send to AI**: Sensitive senders processed locally.

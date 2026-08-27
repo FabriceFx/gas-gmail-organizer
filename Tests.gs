@@ -133,6 +133,18 @@ function executerTestsUnitaires() {
     affirmer(req.includes('in:inbox'), 'construireRequeteRecherche_ inclut in:inbox');
     affirmer(req.includes(CONFIG.LABELS.MARQUEUR), 'construireRequeteRecherche_ exclut le marqueur');
 
+    // Test assainissement entier de fenetreJours
+    saveSettings({ fenetreJours: 7.8 });
+    const propsApres = PropertiesService.getScriptProperties().getProperty(CONFIG.PROPRIETES.FENETRE_JOURS);
+    affirmerEgal(propsApres, '7', 'saveSettings convertit fenetreJours flottant en entier');
+
+    // Test exclusion d'urgence dans le Digest pour éviter double comptage
+    const digestSections = construireSectionsDigest_();
+    const sectionAttention = digestSections.find(s => s.titreTexte === 'Attention requise');
+    const sectionRapide = digestSections.find(s => s.titreTexte === 'Actions rapides');
+    affirmer(sectionAttention && sectionAttention.requete.includes(`-label:"${CONFIG.LABELS.URGENT}"`), 'Digest Attention requise exclut le libellé Urgent');
+    affirmer(sectionRapide && sectionRapide.requete.includes(`-label:"${CONFIG.LABELS.URGENT}"`), 'Digest Actions rapides exclut le libellé Urgent');
+
     const testInfo = {
         dateIso: '2026-08-27T10:00:00.000Z',
         ok: true,

@@ -89,7 +89,7 @@ function _loadNumberProp(key, defaultVal) {
         const val = props[key];
         if (val !== undefined && val !== null && val !== '') {
             const num = Number(val);
-            return !isNaN(num) ? num : defaultVal;
+            return Number.isFinite(num) && num >= 0 ? Math.floor(num) : defaultVal;
         }
         return defaultVal;
     } catch (e) {

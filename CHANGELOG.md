@@ -12,6 +12,9 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 ### 🎯 Terre promise : La clarté instantanée et la maîtrise absolue du tri
 *Fini l'incertitude : vous ouvrez votre Dashboard et savez en un clin d'œil quand le dernier tri a tourné, combien d'e-mails ont été traités et si votre API répond en quelques millisecondes. Vos quotas ne s'épuisent plus dans les promotions ou les vieux messages, et les urgences critiques vous sautent aux yeux dès le matin.*
 
+### ⚠️ Note de migration importante / Migration Notice
+- **Changement des filtres par défaut** : Par défaut, l'analyse s'applique désormais aux 30 derniers jours (`newer_than:30d`) et exclut les onglets secondaires Promotions / Réseaux sociaux / Forums (`category:primary`). Si vous souhaitez trier l'ensemble de votre boîte ou de votre historique, modifiez simplement ces options dans l'onglet **Paramètres** de la WebApp.
+
 ### ✨ Ajouté / Added
 - **Périmètre d'analyse borné & exclusion des onglets secondaires** :
   - Support de `newer_than:30d` (configurable à 7, 14, 30, 90 jours ou tout l'historique) pour préserver le quota Gemini lors du premier lancement.
@@ -19,10 +22,15 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 - **Panneau de statut temps réel & métriques d'exécution** :
   - Carte de surveillance du dernier tri : date, volume d'emails, répartition par catégories et temps de traitement.
   - Diagnostic API Gemini en un clic avec mesure de la latence réseau en millisecondes et validation du modèle.
-  - Compteur d'e-mails en quarantaine avec badge d'alerte et bouton de relance.
+  - Compteur d'e-mails en quarantaine avec badge d'alerte (`50+` si plafonné) et bouton de relance.
 - **Priorité Haute & Libellé `⏰ Urgent`** :
   - Libellé non exclusif `⏰ Urgent` appliqué aux e-mails nécessitant une décision critique ou d'urgence élevée (`urgence === 'ELEVEE'`).
-  - Section prioritaire en tête du Digest quotidien avec mise en évidence des e-mails urgents.
+  - Section prioritaire en tête du Digest quotidien sans doublons de comptage avec les autres sections.
+
+### 🐛 Corrigé / Fixed
+- **Élimination de la condition morte `CRITIQUE`** : alignement de `Tri.gs` sur les 3 valeurs réelles de l'énumération (`FAIBLE`, `NORMALE`, `ELEVEE`).
+- **Garantie d'entier sur `fenetreJours`** : assainissement systématique (`Math.floor`) pour interdire les valeurs décimales (`newer_than:7.5d`) côté serveur.
+- **Suppression du double comptage dans le Digest** : exclusion du libellé `⏰ Urgent` des requêtes *Attention requise* et *Actions rapides* pour garantir un décompte unitaire exact.
 
 ---
 

@@ -178,7 +178,7 @@ function trierBoiteReceptionInterne_() {
 
             const estUrgent = Boolean(
                 resultat.estUrgent ||
-                (resultat.analyse && (resultat.analyse.urgence === 'ELEVEE' || resultat.analyse.urgence === 'CRITIQUE'))
+                (resultat.analyse && resultat.analyse.urgence === 'ELEVEE')
             );
 
             resultats.push({
