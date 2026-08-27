@@ -299,6 +299,16 @@ function executerTestsUnitaires() {
     const resClasserAlias = classerThreadAvecIA_(mockThreadAlias, [mockMsgAlias], testIdentites, 'FAKE_KEY', 'model', Date.now() + 10000);
     affirmer(resClasserAlias.categorie === 'RAPIDE' && resClasserAlias.source === 'REGLE', 'classerThreadAvecIA_ classe par règle d’alias sans appel IA');
 
+    const mockMsgAliasNews = {
+        getFrom: () => 'automated-service@domain.com',
+        getTo: () => 'support@entreprise.com',
+        getCc: () => '',
+        getSubject: () => 'Notification avec List-Unsubscribe',
+        getHeader: (h) => h === 'List-Unsubscribe' ? '<mailto:unsub@domain.com>' : null
+    };
+    const resAliasNews = classerThreadAvecIA_(mockThreadAlias, [mockMsgAliasNews], testIdentites, 'FAKE_KEY', 'model', Date.now() + 10000);
+    affirmer(resAliasNews.categorie === 'RAPIDE', 'La règle d’alias a priorité sur la détection de newsletter');
+
     // D. Gestion de l'historique sur 7 jours (Analytics)
     enregistrerHistoriqueTri_({
         ok: true,

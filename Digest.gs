@@ -115,8 +115,8 @@ function envoyerDigest() {
                 const actionsHtml = webAppUrl
                     ? [
                         '<td style="padding:7px 8px;vertical-align:top;white-space:nowrap;text-align:right">',
-                        `<a href="${escapeHtml_(webAppUrl)}?action=archiver&id=${escapeHtml_(thread.getId())}" target="_blank" style="display:inline-block;padding:3px 7px;font-size:11px;font-weight:600;color:#137333;background:#e6f4ea;border-radius:4px;text-decoration:none;margin-right:4px">📥 Archiver</a>`,
-                        `<a href="${escapeHtml_(webAppUrl)}?action=traite&id=${escapeHtml_(thread.getId())}" target="_blank" style="display:inline-block;padding:3px 7px;font-size:11px;font-weight:600;color:#1a73e8;background:#e8f0fe;border-radius:4px;text-decoration:none">✅ Fait</a>`,
+                        `<a href="${escapeHtml_(webAppUrl)}?action=archiver&amp;id=${escapeHtml_(thread.getId())}" target="_blank" style="display:inline-block;padding:3px 7px;font-size:11px;font-weight:600;color:#137333;background:#e6f4ea;border-radius:4px;text-decoration:none;margin-right:4px">📥 Archiver</a>`,
+                        `<a href="${escapeHtml_(webAppUrl)}?action=traite&amp;id=${escapeHtml_(thread.getId())}" target="_blank" style="display:inline-block;padding:3px 7px;font-size:11px;font-weight:600;color:#1a73e8;background:#e8f0fe;border-radius:4px;text-decoration:none">✅ Fait</a>`,
                         '</td>'
                     ].join('')
                     : '';

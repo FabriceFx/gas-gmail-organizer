@@ -59,6 +59,17 @@ function classerThreadAvecIA_(
         };
     }
 
+    // ── Règles explicites par Alias & Adresse de réception (To / Cc) ──
+    const destinataires = [].concat(adressesTo, adressesCc);
+    const regleAlias = trouverRegleAliasCorrespondante_(destinataires, CONFIG.REGLES_ALIAS);
+    if (regleAlias) {
+        return {
+            categorie: regleAlias.categorie,
+            source: 'REGLE',
+            raison: `Règle d’alias destinataire active ("${regleAlias.alias}" ➜ ${regleAlias.categorie}).`
+        };
+    }
+
     // ── Mots-clés dans l'objet ──
     const sujet = String(dernier.getSubject() || thread.getFirstMessageSubject() || '');
     
@@ -90,17 +101,6 @@ function classerThreadAvecIA_(
                 raison: `Newsletter ou message automatique détecté (${auto.entete}).`
             };
         }
-    }
-
-    // ── Règles par Alias & Adresse de réception (To / Cc) ──
-    const destinataires = [].concat(adressesTo, adressesCc);
-    const regleAlias = trouverRegleAliasCorrespondante_(destinataires, CONFIG.REGLES_ALIAS);
-    if (regleAlias) {
-        return {
-            categorie: regleAlias.categorie,
-            source: 'REGLE',
-            raison: `Règle d’alias destinataire active ("${regleAlias.alias}" ➜ ${regleAlias.categorie}).`
-        };
     }
 
     const compteDansTo = contientUneIdentite_(adressesTo, identites);
