@@ -105,7 +105,7 @@ function _loadNumberProp(key, defaultVal) {
 }
 
 
-const CONFIG = {
+const CONFIG = Object.freeze({
     LABELS: Object.freeze({
         RAPIDE: '\uD83D\uDFE0 Action rapide',
         ATTENTION: '\uD83D\uDD34 Attention requise',
@@ -136,7 +136,7 @@ const CONFIG = {
      */
     get EXPEDITEURS_AUCUNE_ACTION() { return _loadArrayProp(CLES_PROPRIETES_.AUCUNE, []); },
 
-    TRI: {
+    TRI: Object.freeze({
         LOT_MAX: 30,
         DUREE_MAX_MS: 4.5 * 60 * 1000,
         MARGE_FINALISATION_MS: 20 * 1000,
@@ -169,9 +169,9 @@ const CONFIG = {
         // Désactivé par défaut pour ne pas écrire de données métier dans les logs.
         JOURNALISER_SUJETS: false,
         JOURNALISER_RAISONS_IA: false
-    },
+    }),
 
-    GEMINI: {
+    GEMINI: Object.freeze({
         get IS_FREE_TIER() { return _loadBooleanProp(CLES_PROPRIETES_.API_KEY_FREE_TIER, true); },
         DELAI_FREE_TIER_MS: 4000,
         MODELE: 'gemini-3.7-flash',
@@ -189,7 +189,7 @@ const CONFIG = {
 
         PIECES_JOINTES_MAX_PAR_MESSAGE: 10,
         INCLURE_NOMS_PIECES_JOINTES: true
-    },
+    }),
 
     DIGEST: Object.freeze({
         HEURE: 8,
@@ -219,7 +219,7 @@ const CONFIG = {
     }),
 
     PROPRIETES: CLES_PROPRIETES_
-};
+});
 
 const CATEGORIES_TRI_ = Object.freeze(['RAPIDE', 'ATTENTION', 'AUCUNE']);
 const LIBELLES_EXCLUSIFS_ = Object.freeze([

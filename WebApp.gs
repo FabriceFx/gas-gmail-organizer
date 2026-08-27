@@ -162,9 +162,23 @@ function getDashboardStatus() {
 
 /**
  * Extrait les expéditeurs récurrents récents non encore configurés dans les règles.
+ * Utilise CacheService pour éviter des requêtes Gmail répétées lors de chaque affichage du Dashboard.
  */
 function getSenderSuggestions_() {
     try {
+        let cache = null;
+        try {
+            cache = CacheService.getUserCache();
+            if (cache) {
+                const cacheData = cache.get('SUGGESTIONS_EXPEDITEURS_CACHE');
+                if (cacheData) {
+                    return JSON.parse(cacheData);
+                }
+            }
+        } catch (e) {
+            // Cache non bloquant
+        }
+
         const vips = _loadArrayProp(CONFIG.PROPRIETES.VIP, []);
         const noIas = _loadArrayProp(CONFIG.PROPRIETES.NO_IA, []);
         const aucunes = _loadArrayProp(CONFIG.PROPRIETES.AUCUNE, []);
@@ -206,7 +220,15 @@ function getSenderSuggestions_() {
 
         const liste = Object.values(compteurs);
         liste.sort((a, b) => b.count - a.count);
-        return liste.slice(0, 4);
+        const top = liste.slice(0, 4);
+
+        if (cache) {
+            try {
+                cache.put('SUGGESTIONS_EXPEDITEURS_CACHE', JSON.stringify(top), 300); // 5 min TTL
+            } catch (e) {}
+        }
+
+        return top;
     } catch (e) {
         return [];
     }
@@ -244,6 +266,12 @@ function quickAddRule(type, pattern) {
         props.setProperty(cleProp, JSON.stringify(existantes));
         _invaliderPropsSnapshot_();
     }
+
+    // Invalider le cache des suggestions
+    try {
+        const cache = CacheService.getUserCache();
+        if (cache) cache.remove('SUGGESTIONS_EXPEDITEURS_CACHE');
+    } catch (e) {}
 
     return {
         success: true,

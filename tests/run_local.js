@@ -54,6 +54,18 @@ const context = {
             releaseLock: () => {}
         })
     },
+    CacheService: (() => {
+        const cacheStore = {};
+        const cacheObj = {
+            get: (k) => cacheStore[k] || null,
+            put: (k, v) => { cacheStore[k] = String(v); },
+            remove: (k) => { delete cacheStore[k]; }
+        };
+        return {
+            getUserCache: () => cacheObj,
+            getScriptCache: () => cacheObj
+        };
+    })(),
     ScriptApp: {
         getProjectTriggers: () => [],
         newTrigger: () => ({

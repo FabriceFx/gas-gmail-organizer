@@ -169,7 +169,8 @@ function estRegleValide_(regleBrute) {
 
 
 /**
- * Vérifie si un texte (sujet d'email) contient l'un des mots-clés configurés.
+ * Vérifie si un texte (sujet d'email) contient l'un des mots-clés configurés,
+ * avec respect des frontières de mots pour éviter les faux positifs (ex: "ok" vs "broker").
  * @param {string} texte
  * @param {string[]} listeMotsCles
  * @returns {{match: boolean, motCle: string}|null}
@@ -179,15 +180,19 @@ function contientUnMotCle_(texte, listeMotsCles) {
         return null;
     }
 
-    const sujetNorm = String(texte).trim().toLowerCase();
-    if (!sujetNorm) return null;
+    const sujet = String(texte).trim();
+    if (!sujet) return null;
 
     for (let i = 0; i < listeMotsCles.length; i++) {
         const motCle = String(listeMotsCles[i] || '').trim();
         if (motCle.length === 0) continue;
 
-        const motCleNorm = motCle.toLowerCase();
-        if (sujetNorm.includes(motCleNorm)) {
+        // Échappement regex sécurisé
+        const motCleEchappe = motCle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // Frontières de mot adaptées aux caractères accentués et à la ponctuation
+        const regex = new RegExp('(?:^|[^a-zA-Z0-9À-ÿ])' + motCleEchappe + '(?=[^a-zA-Z0-9À-ÿ]|$)', 'i');
+        
+        if (regex.test(sujet)) {
             return { match: true, motCle };
         }
     }
@@ -198,6 +203,7 @@ function contientUnMotCle_(texte, listeMotsCles) {
 
 /**
  * Analyse les en-têtes RFC standards d'un message pour détecter s'il s'agit d'une newsletter ou d'un envoi automatisé.
+ * Pour List-Unsubscribe, on vérifie que l'objet ne contient pas de signal d'alerte / action requise (sécurité, code, réinitialisation).
  * @param {GoogleAppsScript.Gmail.GmailMessage} message
  * @returns {{isAuto: boolean, entete: string}|null}
  */
@@ -207,22 +213,27 @@ function estUneNewsletterOuAuto_(message) {
     }
 
     try {
-        // 1. En-tête de désinscription (présent sur 99% des newsletters et campagnes marketing)
-        const listUnsubscribe = message.getHeader('List-Unsubscribe');
-        if (listUnsubscribe && String(listUnsubscribe).trim().length > 0) {
-            return { isAuto: true, entete: 'List-Unsubscribe' };
-        }
-
-        // 2. En-tête de priorité en masse
+        // 1. En-tête de priorité en masse (signal fort)
         const precedence = String(message.getHeader('Precedence') || '').trim().toLowerCase();
         if (precedence === 'bulk' || precedence === 'list' || precedence === 'junk') {
             return { isAuto: true, entete: 'Precedence: ' + precedence };
         }
 
-        // 3. En-tête de génération automatique (RFC 3834)
+        // 2. En-tête de génération automatique (RFC 3834)
         const autoSubmitted = String(message.getHeader('Auto-Submitted') || '').trim().toLowerCase();
         if (autoSubmitted.includes('auto-generated') || autoSubmitted.includes('auto-replied')) {
             return { isAuto: true, entete: 'Auto-Submitted: ' + autoSubmitted };
+        }
+
+        // 3. En-tête de désinscription : n'est appliqué que si l'objet ne signale pas une alerte ou une action attendue
+        const listUnsubscribe = message.getHeader('List-Unsubscribe');
+        if (listUnsubscribe && String(listUnsubscribe).trim().length > 0) {
+            const sujet = String((typeof message.getSubject === 'function' ? message.getSubject() : '') || '').toLowerCase();
+            const estAlerteOuAction = /\b(urgent|urgence|alerte|alert|incident|échec|echec|failed|failure|bloqué|blocked|sécurité|security|expiration|expire|rejeté|rejected|action|review|code|verification|vérification|connexion|login|facture|invoice|paiement|payment|mot de passe|password)\b/i.test(sujet);
+
+            if (!estAlerteOuAction) {
+                return { isAuto: true, entete: 'List-Unsubscribe' };
+            }
         }
     } catch (e) {
         // En cas d'erreur de lecture d'en-tête, continuer normalement

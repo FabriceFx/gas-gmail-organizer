@@ -168,30 +168,49 @@ function executerTestsUnitaires() {
     affirmer(match2 && match2.match === true && match2.motCle === 'Confirmation', 'contientUnMotCle_ insensible à la casse');
     const matchNul = contientUnMotCle_('Bonjour, réunion urgente demain', motsTest);
     affirmer(matchNul === null, 'contientUnMotCle_ retourne null en l\'absence de mot-clé');
+    const matchBroker = contientUnMotCle_('Négociation avec le broker', ['ok']);
+    affirmer(matchBroker === null, 'contientUnMotCle_ respecte les frontières de mots (rejette ok dans broker)');
+    const matchOk = contientUnMotCle_('Statut du rapport : OK', ['ok']);
+    affirmer(matchOk && matchOk.match === true, 'contientUnMotCle_ valide un mot isolé');
 
     // B. Détection des en-têtes RFC Newsletter
     const mockMsgNewsletter = {
+        getSubject: () => 'Nos promotions de printemps',
         getHeader: (h) => h === 'List-Unsubscribe' ? '<mailto:unsubscribe@domain.com>' : null
     };
     const resNews = estUneNewsletterOuAuto_(mockMsgNewsletter);
-    affirmer(resNews && resNews.isAuto === true, 'estUneNewsletterOuAuto_ détecte List-Unsubscribe');
+    affirmer(resNews && resNews.isAuto === true, 'estUneNewsletterOuAuto_ détecte List-Unsubscribe standard');
+
+    const mockMsgSecurite = {
+        getSubject: () => '[Alerte de sécurité] Nouvelle connexion détectée',
+        getHeader: (h) => h === 'List-Unsubscribe' ? '<mailto:unsub@domain.com>' : null
+    };
+    const resSecurite = estUneNewsletterOuAuto_(mockMsgSecurite);
+    affirmer(resSecurite === null, 'estUneNewsletterOuAuto_ ne court-circuite pas une alerte de sécurité portant List-Unsubscribe');
 
     const mockMsgBulk = {
+        getSubject: () => 'Notification',
         getHeader: (h) => h === 'Precedence' ? 'bulk' : null
     };
     const resBulk = estUneNewsletterOuAuto_(mockMsgBulk);
     affirmer(resBulk && resBulk.isAuto === true, 'estUneNewsletterOuAuto_ détecte Precedence: bulk');
 
     const mockMsgAuto = {
+        getSubject: () => 'Réponse automatique',
         getHeader: (h) => h === 'Auto-Submitted' ? 'auto-generated' : null
     };
     const resAuto = estUneNewsletterOuAuto_(mockMsgAuto);
     affirmer(resAuto && resAuto.isAuto === true, 'estUneNewsletterOuAuto_ détecte Auto-Submitted: auto-generated');
 
     const mockMsgNormal = {
+        getSubject: () => 'Message ordinaire',
         getHeader: () => null
     };
     affirmer(estUneNewsletterOuAuto_(mockMsgNormal) === null, 'estUneNewsletterOuAuto_ ignore un email normal');
+
+    // Vérification du gel de CONFIG
+    affirmer(Object.isFrozen(CONFIG), 'CONFIG est bien gelé avec Object.freeze');
+    affirmer(Object.isFrozen(CONFIG.TRI), 'CONFIG.TRI est bien gelé avec Object.freeze');
 
     // C. Ajout rapide de règle (quickAddRule)
     const quickResVip = quickAddRule('vip', 'president@directoire.com');
