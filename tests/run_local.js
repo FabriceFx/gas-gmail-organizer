@@ -21,13 +21,21 @@ const context = {
     RegExp: RegExp,
     Number: Number,
     Boolean: Boolean,
-    PropertiesService: {
-        getScriptProperties: () => ({
-            getProperty: (k) => k === 'GEMINI_API_KEY' ? 'AIzaSyTestApiKeyMock12345' : null,
-            setProperty: (k, v) => {},
-            deleteProperty: (k) => {}
-        })
-    },
+    PropertiesService: (() => {
+        const store = {
+            'GEMINI_API_KEY': 'AIzaSyTestApiKeyMock12345'
+        };
+        const propsObj = {
+            getProperty: (k) => store[k] !== undefined ? store[k] : null,
+            getProperties: () => Object.assign({}, store),
+            setProperty: (k, v) => { store[k] = String(v); },
+            deleteProperty: (k) => { delete store[k]; }
+        };
+        return {
+            getScriptProperties: () => propsObj,
+            getUserProperties: () => propsObj
+        };
+    })(),
     Session: {
         getEffectiveUser: () => ({ getEmail: () => 'test@example.com' }),
         getScriptTimeZone: () => 'Europe/Paris'

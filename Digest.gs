@@ -197,7 +197,19 @@ function envoyerDigest() {
 
 
 function construireSectionsDigest_() {
-    const sections = [
+    const sections = [];
+
+    if (CONFIG.LABELS.URGENT) {
+        sections.push({
+            titre: '&#x23F0; Priorité haute (Urgents)',
+            titreTexte: 'Priorité haute (Urgents)',
+            couleur: '#D93025',
+            requete:
+                `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.URGENT)}"`
+        });
+    }
+
+    sections.push(
         {
             titre: '&#x26A0;&#xFE0F; Erreurs de tri',
             titreTexte: 'Erreurs de tri',
@@ -219,7 +231,7 @@ function construireSectionsDigest_() {
             requete:
                 `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.RAPIDE)}"`
         }
-    ];
+    );
 
     if (CONFIG.DIGEST.INCLURE_AUCUNE_ACTION) {
         const requeteAucune = CONFIG.TRI.ARCHIVER_AUCUNE_ACTION

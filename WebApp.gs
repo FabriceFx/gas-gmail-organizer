@@ -38,6 +38,8 @@ function getSettings() {
     return {
         hasApiKey: Boolean(cleApi && cleApi.trim().length > 0),
         isFreeTier: _loadBooleanProp(CONFIG.PROPRIETES.API_KEY_FREE_TIER, true),
+        fenetreJours: _loadNumberProp(CONFIG.PROPRIETES.FENETRE_JOURS, 30),
+        categoryPrimaryOnly: _loadBooleanProp(CONFIG.PROPRIETES.CATEGORY_PRIMARY_ONLY, true),
         vip: _loadArrayProp(CONFIG.PROPRIETES.VIP, []),
         noIa: _loadArrayProp(CONFIG.PROPRIETES.NO_IA, []),
         aucune: _loadArrayProp(CONFIG.PROPRIETES.AUCUNE, [])
@@ -68,6 +70,15 @@ function saveSettings(settings) {
         props.setProperty(CONFIG.PROPRIETES.API_KEY_FREE_TIER, String(Boolean(settings.isFreeTier)));
     }
     
+    if (settings.categoryPrimaryOnly !== undefined) {
+        props.setProperty(CONFIG.PROPRIETES.CATEGORY_PRIMARY_ONLY, String(Boolean(settings.categoryPrimaryOnly)));
+    }
+    
+    if (settings.fenetreJours !== undefined) {
+        const jours = Number(settings.fenetreJours);
+        props.setProperty(CONFIG.PROPRIETES.FENETRE_JOURS, String(!isNaN(jours) && jours >= 0 ? jours : 30));
+    }
+    
     const reglesRejetees = [];
 
     if (Array.isArray(settings.vip)) {
@@ -84,6 +95,67 @@ function saveSettings(settings) {
         success: true,
         reglesRejetees
     };
+}
+
+/**
+ * Récupère le statut complet et les métriques pour le Dashboard.
+ */
+function getDashboardStatus() {
+    try {
+        const dernierTri = obtenirDernierTriInfo_();
+        const autoSortActive = getAutoSortStatus();
+        const resetEnCours = reinitialisationEnCours_();
+        const props = PropertiesService.getScriptProperties();
+        const cleApi = props.getProperty(CONFIG.PROPRIETES.API_KEY);
+        
+        let quarantaineCount = 0;
+        try {
+            const threadsErreur = GmailApp.search(
+                `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.ERREUR)}"`,
+                0,
+                50
+            );
+            quarantaineCount = threadsErreur.length;
+        } catch (e) {
+            // Lecture non bloquante
+        }
+
+        return {
+            success: true,
+            dernierTri,
+            quarantaineCount,
+            autoSortActive,
+            resetEnCours,
+            hasApiKey: Boolean(cleApi && cleApi.trim().length > 0)
+        };
+    } catch (e) {
+        journaliser_('ERREUR', 'Erreur récupération statut dashboard : ' + e.message, { error: e.message });
+        return { success: false, message: e.message };
+    }
+}
+
+/**
+ * Teste la connexion Gemini depuis l'interface avec mesure de latence.
+ */
+function testerConnexionGemini() {
+    const debut = Date.now();
+    try {
+        const validation = verifierConfiguration_({ testerGemini: true });
+        const latenceMs = Date.now() - debut;
+        return {
+            success: true,
+            latenceMs,
+            compte: validation.compte,
+            modele: validation.modele,
+            testGemini: validation.testGemini
+        };
+    } catch (e) {
+        return {
+            success: false,
+            message: nettoyerMessageErreur_(e),
+            latenceMs: Date.now() - debut
+        };
+    }
 }
 
 /**

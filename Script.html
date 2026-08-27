@@ -12,20 +12,33 @@ const DICT = {
         nav_settings: "Paramètres",
         nav_about: "À propos",
         title_dashboard: "Vue d'ensemble",
-        subtitle_dashboard: "Gérez et lancez le tri de votre boîte de réception.",
+        subtitle_dashboard: "Gérez et suivez le tri automatique de votre boîte de réception.",
+        title_last_sort: "Dernier passage",
+        title_api_test: "Connexion Gemini",
+        desc_api_test: "Testez la réponse du modèle et sa latence.",
+        btn_test_api: "Tester la clé",
         action_sort: "Lancer le tri manuel",
         action_sort_desc: "Déclenche l'analyse immédiate des nouveaux emails par Gemini.",
         btn_run: "Exécuter maintenant",
-        action_retry_errors: "Retraiter les erreurs",
-        action_retry_errors_desc: "Réanalyse les emails placés en quarantaine (⚠️ Erreur de tri).",
+        action_retry_errors: "Quarantaine",
+        action_retry_errors_desc: "Emails en échec répété (⚠️ Erreur de tri).",
         btn_retry: "Retraiter",
         info_auto: "Tri Automatique",
-        info_auto_desc: "Le déclencheur est actif en arrière-plan. La boîte est surveillée.",
+        info_auto_desc: "Surveillance horaire en arrière-plan.",
         title_settings: "Configuration",
-        subtitle_settings: "Ajustez vos préférences et clés d'API.",
+        subtitle_settings: "Ajustez vos préférences et règles de tri.",
         help_api_key: "Laissez vide pour conserver la clé actuelle. Entrez __CLEAR__ pour la supprimer.",
         label_free_tier: "Clé API Gratuite",
         help_free_tier: "Limite la vitesse à 15 requêtes/min pour éviter de bloquer votre compte AI Studio.",
+        label_primary_only: "Boîte Principale uniquement",
+        help_primary_only: "Exclut les onglets Promotions, Réseaux sociaux et Forums de Gmail (category:primary).",
+        label_time_window: "Périmètre d'analyse (ancienneté)",
+        help_time_window: "Limite l'analyse aux emails récents pour préserver votre quota au premier lancement.",
+        opt_window_7: "7 derniers jours (newer_than:7d)",
+        opt_window_14: "14 derniers jours (newer_than:14d)",
+        opt_window_30: "30 derniers jours (newer_than:30d — recommandé)",
+        opt_window_90: "90 derniers jours (newer_than:90d)",
+        opt_window_all: "Tout l'historique non classé",
         help_vip: "Ces expéditeurs sont toujours classés en Attention Requise sans passer par l'IA.",
         help_no_ia: "Emails sensibles (classés en Attention Requise localement).",
         help_aucune: "Emails toujours classés en Aucune Action (Info).",
@@ -38,17 +51,21 @@ const DICT = {
         msg_saving: "Sauvegarde en cours...",
         msg_sorting: "Lancement du tri...",
         msg_retrying: "Lancement du retraitement...",
+        msg_testing_api: "Test de connexion Gemini...",
         msg_sort_bg: "Le tri a été lancé en arrière-plan ! Tes e-mails seront classés dans quelques instants (tu peux fermer cette page).",
         msg_retry_errors_bg: "Le retraitement des erreurs a été lancé en arrière-plan !",
         msg_save_success: "Paramètres sauvegardés avec succès !",
         msg_save_warning_rejected: "Paramètres sauvegardés (certaines règles invalides ont été ignorées)",
         msg_save_error: "Erreur lors de la sauvegarde.",
         msg_fetch_error: "Erreur de récupération des données.",
+        status_active: "Actif",
+        status_inactive: "Inactif",
+        status_in_progress: "En cours",
         nav_guide: "Guide",
         title_guide: "Guide d'utilisation",
         subtitle_guide: "Comprendre le fonctionnement du tri.",
         guide_labels_title: "Les catégories de tri",
-        guide_labels_desc: "L'outil trie vos emails en 3 catégories principales : <b>Action Rapide</b> (réponse simple), <b>Attention Requise</b> (dossier complexe) et <b>Aucune Action</b> (informatif).",
+        guide_labels_desc: "L'outil trie vos emails en catégories : <b>Action Rapide</b> (réponse simple), <b>Attention Requise</b> (dossier complexe), <b>Aucune Action</b> (informatif) et ajoute un badge <b>⏰ Urgent</b> pour les priorités hautes.",
         guide_workflow_title: "🎯 Méthodologie au quotidien",
         guide_workflow_desc: "Pour garder une boîte mail propre (Inbox Zero), suivez ces 3 étapes :",
         guide_workflow_step1: "<b>1. Agir :</b> Ouvrez le libellé <i>Action Rapide</i> et traitez les e-mails (réponse courte, validation). Ensuite, passez au libellé <i>Attention Requise</i> pour les sujets de fond.",
@@ -69,20 +86,33 @@ const DICT = {
         nav_settings: "Settings",
         nav_about: "About",
         title_dashboard: "Overview",
-        subtitle_dashboard: "Manage and trigger your inbox sorting.",
+        subtitle_dashboard: "Manage and monitor automatic triage of your inbox.",
+        title_last_sort: "Last Sort Run",
+        title_api_test: "Gemini Connection",
+        desc_api_test: "Test model connectivity and latency.",
+        btn_test_api: "Test Key",
         action_sort: "Run Manual Sort",
         action_sort_desc: "Triggers immediate analysis of new emails by Gemini.",
         btn_run: "Run now",
-        action_retry_errors: "Retry Errors",
-        action_retry_errors_desc: "Re-analyzes quarantined emails (⚠️ Sort error).",
+        action_retry_errors: "Quarantine",
+        action_retry_errors_desc: "Emails repeatedly failing sort (⚠️ Sort error).",
         btn_retry: "Retry",
         info_auto: "Auto Sort",
-        info_auto_desc: "The background trigger is active. Your inbox is monitored.",
+        info_auto_desc: "Hourly background monitoring.",
         title_settings: "Settings",
-        subtitle_settings: "Adjust your preferences and API keys.",
+        subtitle_settings: "Adjust your preferences and sorting rules.",
         help_api_key: "Leave empty to keep the current key. Enter __CLEAR__ to remove it.",
         label_free_tier: "Free API Key",
         help_free_tier: "Limits speed to 15 requests/min to prevent your AI Studio account from being blocked.",
+        label_primary_only: "Primary Inbox only",
+        help_primary_only: "Excludes Promotions, Social and Forum tabs in Gmail (category:primary).",
+        label_time_window: "Analysis Scope (time window)",
+        help_time_window: "Restricts triage to recent emails to preserve quota on initial setup.",
+        opt_window_7: "Last 7 days (newer_than:7d)",
+        opt_window_14: "Last 14 days (newer_than:14d)",
+        opt_window_30: "Last 30 days (newer_than:30d — recommended)",
+        opt_window_90: "Last 90 days (newer_than:90d)",
+        opt_window_all: "All unclassified history",
         help_vip: "These senders are always flagged as Needs Attention without AI.",
         help_no_ia: "Sensitive emails (classified as Needs Attention locally).",
         help_aucune: "Emails always classified as No Action (Info).",
@@ -95,17 +125,21 @@ const DICT = {
         msg_saving: "Saving...",
         msg_sorting: "Starting sort...",
         msg_retrying: "Starting retry...",
+        msg_testing_api: "Testing Gemini connection...",
         msg_sort_bg: "Sort launched in background! Your emails will be classified in a few moments (you can close this page).",
         msg_retry_errors_bg: "Error reprocessing launched in background!",
         msg_save_success: "Settings saved successfully!",
         msg_save_warning_rejected: "Settings saved (some invalid rules were ignored)",
         msg_save_error: "Error saving settings.",
         msg_fetch_error: "Error fetching data.",
+        status_active: "Active",
+        status_inactive: "Inactive",
+        status_in_progress: "In progress",
         nav_guide: "Guide",
         title_guide: "User Guide",
         subtitle_guide: "Understand how the sorting works.",
         guide_labels_title: "Sorting Categories",
-        guide_labels_desc: "The tool sorts your emails into 3 main categories: <b>Quick Action</b> (simple reply), <b>Needs Attention</b> (complex topic), and <b>No Action</b> (informative).",
+        guide_labels_desc: "The tool sorts your emails into categories: <b>Quick Action</b> (simple reply), <b>Needs Attention</b> (complex topic), <b>No Action</b> (informative), and adds an <b>⏰ Urgent</b> badge for high priorities.",
         guide_workflow_title: "🎯 Daily Workflow",
         guide_workflow_desc: "To keep a clean inbox (Inbox Zero), follow these 3 steps:",
         guide_workflow_step1: "<b>1. Act:</b> Open the <i>Quick Action</i> label and process the emails (short reply, approval). Then, move to the <i>Needs Attention</i> label for deep work.",
@@ -129,13 +163,17 @@ document.addEventListener("DOMContentLoaded", () => {
     initNavigation();
     initTranslations();
     fetchSettings();
-    fetchAutoSortStatus();
+    fetchDashboardStatus();
     
     document.getElementById('btn-save-settings').addEventListener('click', onSaveSettings);
     document.getElementById('btn-trigger-sort').addEventListener('click', onTriggerSort);
     const btnRetryErrors = document.getElementById('btn-retry-errors');
     if (btnRetryErrors) {
         btnRetryErrors.addEventListener('click', onTriggerRetryErrors);
+    }
+    const btnTestApi = document.getElementById('btn-test-api');
+    if (btnTestApi) {
+        btnTestApi.addEventListener('click', onTestApiConnection);
     }
     document.getElementById('toggle-auto-sort').addEventListener('change', onToggleAutoSort);
 });
@@ -158,6 +196,10 @@ function initNavigation() {
         if (targetSection) {
             targetSection.classList.add('active');
         }
+
+        if (targetId === 'dashboard') {
+            fetchDashboardStatus();
+        }
     }
 
     navItems.forEach(item => {
@@ -172,11 +214,10 @@ function initNavigation() {
 }
 
 function initTranslations() {
-    // Boutons de langue
     const btnFr = document.getElementById('btn-fr');
     const btnEn = document.getElementById('btn-en');
     
-    if(currentLang === 'en') {
+    if (currentLang === 'en') {
         btnFr.classList.remove('active');
         btnEn.classList.add('active');
     }
@@ -195,6 +236,7 @@ function setLang(lang) {
     document.getElementById('btn-en').classList.toggle('active', lang === 'en');
     
     applyTranslations();
+    fetchDashboardStatus();
 }
 
 function applyTranslations() {
@@ -236,6 +278,76 @@ function showSnackbar(message, isError = false) {
     }, 4000);
 }
 
+function fetchDashboardStatus() {
+    google.script.run
+        .withSuccessHandler((status) => {
+            if (!status || !status.success) return;
+
+            // Auto sort status
+            const autoBadge = document.getElementById('badge-auto-sort');
+            const toggleAuto = document.getElementById('toggle-auto-sort');
+            toggleAuto.checked = status.autoSortActive;
+            if (status.autoSortActive) {
+                autoBadge.textContent = DICT[currentLang].status_active;
+                autoBadge.className = 'status-badge active';
+            } else {
+                autoBadge.textContent = DICT[currentLang].status_inactive;
+                autoBadge.className = 'status-badge inactive';
+            }
+
+            // Reset indicator
+            const resetInd = document.getElementById('reset-indicator');
+            if (status.resetEnCours) {
+                resetInd.style.display = 'inline';
+            } else {
+                resetInd.style.display = 'none';
+            }
+
+            // Quarantaine badge
+            const qBadge = document.getElementById('badge-quarantaine-count');
+            qBadge.textContent = status.quarantaineCount + (currentLang === 'en' ? ' quarantined' : ' en quarantaine');
+            qBadge.className = status.quarantaineCount > 0 ? 'status-badge warning' : 'status-badge inactive';
+
+            // Dernier tri
+            const dernierTri = status.dernierTri;
+            const dateEl = document.getElementById('stat-dernier-tri-date');
+            const countEl = document.getElementById('stat-dernier-tri-count');
+            const chipUrgent = document.getElementById('chip-urgent');
+            const chipRapide = document.getElementById('chip-rapide');
+            const chipAttention = document.getElementById('chip-attention');
+            const chipAucune = document.getElementById('chip-aucune');
+
+            if (dernierTri && dernierTri.dateIso) {
+                const dateObj = new Date(dernierTri.dateIso);
+                dateEl.textContent = dateObj.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'fr-FR', {
+                    day: 'numeric',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                countEl.textContent = (dernierTri.traites || 0) + (currentLang === 'en' ? ' emails sorted' : ' e-mails triés');
+
+                chipRapide.textContent = '🟠 ' + (dernierTri.rapide || 0) + (currentLang === 'en' ? ' quick' : ' rapides');
+                chipAttention.textContent = '🔴 ' + (dernierTri.attention || 0) + (currentLang === 'en' ? ' attention' : ' attention');
+                chipAucune.textContent = '🟢 ' + (dernierTri.aucune || 0) + (currentLang === 'en' ? ' no action' : ' aucune');
+
+                if (dernierTri.urgent && dernierTri.urgent > 0) {
+                    chipUrgent.style.display = 'inline-flex';
+                    chipUrgent.textContent = '⏰ ' + dernierTri.urgent + (currentLang === 'en' ? ' urgent' : ' urgents');
+                } else {
+                    chipUrgent.style.display = 'none';
+                }
+            } else {
+                dateEl.textContent = currentLang === 'en' ? 'No recent sort' : 'Aucun tri récent';
+                countEl.textContent = '0 ' + (currentLang === 'en' ? 'emails' : 'e-mails');
+            }
+        })
+        .withFailureHandler((err) => {
+            console.error('Erreur chargement statut dashboard', err);
+        })
+        .getDashboardStatus();
+}
+
 function fetchSettings() {
     google.script.run
         .withSuccessHandler((settings) => {
@@ -245,6 +357,8 @@ function fetchSettings() {
                 ? (DICT[currentLang].placeholder_api_key_set || '•••••••••••••••• (Clé configurée)')
                 : (DICT[currentLang].placeholder_api_key_empty || 'Entrez votre clé API Gemini');
             document.getElementById('toggle-free-tier').checked = settings.isFreeTier;
+            document.getElementById('toggle-category-primary').checked = settings.categoryPrimaryOnly !== false;
+            document.getElementById('select-fenetre-jours').value = String(settings.fenetreJours !== undefined ? settings.fenetreJours : 30);
             document.getElementById('input-vip').value = settings.vip.join('\n');
             document.getElementById('input-no-ia').value = settings.noIa.join('\n');
             document.getElementById('input-aucune').value = settings.aucune.join('\n');
@@ -257,17 +371,6 @@ function fetchSettings() {
         .getSettings();
 }
 
-function fetchAutoSortStatus() {
-    google.script.run
-        .withSuccessHandler((isActive) => {
-            document.getElementById('toggle-auto-sort').checked = isActive;
-        })
-        .withFailureHandler((error) => {
-            console.error("Failed to fetch auto sort status", error);
-        })
-        .getAutoSortStatus();
-}
-
 function onToggleAutoSort(e) {
     showLoader('msg_saving');
     const isEnabled = e.target.checked;
@@ -277,6 +380,7 @@ function onToggleAutoSort(e) {
             hideLoader();
             if (result.success) {
                 showSnackbar(result.message);
+                fetchDashboardStatus();
             } else {
                 showSnackbar(result.message, true);
                 e.target.checked = !isEnabled; // Revert visually
@@ -296,6 +400,8 @@ function onSaveSettings() {
     const settings = {
         apiKey: document.getElementById('input-api-key').value,
         isFreeTier: document.getElementById('toggle-free-tier').checked,
+        categoryPrimaryOnly: document.getElementById('toggle-category-primary').checked,
+        fenetreJours: Number(document.getElementById('select-fenetre-jours').value),
         vip: document.getElementById('input-vip').value.split('\n'),
         noIa: document.getElementById('input-no-ia').value.split('\n'),
         aucune: document.getElementById('input-aucune').value.split('\n')
@@ -321,6 +427,33 @@ function onSaveSettings() {
         .saveSettings(settings);
 }
 
+function onTestApiConnection() {
+    showLoader('msg_testing_api');
+    
+    google.script.run
+        .withSuccessHandler((result) => {
+            hideLoader();
+            const descEl = document.getElementById('desc-api-status');
+            if (result.success) {
+                const msg = currentLang === 'en'
+                    ? `Connected (${result.modele}, ${result.latenceMs} ms)`
+                    : `Connecté (${result.modele}, ${result.latenceMs} ms)`;
+                descEl.textContent = msg;
+                descEl.style.color = '#188038';
+                showSnackbar(msg);
+            } else {
+                descEl.textContent = result.message || 'Erreur de connexion';
+                descEl.style.color = '#c5221f';
+                showSnackbar(result.message, true);
+            }
+        })
+        .withFailureHandler((error) => {
+            hideLoader();
+            showSnackbar(error.message, true);
+        })
+        .testerConnexionGemini();
+}
+
 function onTriggerSort() {
     showLoader('msg_sorting');
     
@@ -333,6 +466,7 @@ function onTriggerSort() {
             } else {
                 showSnackbar(result.message, true);
             }
+            setTimeout(fetchDashboardStatus, 2000);
         })
         .withFailureHandler((error) => {
             hideLoader();
@@ -353,6 +487,7 @@ function onTriggerRetryErrors() {
             } else {
                 showSnackbar(result.message, true);
             }
+            setTimeout(fetchDashboardStatus, 2000);
         })
         .withFailureHandler((error) => {
             hideLoader();

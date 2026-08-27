@@ -57,44 +57,85 @@
             <section id="dashboard" class="page-section active">
                 <header>
                     <h2 data-i18n="title_dashboard">Vue d'ensemble</h2>
-                    <p data-i18n="subtitle_dashboard">Gérez et lancez le tri de votre boîte de réception.</p>
+                    <p data-i18n="subtitle_dashboard">Gérez et suivez le tri automatique de votre boîte de réception.</p>
                 </header>
                 
                 <div class="cards-grid">
+                    <!-- Carte 1: État du service -->
+                    <div class="glass-card info-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div class="card-icon">
+                                <span class="material-symbols-outlined">schedule</span>
+                            </div>
+                            <span id="badge-auto-sort" class="status-badge inactive">Inactif</span>
+                        </div>
+                        <h3 data-i18n="info_auto">Tri Automatique</h3>
+                        <p data-i18n="info_auto_desc" style="margin-bottom: 16px;">Surveillance horaire en arrière-plan.</p>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                            <span id="reset-indicator" style="font-size: 0.8rem; color: #b06000; display: none;">🔄 Réinitialisation en cours</span>
+                            <label class="switch" style="margin-left: auto;">
+                                <input type="checkbox" id="toggle-auto-sort">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Carte 2: Dernier Tri -->
+                    <div class="glass-card">
+                        <div class="card-icon" style="background: rgba(11, 87, 208, 0.1); color: var(--md-sys-color-primary);">
+                            <span class="material-symbols-outlined">history</span>
+                        </div>
+                        <h3 data-i18n="title_last_sort">Dernier passage</h3>
+                        <div id="stat-dernier-tri-date" style="font-size: 0.9rem; color: var(--md-sys-color-on-surface-variant);">Aucun tri récent</div>
+                        <div class="metric-value" id="stat-dernier-tri-count">0 e-mails</div>
+                        <div class="stat-chip-group" id="stat-chips-container">
+                            <span class="stat-chip urgent" id="chip-urgent" style="display: none;">⏰ 0 urgents</span>
+                            <span class="stat-chip rapide" id="chip-rapide">🟠 0 rapides</span>
+                            <span class="stat-chip attention" id="chip-attention">🔴 0 attention</span>
+                            <span class="stat-chip aucune" id="chip-aucune">🟢 0 aucune</span>
+                        </div>
+                    </div>
+
+                    <!-- Carte 3: Quarantaine -->
+                    <div class="glass-card action-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div class="card-icon" style="background: rgba(234, 67, 53, 0.1); color: #ea4335;">
+                                <span class="material-symbols-outlined">warning</span>
+                            </div>
+                            <span id="badge-quarantaine-count" class="status-badge inactive">0 en quarantaine</span>
+                        </div>
+                        <h3 data-i18n="action_retry_errors">Quarantaine</h3>
+                        <p data-i18n="action_retry_errors_desc" style="margin-bottom: 16px;">Emails en échec répété (⚠️ Erreur de tri).</p>
+                        <button id="btn-retry-errors" class="btn-secondary" style="margin-top: auto;">
+                            <span class="material-symbols-outlined">refresh</span>
+                            <span data-i18n="btn_retry">Retraiter</span>
+                        </button>
+                    </div>
+
+                    <!-- Carte 4: Test API Gemini -->
+                    <div class="glass-card action-card">
+                        <div class="card-icon" style="background: rgba(24, 128, 56, 0.1); color: #188038;">
+                            <span class="material-symbols-outlined">network_check</span>
+                        </div>
+                        <h3 data-i18n="title_api_test">Connexion Gemini</h3>
+                        <p id="desc-api-status" data-i18n="desc_api_test" style="margin-bottom: 16px;">Testez la réponse du modèle et sa latence.</p>
+                        <button id="btn-test-api" class="btn-secondary" style="margin-top: auto;">
+                            <span class="material-symbols-outlined">bolt</span>
+                            <span data-i18n="btn_test_api">Tester la clé</span>
+                        </button>
+                    </div>
+
+                    <!-- Carte 5: Tri Manuel -->
                     <div class="glass-card action-card">
                         <div class="card-icon">
                             <span class="material-symbols-outlined">play_arrow</span>
                         </div>
                         <h3 data-i18n="action_sort">Lancer le tri manuel</h3>
-                        <p data-i18n="action_sort_desc">Déclenche l'analyse immédiate des nouveaux emails par Gemini.</p>
-                        <button id="btn-trigger-sort" class="btn-primary">
+                        <p data-i18n="action_sort_desc" style="margin-bottom: 16px;">Déclenche l'analyse immédiate des nouveaux emails.</p>
+                        <button id="btn-trigger-sort" class="btn-primary" style="margin-top: auto;">
                             <span class="material-symbols-outlined">bolt</span>
                             <span data-i18n="btn_run">Exécuter maintenant</span>
-                        </button>
-                    </div>
-                    
-                    <div class="glass-card info-card">
-                        <div class="card-icon">
-                            <span class="material-symbols-outlined">schedule</span>
-                        </div>
-                        <h3 data-i18n="info_auto">Tri Automatique</h3>
-                        <p data-i18n="info_auto_desc">Le déclencheur est actif en arrière-plan. La boîte est surveillée.</p>
-                        
-                        <label class="switch">
-                            <input type="checkbox" id="toggle-auto-sort">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="glass-card action-card">
-                        <div class="card-icon" style="background: rgba(234, 67, 53, 0.1); color: #ea4335;">
-                            <span class="material-symbols-outlined">replay</span>
-                        </div>
-                        <h3 data-i18n="action_retry_errors">Retraiter les erreurs</h3>
-                        <p data-i18n="action_retry_errors_desc">Réanalyse les emails placés en quarantaine.</p>
-                        <button id="btn-retry-errors" class="btn-secondary" style="margin-top: auto;">
-                            <span class="material-symbols-outlined">refresh</span>
-                            <span data-i18n="btn_retry">Retraiter</span>
                         </button>
                     </div>
                 </div>
@@ -104,7 +145,7 @@
             <section id="settings" class="page-section">
                 <header>
                     <h2 data-i18n="title_settings">Configuration</h2>
-                    <p data-i18n="subtitle_settings">Ajustez vos préférences et clés d'API.</p>
+                    <p data-i18n="subtitle_settings">Ajustez vos préférences et règles de tri.</p>
                 </header>
                 
                 <div class="settings-form glass-panel">
@@ -118,7 +159,7 @@
                         <small data-i18n="help_api_key">Laissez vide pour conserver la clé actuelle. Entrez __CLEAR__ pour la supprimer.</small>
                     </div>
                     
-                    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 8px;">
+                    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.04); border-radius: 8px;">
                         <div>
                             <label for="toggle-free-tier" style="margin-bottom: 2px;" data-i18n="label_free_tier">Clé API Gratuite</label>
                             <small data-i18n="help_free_tier" style="display: block; opacity: 0.8; font-size: 11px;">Limite la vitesse à 15 requêtes/min pour éviter de bloquer votre compte AI Studio.</small>
@@ -127,6 +168,30 @@
                             <input type="checkbox" id="toggle-free-tier">
                             <span class="slider"></span>
                         </label>
+                    </div>
+
+                    <!-- Périmètre de recherche -->
+                    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.04); border-radius: 8px;">
+                        <div>
+                            <label for="toggle-category-primary" style="margin-bottom: 2px;" data-i18n="label_primary_only">Boîte Principale uniquement</label>
+                            <small data-i18n="help_primary_only" style="display: block; opacity: 0.8; font-size: 11px;">Exclut les onglets Promotions, Réseaux sociaux et Forums de Gmail (category:primary).</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-category-primary">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="select-fenetre-jours" data-i18n="label_time_window">Périmètre d'analyse (ancienneté)</label>
+                        <select id="select-fenetre-jours">
+                            <option value="7" data-i18n="opt_window_7">7 derniers jours (newer_than:7d)</option>
+                            <option value="14" data-i18n="opt_window_14">14 derniers jours (newer_than:14d)</option>
+                            <option value="30" data-i18n="opt_window_30" selected>30 derniers jours (newer_than:30d — recommandé)</option>
+                            <option value="90" data-i18n="opt_window_90">90 derniers jours (newer_than:90d)</option>
+                            <option value="0" data-i18n="opt_window_all">Tout l'historique non classé</option>
+                        </select>
+                        <small data-i18n="help_time_window">Limite l'analyse aux emails récents pour préserver votre quota au premier lancement.</small>
                     </div>
                     
                     <div class="form-group">

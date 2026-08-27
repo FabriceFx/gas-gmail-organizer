@@ -63,6 +63,21 @@ function trierBoiteReception() {
 }
 
 
+function construireRequeteRecherche_() {
+    const parties = [
+        'in:inbox',
+        `-label:"${echapperRechercheGmail_(CONFIG.LABELS.MARQUEUR)}"`
+    ];
+    if (CONFIG.TRI.CATEGORY_PRIMARY_ONLY) {
+        parties.push('category:primary');
+    }
+    if (CONFIG.TRI.FENETRE_JOURS && CONFIG.TRI.FENETRE_JOURS > 0) {
+        parties.push(`newer_than:${CONFIG.TRI.FENETRE_JOURS}d`);
+    }
+    return parties.join(' ');
+}
+
+
 function trierBoiteReceptionInterne_() {
     const debut = Date.now();
     const deadline = debut + CONFIG.TRI.DUREE_MAX_MS;
@@ -73,8 +88,7 @@ function trierBoiteReceptionInterne_() {
     const modele = obtenirModeleGemini_();
     const labels = obtenirTousLesLibelles_();
 
-    const requete =
-        `in:inbox -label:"${echapperRechercheGmail_(CONFIG.LABELS.MARQUEUR)}"`;
+    const requete = construireRequeteRecherche_();
 
     const threads = GmailApp.search(requete, 0, CONFIG.TRI.LOT_MAX);
 
@@ -86,6 +100,7 @@ function trierBoiteReceptionInterne_() {
         RAPIDE: 0,
         ATTENTION: 0,
         AUCUNE: 0,
+        URGENT: 0,
         ERREURS: 0,
         QUARANTAINE: 0,
         ECRITURE_ECHECS: 0,
@@ -95,6 +110,23 @@ function trierBoiteReceptionInterne_() {
 
     if (threads.length === 0) {
         const purges = purgerAnciensCompteursEchec_();
+
+        enregistrerDernierTriInfo_({
+            dateIso: new Date().toISOString(),
+            ok: true,
+            trouves: 0,
+            traites: 0,
+            ia: 0,
+            regles: 0,
+            rapide: 0,
+            attention: 0,
+            aucune: 0,
+            urgent: 0,
+            erreurs: 0,
+            quarantaine: 0,
+            dureeMs: Date.now() - debut,
+            erreurGlobale: null
+        });
 
         journaliser_('INFO', 'Aucun thread à analyser.', {
             dureeMs: Date.now() - debut,
@@ -127,7 +159,8 @@ function trierBoiteReceptionInterne_() {
                 thread,
                 categorie: 'ERREUR',
                 source: 'QUARANTAINE',
-                raison: 'Seuil d’échecs déjà atteint.'
+                raison: 'Seuil d’échecs déjà atteint.',
+                estUrgent: false
             });
             stats.QUARANTAINE++;
             continue;
@@ -143,16 +176,25 @@ function trierBoiteReceptionInterne_() {
                 deadline
             );
 
+            const estUrgent = Boolean(
+                resultat.estUrgent ||
+                (resultat.analyse && (resultat.analyse.urgence === 'ELEVEE' || resultat.analyse.urgence === 'CRITIQUE'))
+            );
+
             resultats.push({
                 thread,
                 categorie: resultat.categorie,
                 source: resultat.source,
                 raison: resultat.raison || '',
-                analyse: resultat.analyse || null
+                analyse: resultat.analyse || null,
+                estUrgent
             });
 
             stats.TRAITES++;
             stats[resultat.categorie]++;
+            if (estUrgent) {
+                stats.URGENT++;
+            }
 
             if (resultat.source === 'IA') {
                 stats.IA++;
@@ -228,6 +270,23 @@ function trierBoiteReceptionInterne_() {
         modele
     };
 
+    enregistrerDernierTriInfo_({
+        dateIso: new Date().toISOString(),
+        ok: !erreurGlobale,
+        trouves: stats.TROUVES,
+        traites: stats.TRAITES,
+        ia: stats.IA,
+        regles: stats.REGLES,
+        rapide: stats.RAPIDE,
+        attention: stats.ATTENTION,
+        aucune: stats.AUCUNE,
+        urgent: stats.URGENT,
+        erreurs: stats.ERREURS,
+        quarantaine: stats.QUARANTAINE,
+        dureeMs: Date.now() - debut,
+        erreurGlobale: erreurGlobale ? nettoyerMessageErreur_(erreurGlobale) : null
+    });
+
     journaliser_('INFO', 'Tri terminé.', resume);
     return resume;
 }
@@ -246,22 +305,40 @@ function appliquerResultats_(resultats, labels) {
 
     try {
         LIBELLES_EXCLUSIFS_.forEach(cle => {
-            labels[cle].removeFromThreads(threads);
+            if (labels[cle]) {
+                labels[cle].removeFromThreads(threads);
+            }
         });
+
+        if (labels.URGENT) {
+            labels.URGENT.removeFromThreads(threads);
+        }
 
         LIBELLES_EXCLUSIFS_.forEach(cle => {
             const groupe = resultats
                 .filter(resultat => resultat.categorie === cle)
                 .map(resultat => resultat.thread);
 
-            if (groupe.length > 0) {
+            if (groupe.length > 0 && labels[cle]) {
                 labels[cle].addToThreads(groupe);
             }
         });
 
+        if (labels.URGENT) {
+            const threadsUrgents = resultats
+                .filter(resultat => resultat.estUrgent === true)
+                .map(resultat => resultat.thread);
+
+            if (threadsUrgents.length > 0) {
+                labels.URGENT.addToThreads(threadsUrgents);
+            }
+        }
+
         // Le marqueur est ajouté en dernier : un échec d'écriture laisse le thread
         // retraitable au prochain passage.
-        labels.MARQUEUR.addToThreads(threads);
+        if (labels.MARQUEUR) {
+            labels.MARQUEUR.addToThreads(threads);
+        }
 
         const aArchiver = resultats
             .filter(resultat =>
@@ -303,11 +380,24 @@ function appliquerResultatsUnParUn_(resultats, labels) {
     resultats.forEach(resultat => {
         try {
             LIBELLES_EXCLUSIFS_.forEach(cle => {
-                labels[cle].removeFromThread(resultat.thread);
+                if (labels[cle]) {
+                    labels[cle].removeFromThread(resultat.thread);
+                }
             });
 
-            labels[resultat.categorie].addToThread(resultat.thread);
-            labels.MARQUEUR.addToThread(resultat.thread);
+            if (labels.URGENT) {
+                labels.URGENT.removeFromThread(resultat.thread);
+                if (resultat.estUrgent) {
+                    labels.URGENT.addToThread(resultat.thread);
+                }
+            }
+
+            if (labels[resultat.categorie]) {
+                labels[resultat.categorie].addToThread(resultat.thread);
+            }
+            if (labels.MARQUEUR) {
+                labels.MARQUEUR.addToThread(resultat.thread);
+            }
 
             if (
                 resultat.categorie === 'AUCUNE' &&

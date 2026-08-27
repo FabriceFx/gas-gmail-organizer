@@ -127,6 +127,26 @@ function executerTestsUnitaires() {
     affirmer(typeof retraiterErreursBackground === 'function', 'retraiterErreursBackground est bien définie');
     affirmer(typeof executerTriManuelBackground === 'function', 'executerTriManuelBackground est bien définie');
 
+    // ── 10. Tests des nouveautés Lot 1 (Recherche, Urgent, Statut) ──
+    affirmer(Boolean(CONFIG.LABELS.URGENT), 'Le libellé URGENT est défini dans CONFIG.LABELS');
+    const req = construireRequeteRecherche_();
+    affirmer(req.includes('in:inbox'), 'construireRequeteRecherche_ inclut in:inbox');
+    affirmer(req.includes(CONFIG.LABELS.MARQUEUR), 'construireRequeteRecherche_ exclut le marqueur');
+
+    const testInfo = {
+        dateIso: '2026-08-27T10:00:00.000Z',
+        ok: true,
+        trouves: 12,
+        traites: 12,
+        urgent: 2
+    };
+    enregistrerDernierTriInfo_(testInfo);
+    const luInfo = obtenirDernierTriInfo_();
+    affirmer(luInfo && luInfo.urgent === 2, 'enregistrerDernierTriInfo_ / obtenirDernierTriInfo_ enregistre et restitue les données');
+
+    const dashStatus = getDashboardStatus();
+    affirmer(dashStatus && dashStatus.success === true, 'getDashboardStatus retourne un statut avec succès');
+
     // Log récapitulatif
     console.log(`[TESTS] ${resultats.reussis}/${resultats.total} tests réussis (${resultats.echecs} échecs).`);
     resultats.details.forEach(d => console.log(d));

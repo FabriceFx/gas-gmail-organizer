@@ -44,7 +44,10 @@ const CLES_PROPRIETES_ = Object.freeze({
     API_KEY_FREE_TIER: 'TRI_GMAIL_API_FREE_TIER',
     VIP: 'TRI_GMAIL_VIP',
     NO_IA: 'TRI_GMAIL_NO_IA',
-    AUCUNE: 'TRI_GMAIL_AUCUNE'
+    AUCUNE: 'TRI_GMAIL_AUCUNE',
+    FENETRE_JOURS: 'TRI_GMAIL_FENETRE_JOURS',
+    CATEGORY_PRIMARY_ONLY: 'TRI_GMAIL_CATEGORY_PRIMARY',
+    DERNIER_TRI_INFO: 'TRI_GMAIL_DERNIER_TRI_INFO'
 });
 
 let _PROPS_SNAPSHOT_ = null;
@@ -80,12 +83,27 @@ function _loadBooleanProp(key, defaultVal) {
     }
 }
 
+function _loadNumberProp(key, defaultVal) {
+    try {
+        const props = _getPropsSnapshot_();
+        const val = props[key];
+        if (val !== undefined && val !== null && val !== '') {
+            const num = Number(val);
+            return !isNaN(num) ? num : defaultVal;
+        }
+        return defaultVal;
+    } catch (e) {
+        return defaultVal;
+    }
+}
+
 
 const CONFIG = Object.freeze({
     LABELS: Object.freeze({
         RAPIDE: '\uD83D\uDFE0 Action rapide',
         ATTENTION: '\uD83D\uDD34 Attention requise',
         AUCUNE: '\uD83D\uDFE2 Aucune action',
+        URGENT: '\u23F0 Urgent',
         ERREUR: '\u26A0\uFE0F Erreur de tri',
         MARQUEUR: '· analysé'
     }),
@@ -116,6 +134,10 @@ const CONFIG = Object.freeze({
         DUREE_MAX_MS: 4.5 * 60 * 1000,
         MARGE_FINALISATION_MS: 20 * 1000,
         VERROU_TIMEOUT_MS: 1000,
+
+        // Périmètre de recherche dans la boîte de réception
+        FENETRE_JOURS: _loadNumberProp(CLES_PROPRIETES_.FENETRE_JOURS, 30),
+        CATEGORY_PRIMARY_ONLY: _loadBooleanProp(CLES_PROPRIETES_.CATEGORY_PRIMARY_ONLY, true),
 
         ARCHIVER_AUCUNE_ACTION: false,
 

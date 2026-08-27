@@ -11,13 +11,14 @@ Développé par [Fabrice Faucheux](https://faucheux.bzh).
 
 ### 1. Description du système
 
-Ce projet Google Apps Script trie automatiquement les emails de votre boîte de réception en trois catégories :
+Ce projet Google Apps Script trie automatiquement les emails de votre boîte de réception en catégories claires :
 
 | Libellé | Signification |
 |---------|---------------|
-| 🔴 Attention requise | Décision, urgence ou effort approfondi attendu |
+| 🔴 Attention requise | Décision, tâche complexe ou effort approfondi attendu |
 | 🟠 Action rapide | Réponse ou vérification simple (≈ 2 min) |
 | 🟢 Aucune action | Email informatif ou clôturé, sans suivi attendu |
+| ⏰ Urgent | Priorité haute détectée (décision critique ou urgence élevée) |
 | ⚠️ Erreur de tri | Thread mis en quarantaine après plusieurs échecs de traitement |
 
 Le moteur hybride applique d'abord des règles locales (expéditeurs VIP, adresses à ignorer, etc.) configurées via le **Dashboard**. Les cas ambigus sont ensuite délégués à l'API Gemini avec un prompt sécurisé contre l'injection d'instructions.
@@ -37,20 +38,20 @@ Ce projet est modulaire et dispose d'une interface graphique (WebApp).
 
 ### 3. Utilisation du Dashboard
 
-Toute la configuration se fait depuis l'interface Web (Dashboard), sans jamais avoir à modifier le code source.
+Toute la configuration et le suivi se font depuis l'interface Web (Dashboard), sans jamais avoir à modifier le code source.
 
-- **Onglet Dashboard** :
-  - **Lancer le tri manuel** : Lance une passe de tri immédiate sur les emails non analysés de la boîte de réception (`in:inbox -label:"· analysé"`).
-  - **Interrupteur Tri Automatique** : Active (ON) ou désactive (OFF) le robot de tri en arrière-plan (qui s'exécute toutes les heures).
+- **Onglet Dashboard (Vue d'ensemble)** :
+  - **État du service** : Activez / désactivez la surveillance horaire en arrière-plan en un clic.
+  - **Bilan du dernier tri** : Date, volume d'emails traités, répartition par catégorie et urgence, temps d'exécution.
+  - **Quarantaine & Retraitement** : Compteur d'e-mails en quarantaine avec bouton de relance immédiate.
+  - **Diagnostic Gemini** : Testez la validité de votre clé API et mesurez la latence réseau en temps réel.
+  - **Lancer le tri manuel** : Déclenche l'analyse immédiate des nouveaux emails.
 - **Onglet Paramètres** :
-  - **Clé API Gemini** : Obligatoire.
-    > **Comment obtenir une clé API ? (Gratuit)**
-    > 1. Allez sur [Google AI Studio](https://aistudio.google.com) et connectez-vous.
-    > 2. Dans le menu de gauche, cliquez sur **Get API key**.
-    > 3. Cliquez sur le bouton **Create API key** et copiez la longue chaîne de caractères.
-  - **VIP** : Saisissez ici les adresses (ex: `direction@entreprise.fr`) ou domaines (ex: `@mondomaine.com`) dont les emails doivent toujours être classés en "Attention requise" (🔴), sans passer par l'IA.
-  - **Ne pas envoyer à l'IA** : Liste des expéditeurs ultra-sensibles. Ils seront toujours classés en "Attention requise" et leur contenu ne sera jamais envoyé à Gemini.
-  - **Ignorer** : Liste des expéditeurs de type "Newsletter" qui finiront automatiquement en "Aucune action".
+  - **Périmètre d'analyse** : Choisissez la fenêtre temporelle (ex: 30 jours) et l'exclusion des onglets secondaires (`category:primary`).
+  - **Clé API Gemini** : Clé Google AI Studio (masquée et sécurisée).
+  - **Contacts VIP** : Expéditeurs classés en "Attention requise" (🔴) sans appel IA.
+  - **Ne pas envoyer à l'IA** : Expéditeurs ultra-sensibles traités localement.
+  - **Newsletters & à ignorer** : Expéditeurs classés en "Aucune action" (🟢).
 
 ### 4. Méthodologie au quotidien (Inbox Zero)
 Pour que l'outil soit efficace et que votre rapport quotidien ne se remplisse pas indéfiniment, suivez cette méthode simple :
@@ -59,11 +60,12 @@ Pour que l'outil soit efficace et que votre rapport quotidien ne se remplisse pa
 3. **Nettoyer** : Consultez de temps en temps le dossier `Aucune Action` en lisant en diagonale, puis archivez massivement.
 
 ### 5. Rapports quotidiens (Digest)
-En activant le tri automatique, un email récapitulatif (Digest) vous sera envoyé tous les matins à 8h avec le résumé des actions rapides et attentions requises.
+En activant le tri automatique, un email récapitulatif (Digest) vous sera envoyé tous les matins à 8h avec le résumé des actions rapides et attentions requises, priorisant les e-mails urgents.
 
 ### 6. Sécurité
 - Votre clé API est chiffrée et stockée dans le `PropertiesService` masqué de Google (jamais exposée au navigateur).
-- Le contenu de vos emails (corps, pièces jointes) est toujours injecté comme "donnée non fiable" pour bloquer tout piratage par ingénierie sociale (Prompt Injection) dans l'email entrant.
+- Restriction plateforme stricte des requêtes sortantes (`urlFetchWhitelist`) vers l'API Gemini exclusivement.
+- Le contenu de vos emails est injecté comme "donnée non fiable" contre le Prompt Injection.
 - Aucune dépendance hors services Google (Google Fonts / Google Apps Script).
 
 ---
@@ -72,13 +74,14 @@ En activant le tri automatique, un email récapitulatif (Digest) vous sera envoy
 
 ### 1. System Description
 
-This Google Apps Script project automatically sorts your inbox emails into three categories:
+This Google Apps Script project automatically sorts your inbox emails into clear categories:
 
 | Label | Meaning |
 |-------|---------|
 | 🔴 Attention required | Decision, urgency, or deep work expected |
 | 🟠 Quick action | Simple reply or check (≈ 2 min) |
 | 🟢 No action | Informational or closed thread |
+| ⏰ Urgent | High priority badge (critical decision or high urgency) |
 | ⚠️ Sort error | Thread quarantined after repeated processing failures |
 
 A hybrid engine first applies local rules (VIP senders, ignore lists, etc.) configured via the **Dashboard**. Ambiguous cases are then delegated to the Gemini API using an injection-hardened prompt.
@@ -98,33 +101,34 @@ This project is modular and features a graphical interface (WebApp).
 
 ### 3. Using the Dashboard
 
-All configuration is done from the Web Interface (Dashboard), without ever needing to touch the source code.
+All configuration and monitoring is done from the Web Interface (Dashboard), without touching the code.
 
-- **Dashboard Tab**:
-  - **Manual Sort**: Instantly triggers a sorting pass on unanalyzed inbox emails (`in:inbox -label:"· analysé"`).
-  - **Auto-Sort Toggle**: Enables (ON) or disables (OFF) the background sorting robot (runs hourly).
+- **Dashboard Tab (Overview)**:
+  - **Service Status**: Toggle hourly background monitoring in one click.
+  - **Last Run Metrics**: Date, total sorted emails, category & urgency breakdown, execution time.
+  - **Quarantine & Retry**: Quarantined count with instant retry action button.
+  - **Gemini Diagnostics**: Test API key validity and measure network latency.
+  - **Manual Sort**: Trigger immediate analysis of new incoming emails.
 - **Settings Tab**:
-  - **Gemini API Key**: Mandatory. 
-    > **How to get an API key? (Free)**
-    > 1. Go to [Google AI Studio](https://aistudio.google.com) and sign in.
-    > 2. In the left menu, click **Get API key**.
-    > 3. Click the **Create API key** button and copy the generated string.
-  - **VIP**: Enter addresses (e.g., `boss@company.com`) or domains (e.g., `@mydomain.com`) whose emails should always be flagged as "Attention required" (🔴) without using AI.
-  - **Do not send to AI**: Ultra-sensitive senders list. They will always be flagged as "Attention required" and their content will never be sent to Gemini.
-  - **Ignore**: Newsletters or receipts that should automatically go to "No Action".
+  - **Search Scope**: Choose time window (e.g. 30 days) and exclude secondary tabs (`category:primary`).
+  - **Gemini API Key**: Securely stored AI Studio key.
+  - **VIP Contacts**: Always classified as "Attention required" (🔴) without AI.
+  - **Do not send to AI**: Sensitive senders processed locally.
+  - **Ignore & Newsletters**: Always classified as "No Action" (🟢).
 
 ### 4. Daily Workflow (Inbox Zero)
 For the tool to be effective and keep your daily digest clean, follow this simple routine:
 1. **Act**: Open your `Quick Action` label and process the pending emails.
-2. **Archive**: Once an email is processed, **remove its color label** or **archive the email**. If it stays in your inbox with the color label attached, the script will consider it still "pending".
+2. **Archive**: Once an email is processed, **remove its color label** or **archive the email**.
 3. **Clean**: Briefly check the `No Action` folder, skim through, and bulk archive.
 
 ### 5. Daily Reports (Digest)
-By enabling auto-sort, a summary email (Digest) will be sent to you every morning at 8 AM, listing quick actions and required attentions.
+By enabling auto-sort, a summary email (Digest) will be sent to you every morning at 8 AM, listing quick actions and required attentions, highlighting urgent items.
 
 ### 6. Security
 - Your API key is encrypted and stored in Google's hidden `PropertiesService` (never exposed to client browser).
-- Email content (body, attachments) is strictly injected as "untrusted data" to prevent social engineering attacks (Prompt Injection) originating from incoming emails.
+- Platform-enforced outbound URL restriction (`urlFetchWhitelist`) strictly targeting the Gemini API.
+- Email content is treated as untrusted data against prompt injection.
 - Zero third-party dependencies outside Google services (Google Fonts / Google Apps Script).
 
 ---

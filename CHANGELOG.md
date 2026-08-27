@@ -7,6 +7,25 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [3.4.0] — 2026-08-27
+
+### 🎯 Terre promise : La clarté instantanée et la maîtrise absolue du tri
+*Fini l'incertitude : vous ouvrez votre Dashboard et savez en un clin d'œil quand le dernier tri a tourné, combien d'e-mails ont été traités et si votre API répond en quelques millisecondes. Vos quotas ne s'épuisent plus dans les promotions ou les vieux messages, et les urgences critiques vous sautent aux yeux dès le matin.*
+
+### ✨ Ajouté / Added
+- **Périmètre d'analyse borné & exclusion des onglets secondaires** :
+  - Support de `newer_than:30d` (configurable à 7, 14, 30, 90 jours ou tout l'historique) pour préserver le quota Gemini lors du premier lancement.
+  - Option `category:primary` pour filtrer d'emblée les onglets Promotions, Réseaux sociaux et Forums déjà gérés par Gmail.
+- **Panneau de statut temps réel & métriques d'exécution** :
+  - Carte de surveillance du dernier tri : date, volume d'emails, répartition par catégories et temps de traitement.
+  - Diagnostic API Gemini en un clic avec mesure de la latence réseau en millisecondes et validation du modèle.
+  - Compteur d'e-mails en quarantaine avec badge d'alerte et bouton de relance.
+- **Priorité Haute & Libellé `⏰ Urgent`** :
+  - Libellé non exclusif `⏰ Urgent` appliqué aux e-mails nécessitant une décision critique ou d'urgence élevée (`urgence === 'ELEVEE'`).
+  - Section prioritaire en tête du Digest quotidien avec mise en évidence des e-mails urgents.
+
+---
+
 ## [3.3.1] — 2026-08-27
 
 ### 🐛 Corrigé / Fixed

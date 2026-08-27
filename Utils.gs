@@ -388,3 +388,26 @@ function formaterDateHeureCourte_(date) {
         'dd/MM HH:mm'
     );
 }
+
+function enregistrerDernierTriInfo_(info) {
+    try {
+        if (!info || typeof info !== 'object') return;
+        PropertiesService.getScriptProperties().setProperty(
+            CONFIG.PROPRIETES.DERNIER_TRI_INFO,
+            JSON.stringify(info)
+        );
+    } catch (e) {
+        // Enregistrement non bloquant
+    }
+}
+
+function obtenirDernierTriInfo_() {
+    try {
+        const val = PropertiesService.getScriptProperties().getProperty(
+            CONFIG.PROPRIETES.DERNIER_TRI_INFO
+        );
+        return val ? JSON.parse(val) : null;
+    } catch (e) {
+        return null;
+    }
+}

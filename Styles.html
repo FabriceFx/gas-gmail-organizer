@@ -386,19 +386,29 @@ header p {
 
 input[type="password"],
 input[type="text"],
+select,
 textarea {
     width: 100%;
-    padding: 16px;
+    padding: 14px 16px;
     border: 1px solid rgba(0,0,0,0.1);
     border-radius: var(--border-radius-small);
-    background: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.85);
     font-family: inherit;
-    font-size: 1rem;
+    font-size: 0.95rem;
     transition: var(--transition-standard);
     color: var(--md-sys-color-on-surface);
 }
 
-input:focus, textarea:focus {
+select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 -960 960 960' width='24' fill='%23444746'%3E%3Cpath d='M480-360 280-560h400L480-360Z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 40px;
+}
+
+input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: var(--md-sys-color-primary);
     box-shadow: 0 0 0 4px rgba(11, 87, 208, 0.1);
@@ -407,6 +417,72 @@ input:focus, textarea:focus {
 
 textarea {
     resize: vertical;
+}
+
+/* Status Cards & Chips */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.status-badge.active {
+    background: rgba(24, 128, 56, 0.15);
+    color: #137333;
+}
+.status-badge.inactive {
+    background: rgba(95, 99, 104, 0.15);
+    color: #5f6368;
+}
+.status-badge.warning {
+    background: rgba(232, 113, 10, 0.15);
+    color: #b06000;
+}
+
+.stat-chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.stat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(0,0,0,0.04);
+}
+
+.stat-chip.urgent {
+    background: rgba(217, 48, 37, 0.12);
+    color: #c5221f;
+}
+.stat-chip.rapide {
+    background: rgba(232, 113, 10, 0.12);
+    color: #b06000;
+}
+.stat-chip.attention {
+    background: rgba(217, 48, 37, 0.12);
+    color: #c5221f;
+}
+.stat-chip.aucune {
+    background: rgba(24, 128, 56, 0.12);
+    color: #137333;
+}
+
+.metric-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--md-sys-color-primary);
+    line-height: 1.2;
+    margin: 4px 0;
 }
 
 .form-actions {
