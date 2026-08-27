@@ -104,7 +104,7 @@ function lancerTriManuel() {
  */
 function lancerRetraitementErreurs() {
     try {
-        programmerRepriseUnique_('retraiterErreurs', 100);
+        programmerRepriseUnique_('retraiterErreursBackground', 100);
         return { success: true, messageKey: "msg_retry_errors_bg" };
     } catch (e) {
         journaliser_('ERREUR', 'Erreur lors du retraitement des erreurs depuis l\'UI : ' + e.message, { error: e.message });

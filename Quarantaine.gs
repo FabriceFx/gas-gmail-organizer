@@ -5,6 +5,16 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
+ * Fonction appelée par les déclencheurs one-off de reprise.
+ * Supprime son propre déclencheur éphémère puis relance le retraitement,
+ * sans toucher au déclencheur hebdomadaire récurrent de retraiterErreurs.
+ */
+function retraiterErreursBackground() {
+    supprimerDeclencheursParFonctions_(['retraiterErreursBackground']);
+    retraiterErreurs();
+}
+
+/**
  * Remet en file de triage les threads placés en quarantaine (libellé Erreur).
  * Efface leurs compteurs d'échec pour qu'ils soient retraités au prochain cycle.
  * Peut être déclenché manuellement ou planifié automatiquement.
@@ -27,7 +37,7 @@ function retraiterErreurs() {
             'Reprise des erreurs reportée : une autre exécution est active.'
         );
         programmerRepriseUnique_(
-            'retraiterErreurs',
+            'retraiterErreursBackground',
             CONFIG.REINITIALISATION.DELAI_REPRISE_MS
         );
         return { ok: false, reporte: true };
@@ -52,7 +62,9 @@ function retraiterErreurs() {
             );
 
             if (threads.length === 0) {
-                supprimerDeclencheursParFonctions_(['retraiterErreurs']);
+                // Ne nettoie que les reprises one-off : le déclencheur
+                // hebdomadaire récurrent (handler retraiterErreurs) est conservé.
+                supprimerDeclencheursParFonctions_(['retraiterErreursBackground']);
 
                 journaliser_('INFO', 'Tous les threads en erreur sont retraitables.', {
                     total
@@ -72,7 +84,7 @@ function retraiterErreurs() {
         }
 
         programmerRepriseUnique_(
-            'retraiterErreurs',
+            'retraiterErreursBackground',
             CONFIG.REINITIALISATION.DELAI_REPRISE_MS
         );
 
@@ -83,7 +95,7 @@ function retraiterErreurs() {
         return { ok: true, termine: false, total };
     } catch (e) {
         programmerRepriseUnique_(
-            'retraiterErreurs',
+            'retraiterErreursBackground',
             CONFIG.REINITIALISATION.DELAI_REPRISE_MS
         );
 

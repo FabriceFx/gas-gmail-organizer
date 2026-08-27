@@ -7,6 +7,14 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [3.3.1] — 2026-08-27
+
+### 🐛 Corrigé / Fixed
+- **Protection des déclencheurs récurrents contre les reprises one-off** : découplage strict entre les handlers récurrents (`trierBoiteReception`, `retraiterErreurs`) et les handlers de reprise éphémère (`executerTriManuelBackground`, `retraiterErreursBackground`). Les auto-reprises rapides pour le backlog et la quarantaine ne suppriment plus les déclencheurs horaires ou hebdomadaires de l'utilisateur.
+- **Ajout des wrappers dans `HANDLERS_GERES_`** : garantie que `setup()` et `teardown()` nettoient l'ensemble des triggers résiduels sans orphelins.
+
+---
+
 ## [3.3.0] — 2026-08-27
 
 ### 🎯 Terre promise : Zéro blocage, zéro fuite, fluidité absolue

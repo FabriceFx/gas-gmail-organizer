@@ -194,9 +194,11 @@ const LIBELLES_EXCLUSIFS_ = Object.freeze([
 ]);
 const HANDLERS_GERES_ = Object.freeze([
     'trierBoiteReception',
+    'executerTriManuelBackground',
     'envoyerDigest',
     'reinitialiserTri',
-    'retraiterErreurs'
+    'retraiterErreurs',
+    'retraiterErreursBackground'
 ]);
 
 const ENUM_ACTION_ = Object.freeze([

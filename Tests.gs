@@ -119,6 +119,14 @@ function executerTestsUnitaires() {
         }
     }
 
+    // ── 9. Test des handlers de déclencheurs gérés (HANDLERS_GERES_) ──
+    affirmer(HANDLERS_GERES_.includes('trierBoiteReception'), 'HANDLERS_GERES_ contient trierBoiteReception');
+    affirmer(HANDLERS_GERES_.includes('executerTriManuelBackground'), 'HANDLERS_GERES_ contient executerTriManuelBackground');
+    affirmer(HANDLERS_GERES_.includes('retraiterErreurs'), 'HANDLERS_GERES_ contient retraiterErreurs');
+    affirmer(HANDLERS_GERES_.includes('retraiterErreursBackground'), 'HANDLERS_GERES_ contient retraiterErreursBackground');
+    affirmer(typeof retraiterErreursBackground === 'function', 'retraiterErreursBackground est bien définie');
+    affirmer(typeof executerTriManuelBackground === 'function', 'executerTriManuelBackground est bien définie');
+
     // Log récapitulatif
     console.log(`[TESTS] ${resultats.reussis}/${resultats.total} tests réussis (${resultats.echecs} échecs).`);
     resultats.details.forEach(d => console.log(d));

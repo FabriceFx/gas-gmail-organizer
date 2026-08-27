@@ -213,7 +213,9 @@ function trierBoiteReceptionInterne_() {
             trouves: stats.TROUVES,
             arretTemps: stats.ARRET_TEMPS
         });
-        programmerRepriseUnique_('trierBoiteReception', 60 * 1000);
+        // Reprise via le wrapper auto-nettoyant : ne touche pas au déclencheur
+        // horaire récurrent qui porte le handler trierBoiteReception.
+        programmerRepriseUnique_('executerTriManuelBackground', 60 * 1000);
     }
 
     const purges = purgerAnciensCompteursEchec_();
