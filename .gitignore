@@ -8,3 +8,7 @@
 # Éditeurs
 .vscode/
 *.swp
+
+# Documents de communication et carrousels
+post.md
+*.pdf
