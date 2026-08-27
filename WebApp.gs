@@ -69,24 +69,15 @@ function saveSettings(settings) {
     
     const reglesRejetees = [];
 
-    function traiterEtSauvegarderRegles(cle, entrees) {
-        if (!Array.isArray(entrees)) return;
-        const valides = [];
-        entrees.forEach(entree => {
-            const brute = String(entree || '').trim();
-            if (!brute) return;
-            if (estRegleValide_(brute)) {
-                valides.push(brute.toLowerCase());
-            } else {
-                reglesRejetees.push(brute);
-            }
-        });
-        props.setProperty(cle, JSON.stringify(valides));
+    if (Array.isArray(settings.vip)) {
+        props.setProperty(CONFIG.PROPRIETES.VIP, JSON.stringify(cleanArray_(settings.vip, reglesRejetees)));
     }
-
-    traiterEtSauvegarderRegles(CONFIG.PROPRIETES.VIP, settings.vip);
-    traiterEtSauvegarderRegles(CONFIG.PROPRIETES.NO_IA, settings.noIa);
-    traiterEtSauvegarderRegles(CONFIG.PROPRIETES.AUCUNE, settings.aucune);
+    if (Array.isArray(settings.noIa)) {
+        props.setProperty(CONFIG.PROPRIETES.NO_IA, JSON.stringify(cleanArray_(settings.noIa, reglesRejetees)));
+    }
+    if (Array.isArray(settings.aucune)) {
+        props.setProperty(CONFIG.PROPRIETES.AUCUNE, JSON.stringify(cleanArray_(settings.aucune, reglesRejetees)));
+    }
     
     return {
         success: true,
@@ -143,10 +134,21 @@ function toggleAutoSort(enable) {
 
 /**
  * Fonction utilitaire pour nettoyer et valider les règles d'adresses avant sauvegarde.
+ * @param {Array} arr Tableau de règles brutes
+ * @param {Array=} reglesRejetees Tableau optionnel recevant les règles rejetées
+ * @returns {Array<string>} Tableau de règles valides en minuscules
  */
-function cleanArray_(arr) {
+function cleanArray_(arr, reglesRejetees) {
     if (!Array.isArray(arr)) return [];
-    return arr
-        .map(s => String(s || '').trim().toLowerCase())
-        .filter(s => s.length > 0 && estRegleValide_(s));
+    const valides = [];
+    arr.forEach(entree => {
+        const brute = String(entree || '').trim();
+        if (!brute) return;
+        if (estRegleValide_(brute)) {
+            valides.push(brute.toLowerCase());
+        } else if (Array.isArray(reglesRejetees)) {
+            reglesRejetees.push(brute);
+        }
+    });
+    return valides;
 }

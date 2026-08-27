@@ -98,12 +98,21 @@ function executerTestsUnitaires() {
 
     // ── 7. Tests de nettoyage de listes (cleanArray_) ──
     const reglesTest = ['  jean@domaine.fr  ', 'INVALID STRING', '@valide.org', '', '  '];
-    const reglesNettoyees = cleanArray_(reglesTest);
+    const rejetees = [];
+    const reglesNettoyees = cleanArray_(reglesTest, rejetees);
     affirmerEgal(reglesNettoyees.length, 2, 'cleanArray_ filtre les vides et les invalides');
+    affirmer(reglesNettoyees.includes('jean@domaine.fr') && reglesNettoyees.includes('@valide.org'), 'cleanArray_ conserve les valides');
+    affirmerEgal(rejetees.length, 1, 'cleanArray_ collecte les règles rejetées');
+    affirmerEgal(rejetees[0], 'INVALID STRING', 'cleanArray_ identifie la règle rejetée exacte');
+
     // ── 8. Test d'intégrité de la configuration (verifierConfiguration_) ──
-    const configCheck = verifierConfiguration_({ testerGemini: false });
-    affirmer(configCheck && configCheck.ok === true, 'verifierConfiguration_ sans Gemini retourne ok=true');
-    affirmer(typeof configCheck.compte === 'string', 'verifierConfiguration_ extrait un compte email');
+    try {
+        const configCheck = verifierConfiguration_({ testerGemini: false });
+        affirmer(configCheck && configCheck.ok === true, 'verifierConfiguration_ sans Gemini retourne ok=true');
+        affirmer(typeof configCheck.compte === 'string', 'verifierConfiguration_ extrait un compte email');
+    } catch (e) {
+        affirmer(false, 'verifierConfiguration_ sans Gemini a levé une exception : ' + e.message);
+    }
 
     // Log récapitulatif
     console.log(`[TESTS] ${resultats.reussis}/${resultats.total} tests réussis (${resultats.echecs} échecs).`);
