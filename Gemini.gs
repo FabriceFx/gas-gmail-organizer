@@ -438,11 +438,36 @@ function appelerGemini_(donnees, apiKey, modele, deadline) {
         muteHttpExceptions: true
     };
 
-    const json = executerRequeteGeminiAvecRetry_(
-        url,
-        options,
-        deadline
-    );
+    let json;
+    try {
+        json = executerRequeteGeminiAvecRetry_(
+            url,
+            options,
+            deadline
+        );
+    } catch (e) {
+        const codeErr = Number(e && e.code);
+        const est503 = codeErr === 503 || (e && String(e.message).includes('503'));
+        const modeleFallback = CONFIG.GEMINI.MODELE_FALLBACK || 'gemini-2.5-flash';
+
+        if (est503 && modele !== modeleFallback) {
+            journaliser_('AVERTISSEMENT', `Gemini 503 (haute demande) sur ${modele}. Bascule automatique sur ${modeleFallback}.`, {
+                modeleOriginal: modele,
+                modeleSecours: modeleFallback
+            });
+            const urlFallback =
+                'https://generativelanguage.googleapis.com/v1beta/models/' +
+                encodeURIComponent(modeleFallback) +
+                ':generateContent';
+            json = executerRequeteGeminiAvecRetry_(
+                urlFallback,
+                options,
+                deadline
+            );
+        } else {
+            throw e;
+        }
+    }
 
     const texte = extraireTexteFinalGemini_(json);
     return validerAnalyseGemini_(texte);

@@ -183,6 +183,7 @@ const CONFIG = Object.freeze({
         get IS_FREE_TIER() { return _loadBooleanProp(CLES_PROPRIETES_.API_KEY_FREE_TIER, true); },
         DELAI_FREE_TIER_MS: 4000,
         MODELE: 'gemini-3.7-flash',
+        MODELE_FALLBACK: 'gemini-2.5-flash',
         NIVEAU_REFLEXION: 'low',
         MAX_OUTPUT_TOKENS: 2048,
 
