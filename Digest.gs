@@ -93,15 +93,6 @@ function envoyerDigest() {
 
                 const lien = thread.getPermalink();
 
-                const actionsHtml = webAppUrl
-                    ? [
-                        '<td style="padding:10px 0;vertical-align:middle;white-space:nowrap;text-align:right">',
-                        `<a href="${escapeHtml_(webAppUrl)}?action=archiver&amp;id=${escapeHtml_(thread.getId())}" target="_blank" style="display:inline-block;padding:6px 14px;font-size:12px;font-weight:500;font-family:'Google Sans',Roboto,Arial,sans-serif;color:#137333;background:#e6f4ea;border:1px solid #ceead6;border-radius:16px;text-decoration:none;margin-right:6px">&#x1F4E5; Archiver</a>`,
-                        `<a href="${escapeHtml_(webAppUrl)}?action=traite&amp;id=${escapeHtml_(thread.getId())}" target="_blank" style="display:inline-block;padding:6px 14px;font-size:12px;font-weight:500;font-family:'Google Sans',Roboto,Arial,sans-serif;color:#ffffff;background:#1a73e8;border-radius:16px;text-decoration:none">&#x2705; Traité</a>`,
-                        '</td>'
-                    ].join('')
-                    : '';
-
                 lignesHtml += [
                     '<tr style="border-bottom:1px solid #e8eaed">',
                     '<td style="padding:10px 12px 10px 0;white-space:nowrap;color:#5f6368;vertical-align:top;font-size:12px">',
@@ -109,12 +100,11 @@ function envoyerDigest() {
                     '<br><span style="font-size:11px;color:#9aa0a6">',
                     escapeHtml_(formaterDateHeureCourte_(dateMessage)),
                     '</span></td>',
-                    '<td style="padding:10px 12px 10px 0;vertical-align:top">',
+                    '<td style="padding:10px 0;vertical-align:top">',
                     `<a href="${escapeHtml_(lien)}" `,
                     'style="color:#1a73e8;text-decoration:none;font-size:13px">',
                     escapeHtml_(tronquer_(sujet || '(sans objet)', 80)),
                     '</a></td>',
-                    actionsHtml,
                     '</tr>'
                 ].join('');
 
@@ -160,8 +150,7 @@ function envoyerDigest() {
         const policeTexte = 'Roboto,Arial,sans-serif';
         const introduction = totalGlobal > 0
             ? `Voici les emails triés automatiquement au cours des dernières 24 heures, ` +
-              `classés par catégorie. Utilisez les boutons « Archiver » ou « Traité » ` +
-              `pour agir directement depuis ce message, sans ouvrir Gmail.`
+              `classés par catégorie. Cliquez sur un email pour l'ouvrir directement dans Gmail.`
             : `Aucun nouvel email n'a été trié au cours des dernières 24 heures.`;
 
         let html = [
