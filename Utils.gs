@@ -454,6 +454,7 @@ function obtenirNomExpediteur_(enteteFrom) {
 
     const sansAdresse = brut
         .replace(/<[^>]+>/g, '')
+        .trim()
         .replace(/^"+|"+$/g, '')
         .trim();
 

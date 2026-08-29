@@ -335,7 +335,7 @@ function getDashboardStatus() {
             : `${minutes}min`;
 
         const totalAuto = rapide7j + aucune7j;
-        const tauxAuto = total7j > 0 ? Math.round((totalAuto / total7j) * 100) : 100;
+        const tauxAuto = total7j > 0 ? Math.round((totalAuto / total7j) * 100) : null;
 
         const analytics = {
             historique: historique7j,

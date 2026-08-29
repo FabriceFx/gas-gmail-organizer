@@ -406,8 +406,9 @@ function renderAnalytics(analytics) {
 
     if (totalEl) totalEl.textContent = String(analytics.total7j || 0);
     if (timeEl) timeEl.textContent = analytics.tempsGagneFormatte || '0 min';
-    if (rateEl) rateEl.textContent = (analytics.tauxAuto !== undefined ? analytics.tauxAuto : 100) + '%';
-    if (badgeEl) badgeEl.textContent = `⚡ ${(analytics.tauxAuto !== undefined ? analytics.tauxAuto : 100)}% auto`;
+    const displayRate = (analytics.tauxAuto !== null && analytics.tauxAuto !== undefined) ? analytics.tauxAuto + '%' : '—';
+    if (rateEl) rateEl.textContent = displayRate;
+    if (badgeEl) badgeEl.textContent = displayRate === '—' ? '⚡ —' : `⚡ ${displayRate} auto`;
 
     if (!chartContainer) return;
 
