@@ -1,4 +1,4 @@
-# Changelog — Tri Gmail IA
+# Changelog — TriGénie
 
 Toutes les modifications notables de ce projet sont documentées ici.
 All notable changes to this project are documented here.

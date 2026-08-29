@@ -2,7 +2,7 @@
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════
- * TESTS UNITAIRES — Fonctions pures du projet Tri Gmail
+ * TESTS UNITAIRES — Fonctions pures du projet TriGénie
  * ═══════════════════════════════════════════════════════════════════════════
  */
 

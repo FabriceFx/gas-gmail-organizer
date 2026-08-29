@@ -426,7 +426,10 @@ function escapeHtml_(valeur) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+        .replace(/'/g, '&#39;')
+        // GmailApp.sendEmail corrompt les caractères hors BMP (emoji sur 4 octets) dans le htmlBody :
+        // on les convertit en entités hexadécimales, comme déjà fait pour les emoji d'en-tête du digest.
+        .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, (paire) => `&#x${paire.codePointAt(0).toString(16).toUpperCase()};`);
 }
 
 
@@ -445,7 +448,14 @@ function tronquer_(valeur, longueurMax) {
         return '…';
     }
 
-    return texte.slice(0, longueurMax - 1) + '…';
+    let coupe = longueurMax - 1;
+    // évite de couper au milieu d'une paire de substitution (emoji sur 4 octets), ce qui
+    // laisserait un demi-caractère invalide dans le résultat.
+    if (/[\uDC00-\uDFFF]/.test(texte.charAt(coupe))) {
+        coupe -= 1;
+    }
+
+    return texte.slice(0, coupe) + '…';
 }
 
 

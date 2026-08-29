@@ -235,7 +235,7 @@ function notifierErreurGlobale_(erreur) {
 
         GmailApp.sendEmail(
             destinataire,
-            'Tri Gmail IA — erreur nécessitant une vérification',
+            'TriGénie — erreur nécessitant une vérification',
             [
                 'Le tri Gmail a rencontré une erreur globale.',
                 '',
@@ -247,7 +247,7 @@ function notifierErreurGlobale_(erreur) {
                 'Vérifiez les exécutions Apps Script, la clé API, les quotas et le modèle.'
             ].join('\n'),
             {
-                name: 'Tri Gmail IA'
+                name: 'TriGénie'
             }
         );
 

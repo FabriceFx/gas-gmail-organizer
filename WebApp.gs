@@ -21,7 +21,7 @@ function doGet(e) {
     template.lang = ['fr', 'en'].includes(langBrute) ? langBrute : 'fr';
     
     return template.evaluate()
-        .setTitle('Tri Gmail — Configuration')
+        .setTitle('TriGénie — Configuration')
         .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
@@ -89,7 +89,7 @@ function executerActionRapideWeb_(action, threadId) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Tri Gmail — ${success ? 'Action confirmée' : 'Erreur'}</title>
+        <title>TriGénie — ${success ? 'Action confirmée' : 'Erreur'}</title>
         <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
         <style>
@@ -156,6 +156,16 @@ function executerActionRapideWeb_(action, threadId) {
                 transform: translateY(-2px);
                 box-shadow: 0 8px 20px rgba(11, 87, 208, 0.25);
             }
+            .page-footer {
+                margin-top: 20px;
+                font-size: 0.75rem;
+                color: var(--text-secondary);
+            }
+            .page-footer a {
+                color: inherit;
+                font-weight: 600;
+                text-decoration: none;
+            }
         </style>
     </head>
     <body>
@@ -170,6 +180,7 @@ function executerActionRapideWeb_(action, threadId) {
                 <span class="material-symbols-outlined">dashboard</span>
                 Ouvrir le Dashboard
             </a>
+            <p class="page-footer">TriGénie · <a href="https://faucheux.bzh" target="_blank">Fabrice Faucheux</a></p>
         </div>
     </body>
     </html>

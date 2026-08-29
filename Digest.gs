@@ -5,7 +5,9 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Génère et envoie le digest quotidien par email.
+ * Génère et envoie le résumé quotidien de tri par email, avec une présentation
+ * proche des notifications Google Workspace (carte blanche, en-tête de marque,
+ * texte pédagogique).
  * Liste les threads classés dans chaque catégorie depuis la dernière exécution.
  * @returns {{ok: boolean, envoye?: boolean, totalConnu?: number, ignore?: boolean, erreur?: string}}
  */
@@ -24,22 +26,6 @@ function envoyerDigest() {
         const date = new Date();
         const dateLongue = formaterDateLongueFr_(date);
 
-        let html = [
-            '<!DOCTYPE html>',
-            '<html>',
-            '<head><meta charset="UTF-8"></head>',
-            '<body>',
-            '<div style="font-family:Roboto,Arial,sans-serif;max-width:700px;margin:auto;color:#202124">',
-            '<h2 style="border-bottom:3px solid #1a73e8;padding-bottom:8px">',
-            `Digest de tri Gmail — ${escapeHtml_(dateLongue)}`,
-            '</h2>'
-        ].join('');
-
-        const texte = [
-            `Digest de tri Gmail — ${dateLongue}`,
-            ''
-        ];
-
         let webAppUrl = '';
         try {
             webAppUrl = ScriptApp.getService().getUrl() || '';
@@ -47,9 +33,11 @@ function envoyerDigest() {
             webAppUrl = '';
         }
 
+        // Phase 1 : on interroge Gmail pour chaque catégorie et on prépare le
+        // contenu (HTML + texte brut) sans encore assembler l'email complet,
+        // afin de pouvoir résumer le total dans l'introduction.
         let totalGlobal = 0;
-
-        sections.forEach(section => {
+        const rendus = sections.map(section => {
             const limite = CONFIG.DIGEST.LIMITE_COMPTAGE_PAR_SECTION;
             const threads = GmailApp.search(
                 section.requete,
@@ -70,27 +58,20 @@ function envoyerDigest() {
 
             totalGlobal += nombreConnu;
 
-            html += [
-                `<h3 style="color:${section.couleur};margin:20px 0 6px">`,
-                `${section.titre} `,
-                `<span style="background:${section.couleur};color:#fff;`,
-                'border-radius:12px;padding:2px 10px;font-size:13px">',
-                escapeHtml_(badge),
-                '</span></h3>'
-            ].join('');
-
-            texte.push(`${section.titreTexte} : ${badge}`);
+            const texteLignes = [`${section.titreTexte} : ${badge}`];
 
             if (visibles.length === 0) {
-                html +=
-                    '<p style="color:#5f6368;font-style:italic;margin-top:2px">' +
-                    'Rien à signaler.</p>';
-                texte.push('  Rien à signaler.', '');
-                return;
+                texteLignes.push('  Rien à signaler.', '');
+                return {
+                    section,
+                    badge,
+                    estVide: true,
+                    lignesHtml: '',
+                    texteLignes
+                };
             }
 
-            html +=
-                '<table style="width:100%;border-collapse:collapse;font-size:13px">';
+            let lignesHtml = '';
 
             visibles.forEach((thread, index) => {
                 const messages = messagesVisibles[index] || [];
@@ -114,36 +95,34 @@ function envoyerDigest() {
 
                 const actionsHtml = webAppUrl
                     ? [
-                        '<td style="padding:7px 8px;vertical-align:top;white-space:nowrap;text-align:right">',
-                        `<a href="${escapeHtml_(webAppUrl)}?action=archiver&amp;id=${escapeHtml_(thread.getId())}" target="_blank" style="display:inline-block;padding:3px 7px;font-size:11px;font-weight:600;color:#137333;background:#e6f4ea;border-radius:4px;text-decoration:none;margin-right:4px">📥 Archiver</a>`,
-                        `<a href="${escapeHtml_(webAppUrl)}?action=traite&amp;id=${escapeHtml_(thread.getId())}" target="_blank" style="display:inline-block;padding:3px 7px;font-size:11px;font-weight:600;color:#1a73e8;background:#e8f0fe;border-radius:4px;text-decoration:none">✅ Fait</a>`,
+                        '<td style="padding:10px 0;vertical-align:middle;white-space:nowrap;text-align:right">',
+                        `<a href="${escapeHtml_(webAppUrl)}?action=archiver&amp;id=${escapeHtml_(thread.getId())}" target="_blank" style="display:inline-block;padding:6px 14px;font-size:12px;font-weight:500;font-family:'Google Sans',Roboto,Arial,sans-serif;color:#137333;background:#e6f4ea;border:1px solid #ceead6;border-radius:16px;text-decoration:none;margin-right:6px">&#x1F4E5; Archiver</a>`,
+                        `<a href="${escapeHtml_(webAppUrl)}?action=traite&amp;id=${escapeHtml_(thread.getId())}" target="_blank" style="display:inline-block;padding:6px 14px;font-size:12px;font-weight:500;font-family:'Google Sans',Roboto,Arial,sans-serif;color:#ffffff;background:#1a73e8;border-radius:16px;text-decoration:none">&#x2705; Traité</a>`,
                         '</td>'
                     ].join('')
                     : '';
 
-                html += [
+                lignesHtml += [
                     '<tr style="border-bottom:1px solid #e8eaed">',
-                    '<td style="padding:7px 8px;white-space:nowrap;color:#5f6368;vertical-align:top">',
+                    '<td style="padding:10px 12px 10px 0;white-space:nowrap;color:#5f6368;vertical-align:top;font-size:12px">',
                     escapeHtml_(tronquer_(expediteur, 28)),
                     '<br><span style="font-size:11px;color:#9aa0a6">',
                     escapeHtml_(formaterDateHeureCourte_(dateMessage)),
                     '</span></td>',
-                    '<td style="padding:7px 8px;vertical-align:top">',
+                    '<td style="padding:10px 12px 10px 0;vertical-align:top">',
                     `<a href="${escapeHtml_(lien)}" `,
-                    'style="color:#1a73e8;text-decoration:none">',
+                    'style="color:#1a73e8;text-decoration:none;font-size:13px">',
                     escapeHtml_(tronquer_(sujet || '(sans objet)', 80)),
                     '</a></td>',
                     actionsHtml,
                     '</tr>'
                 ].join('');
 
-                texte.push(
+                texteLignes.push(
                     `  - ${tronquer_(expediteur, 40)} | ` +
                     `${tronquer_(sujet || '(sans objet)', 100)} | ${lien}`
                 );
             });
-
-            html += '</table>';
 
             const autresMinimum = Math.max(
                 0,
@@ -151,39 +130,147 @@ function envoyerDigest() {
             );
 
             if (depasseLimite) {
-                html +=
-                    `<p style="color:#5f6368;font-size:12px">` +
-                    `… et au moins ${autresMinimum} autres.</p>`;
-                texte.push(`  … et au moins ${autresMinimum} autres.`);
+                texteLignes.push(`  … et au moins ${autresMinimum} autres.`);
             } else if (autresMinimum > 0) {
-                html +=
-                    `<p style="color:#5f6368;font-size:12px">` +
-                    `… et ${autresMinimum} autres.</p>`;
-                texte.push(`  … et ${autresMinimum} autres.`);
+                texteLignes.push(`  … et ${autresMinimum} autres.`);
             }
 
-            texte.push('');
-        });
+            texteLignes.push('');
 
-        html += [
-            '<p style="color:#9aa0a6;font-size:11px;margin-top:24px;',
-            'border-top:1px solid #e8eaed;padding-top:8px">',
-            'Généré automatiquement par Tri Gmail IA.',
-            '</p></div></body></html>'
-        ].join('');
+            return {
+                section,
+                badge,
+                estVide: false,
+                lignesHtml,
+                autresMinimum,
+                depasseLimite,
+                texteLignes
+            };
+        });
 
         if (!CONFIG.DIGEST.ENVOYER_SI_VIDE && totalGlobal === 0) {
             journaliser_('INFO', 'Digest vide non envoyé.');
             return { ok: true, envoye: false, total: 0 };
         }
 
+        // Phase 2 : assemblage de l'email, dans un style proche des
+        // notifications Google Workspace (carte blanche sur fond gris clair,
+        // en-tête de marque, description pédagogique par catégorie).
+        const policeTitre = "'Google Sans',Roboto,Arial,sans-serif";
+        const policeTexte = 'Roboto,Arial,sans-serif';
+        const introduction = totalGlobal > 0
+            ? `Voici les emails triés automatiquement au cours des dernières 24 heures, ` +
+              `classés par catégorie. Utilisez les boutons « Archiver » ou « Traité » ` +
+              `pour agir directement depuis ce message, sans ouvrir Gmail.`
+            : `Aucun nouvel email n'a été trié au cours des dernières 24 heures.`;
+
+        let html = [
+            '<!DOCTYPE html>',
+            '<html lang="fr">',
+            '<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>',
+            `<body style="margin:0;padding:0;background-color:#f1f3f4">`,
+            `<div style="background-color:#f1f3f4;padding:24px 12px;font-family:${policeTexte}">`,
+            `<div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(60,64,67,0.25)">`,
+            `<div style="background:#1a73e8;padding:18px 32px">`,
+            `<span style="color:#ffffff;font-size:14px;font-weight:500;font-family:${policeTitre};letter-spacing:.2px">TriGénie</span>`,
+            '</div>',
+            '<div style="padding:28px 32px 4px">',
+            `<h1 style="margin:0 0 4px;font-size:20px;font-weight:500;font-family:${policeTitre};color:#202124">`,
+            'Résumé de tri Gmail',
+            '</h1>',
+            `<p style="margin:0 0 18px;font-size:13px;color:#5f6368">${escapeHtml_(dateLongue)}</p>`,
+            `<p style="margin:0 0 8px;font-size:13px;line-height:1.6;color:#3c4043">${escapeHtml_(introduction)}</p>`,
+            '</div>'
+        ].join('');
+
+        const texte = [
+            `Résumé de tri Gmail — ${dateLongue}`,
+            '',
+            introduction,
+            ''
+        ];
+
+        rendus.forEach(rendu => {
+            const section = rendu.section;
+
+            html += [
+                '<div style="padding:20px 32px 0">',
+                '<table role="presentation" width="100%" style="border-collapse:collapse">',
+                '<tr>',
+                `<td style="font-size:15px;font-weight:500;font-family:${policeTitre};color:${section.couleur}">`,
+                section.titre,
+                '</td>',
+                '<td align="right">',
+                `<span style="display:inline-block;background:${section.couleur};color:#ffffff;`,
+                'border-radius:10px;padding:2px 10px;font-size:12px;font-weight:600">',
+                escapeHtml_(rendu.badge),
+                '</span></td>',
+                '</tr>',
+                '</table>',
+                `<p style="margin:2px 0 12px;font-size:12px;color:#80868b">${escapeHtml_(section.description)}</p>`
+            ].join('');
+
+            texte.push(`${section.titreTexte} : ${rendu.badge}`);
+            texte.push(`  ${section.description}`);
+
+            if (rendu.estVide) {
+                html +=
+                    '<p style="color:#5f6368;font-style:italic;font-size:13px;margin:0 0 4px">' +
+                    'Rien à signaler.</p>';
+                texte.push('  Rien à signaler.', '');
+            } else {
+                html += [
+                    '<table style="width:100%;border-collapse:collapse">',
+                    rendu.lignesHtml,
+                    '</table>'
+                ].join('');
+
+                if (rendu.depasseLimite) {
+                    html +=
+                        `<p style="color:#5f6368;font-size:12px;margin:8px 0 0">` +
+                        `… et au moins ${rendu.autresMinimum} autres.</p>`;
+                } else if (rendu.autresMinimum > 0) {
+                    html +=
+                        `<p style="color:#5f6368;font-size:12px;margin:8px 0 0">` +
+                        `… et ${rendu.autresMinimum} autres.</p>`;
+                }
+
+                rendu.texteLignes.slice(1).forEach(ligne => texte.push(ligne));
+            }
+
+            html += [
+                '</div>',
+                '<div style="margin:20px 32px 0;border-top:1px solid #e8eaed"></div>'
+            ].join('');
+        });
+
+        html += [
+            '<div style="padding:20px 32px;background:#f8f9fa;margin-top:4px">',
+            '<p style="margin:0;font-size:11px;line-height:1.6;color:#80868b">',
+            'Cet e-mail a été généré automatiquement par <strong>TriGénie</strong> ',
+            "à partir du tri effectué sur votre boîte Gmail.",
+            webAppUrl
+                ? ` Retrouvez l'historique complet et les réglages depuis ` +
+                  `<a href="${escapeHtml_(webAppUrl)}" style="color:#1a73e8;text-decoration:none">l'application de tri</a>.`
+                : '',
+            '</p>',
+            '<p style="margin:10px 0 0;font-size:11px;color:#80868b">',
+            'TriGénie · <a href="https://faucheux.bzh" target="_blank" style="color:#80868b;text-decoration:none;font-weight:600">Fabrice Faucheux</a>',
+            '</p></div></div></div></body></html>'
+        ].join('');
+
+        texte.push(
+            '—',
+            'TriGénie · Fabrice Faucheux · https://faucheux.bzh'
+        );
+
         GmailApp.sendEmail(
             destinataire,
-            `Digest de tri Gmail — ${dateLongue}`,
+            `Résumé de tri Gmail — ${dateLongue}`,
             texte.join('\n'),
             {
                 htmlBody: html,
-                name: 'Tri Gmail IA'
+                name: 'TriGénie'
             }
         );
 
@@ -223,6 +310,7 @@ function construireSectionsDigest_() {
         sections.push({
             titre: '&#x23F0; Priorité haute (Urgents)',
             titreTexte: 'Priorité haute (Urgents)',
+            description: 'Emails identifiés comme urgents : à traiter en priorité.',
             couleur: '#D93025',
             requete:
                 `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.URGENT)}"`
@@ -233,6 +321,7 @@ function construireSectionsDigest_() {
         {
             titre: '&#x26A0;&#xFE0F; Erreurs de tri',
             titreTexte: 'Erreurs de tri',
+            description: "Le tri automatique n'a pas pu classer ces emails avec certitude : une vérification manuelle est recommandée.",
             couleur: '#B06000',
             requete:
                 `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.ERREUR)}"`
@@ -240,6 +329,7 @@ function construireSectionsDigest_() {
         {
             titre: '&#x1F534; Attention requise',
             titreTexte: 'Attention requise',
+            description: "Emails à examiner avant de décider d'une action.",
             couleur: '#C5221F',
             requete:
                 `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.ATTENTION)}"${exclusionUrgent}`
@@ -247,6 +337,7 @@ function construireSectionsDigest_() {
         {
             titre: '&#x1F7E0; Actions rapides',
             titreTexte: 'Actions rapides',
+            description: 'Emails ne nécessitant qu\'une action simple : archivez-les ou marquez-les comme traités en un clic.',
             couleur: '#E8710A',
             requete:
                 `in:inbox label:"${echapperRechercheGmail_(CONFIG.LABELS.RAPIDE)}"${exclusionUrgent}`
@@ -265,6 +356,9 @@ function construireSectionsDigest_() {
             titreTexte: CONFIG.TRI.ARCHIVER_AUCUNE_ACTION
                 ? 'Aucune action classée sur les dernières 24 h'
                 : 'Aucune action',
+            description: CONFIG.TRI.ARCHIVER_AUCUNE_ACTION
+                ? 'Emails classés sans action nécessaire, archivés automatiquement.'
+                : 'Emails classés sans action nécessaire.',
             couleur: '#188038',
             requete: requeteAucune
         });
