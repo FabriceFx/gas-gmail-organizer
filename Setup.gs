@@ -3,6 +3,11 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // INSTALLATION ET CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════
+//
+// Installe le projet : création des libellés Gmail, des déclencheurs et
+// vérification de la configuration (clé API Gemini, etc.).
+//
+// TriGénie · Fabrice Faucheux · https://faucheux.bzh
 
 /**
  * Installe les libellés et les déclencheurs.

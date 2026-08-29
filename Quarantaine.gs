@@ -3,6 +3,11 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // QUARANTAINE ET REPRISE DES ERREURS
 // ═══════════════════════════════════════════════════════════════════════════
+//
+// Suit les échecs de tri par thread, met en quarantaine après plusieurs
+// échecs répétés et relance automatiquement leur retraitement.
+//
+// TriGénie · Fabrice Faucheux · https://faucheux.bzh
 
 /**
  * Fonction appelée par les déclencheurs one-off de reprise.

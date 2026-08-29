@@ -3,6 +3,12 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // RÉINITIALISATION COMPLÈTE AVEC REPRISE
 // ═══════════════════════════════════════════════════════════════════════════
+//
+// Retire tous les libellés de tri de toutes les conversations, par lots
+// successifs avec reprise automatique en cas de dépassement du temps
+// d'exécution autorisé par Apps Script.
+//
+// TriGénie · Fabrice Faucheux · https://faucheux.bzh
 
 /**
  * Réinitialise le tri en supprimant tous les libellés de toutes les conversations.

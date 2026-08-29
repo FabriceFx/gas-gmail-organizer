@@ -1,7 +1,7 @@
 # TriGénie
 
 [![CI Unit Tests](https://github.com/FabriceFx/gas-gmail-organizer/actions/workflows/test.yml/badge.svg)](https://github.com/FabriceFx/gas-gmail-organizer/actions/workflows/test.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/License-PolyForm%20Noncommercial%201.0.0-blue.svg)](LICENSE)
 [![Google Apps Script](https://img.shields.io/badge/Google%20Apps%20Script-V8-4285F4?logo=google)](https://script.google.com)
 
 > Triage automatique de la boîte de réception Gmail : règles déterministes d'abord, Gemini pour les cas ambigus, pilotage complet par un Dashboard web. Aucun serveur, aucune donnée hors de votre compte Google.
@@ -277,6 +277,14 @@ Under the hood: execution locks, quarantine with TTL'd failure counters, retry w
 
 ## Licence / License
 
-MIT — voir / see [LICENSE](LICENSE).
+**PolyForm Noncommercial License 1.0.0** — voir [LICENSE](LICENSE).
+Usage, modification et partage libres pour tout usage non commercial. Tout usage
+commercial (revente, hébergement payant, intégration dans un produit commercial…)
+nécessite un accord préalable de l'auteur.
+
+**PolyForm Noncommercial License 1.0.0** — see [LICENSE](LICENSE).
+Free to use, modify and share for any noncommercial purpose. Any commercial use
+(resale, paid hosting, integration into a commercial product…) requires the
+author's prior agreement.
 
 Développé par / Developed by [Fabrice Faucheux](https://faucheux.bzh) · [faucheux.bzh](https://faucheux.bzh)
