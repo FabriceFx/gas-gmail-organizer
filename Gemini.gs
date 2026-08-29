@@ -393,9 +393,6 @@ function appelerGemini_(donnees, apiKey, modele, deadline) {
             }]
         }],
         generationConfig: {
-            thinkingConfig: {
-                thinkingLevel: CONFIG.GEMINI.NIVEAU_REFLEXION
-            },
             maxOutputTokens: CONFIG.GEMINI.MAX_OUTPUT_TOKENS,
             responseMimeType: 'application/json'
         }
