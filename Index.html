@@ -69,7 +69,7 @@
                             </div>
                             <span id="badge-auto-sort" class="status-badge inactive">Inactif</span>
                         </div>
-                        <h3 data-i18n="info_auto">Tri Automatique</h3>
+                        <h3 data-i18n="info_auto">Tri automatique</h3>
                         <p data-i18n="info_auto_desc" style="margin-bottom: 16px;">Surveillance horaire en arrière-plan.</p>
                         
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
@@ -166,7 +166,7 @@
                                 <span class="material-symbols-outlined">insights</span>
                             </div>
                             <div>
-                                <h3 style="margin-bottom: 0; font-size: 1.15rem;" data-i18n="title_analytics">Activité &amp; Temps gagné (7 jours)</h3>
+                                <h3 style="margin-bottom: 0; font-size: 1.15rem;" data-i18n="title_analytics">Activité &amp; temps gagné (7 jours)</h3>
                                 <small style="color: var(--md-sys-color-on-surface-variant);" data-i18n="desc_analytics">Impact et historique du tri automatique.</small>
                             </div>
                         </div>
@@ -218,7 +218,7 @@
                     
                     <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.04); border-radius: 8px;">
                         <div>
-                            <label for="toggle-free-tier" style="margin-bottom: 2px;" data-i18n="label_free_tier">Clé API Gratuite</label>
+                            <label for="toggle-free-tier" style="margin-bottom: 2px;" data-i18n="label_free_tier">Clé API gratuite</label>
                             <small data-i18n="help_free_tier" style="display: block; opacity: 0.8; font-size: 11px;">Limite la vitesse à 15 requêtes/min pour éviter de bloquer votre compte AI Studio.</small>
                         </div>
                         <label class="switch">
@@ -230,7 +230,7 @@
                     <!-- Périmètre de recherche -->
                     <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.04); border-radius: 8px;">
                         <div>
-                            <label for="toggle-category-primary" style="margin-bottom: 2px;" data-i18n="label_primary_only">Boîte Principale uniquement</label>
+                            <label for="toggle-category-primary" style="margin-bottom: 2px;" data-i18n="label_primary_only">Boîte principale uniquement</label>
                             <small data-i18n="help_primary_only" style="display: block; opacity: 0.8; font-size: 11px;">Exclut les onglets Promotions, Réseaux sociaux et Forums de Gmail (category:primary).</small>
                         </div>
                         <label class="switch">
@@ -254,8 +254,8 @@
                     <!-- Détection automatique des Newsletters par en-têtes RFC -->
                     <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.04); border-radius: 8px;">
                         <div>
-                            <label for="toggle-detecter-newsletters" style="margin-bottom: 2px;" data-i18n="label_detect_newsletters">Détection native des Newsletters &amp; e-mails automatiques</label>
-                            <small data-i18n="help_detect_newsletters" style="display: block; opacity: 0.8; font-size: 11px;">Classe automatiquement en <b>Aucune Action</b> les e-mails comportant un en-tête List-Unsubscribe ou Precedence: bulk sans consommer de quota IA.</small>
+                            <label for="toggle-detecter-newsletters" style="margin-bottom: 2px;" data-i18n="label_detect_newsletters">Détection native des newsletters &amp; e-mails automatiques</label>
+                            <small data-i18n="help_detect_newsletters" style="display: block; opacity: 0.8; font-size: 11px;">Classe automatiquement en <b>Aucune action</b> les e-mails comportant un en-tête List-Unsubscribe ou Precedence: bulk sans consommer de quota IA.</small>
                         </div>
                         <label class="switch">
                             <input type="checkbox" id="toggle-detecter-newsletters">
@@ -265,27 +265,27 @@
 
                     <!-- Mots-clés dans l'objet pour Aucune action -->
                     <div class="form-group">
-                        <label for="input-mots-cles-aucune" data-i18n="label_kw_aucune">Mots-clés dans l'objet (Aucune Action)</label>
+                        <label for="input-mots-cles-aucune" data-i18n="label_kw_aucune">Mots-clés dans l'objet (Aucune action)</label>
                         <textarea id="input-mots-cles-aucune" rows="3" placeholder="Facture
 Reçu
 Confirmation de commande
 Avis d'expédition
 [Newsletter]"></textarea>
-                        <small data-i18n="help_kw_aucune">Si l'objet de l'e-mail contient l'un de ces mots-clés (mot entier), il est immédiatement classé en <b>Aucune Action</b> sans appel à l'IA. Un mot-clé par ligne.</small>
+                        <small data-i18n="help_kw_aucune">Si l'objet de l'e-mail contient l'un de ces mots-clés (mot entier), il est immédiatement classé en <b>Aucune action</b> sans appel à l'IA. Un mot-clé par ligne.</small>
                     </div>
 
                     <!-- Mots-clés dans l'objet pour Action rapide -->
                     <div class="form-group">
-                        <label for="input-mots-cles-rapide" data-i18n="label_kw_rapide">Mots-clés dans l'objet (Action Rapide)</label>
+                        <label for="input-mots-cles-rapide" data-i18n="label_kw_rapide">Mots-clés dans l'objet (Action rapide)</label>
                         <textarea id="input-mots-cles-rapide" rows="3" placeholder="À valider
 Signature requise
 Demande de confirmation"></textarea>
-                        <small data-i18n="help_kw_rapide">Si l'objet contient l'un de ces termes (mot entier), il est immédiatement classé en <b>Action Rapide</b> sans appel à l'IA. Un mot-clé par ligne.</small>
+                        <small data-i18n="help_kw_rapide">Si l'objet contient l'un de ces termes (mot entier), il est immédiatement classé en <b>Action rapide</b> sans appel à l'IA. Un mot-clé par ligne.</small>
                     </div>
 
                     <!-- Règles par Alias & Destinataire (To / Cc) -->
                     <div class="form-group">
-                        <label for="input-regles-alias" data-i18n="label_alias_rules">Règles par Alias ou Destinataire (To / Cc)</label>
+                        <label for="input-regles-alias" data-i18n="label_alias_rules">Règles par alias ou destinataire (To / Cc)</label>
                         <textarea id="input-regles-alias" rows="3" placeholder="support@monentreprise.com:RAPIDE
 compta@monentreprise.com:AUCUNE
 direction@*:ATTENTION"></textarea>
@@ -297,7 +297,7 @@ direction@*:ATTENTION"></textarea>
                         <textarea id="input-vip" rows="4" placeholder="patron@monentreprise.com
 client.important@societe.fr
 @partenaire.com"></textarea>
-                        <small data-i18n="help_vip">Ces expéditeurs sont toujours classés <b>Attention Requise</b> sans consultation de l'IA. Une adresse complète (<code>jean@exemple.com</code>) ou un domaine entier (<code>@exemple.com</code>) par ligne.</small>
+                        <small data-i18n="help_vip">Ces expéditeurs sont toujours classés <b>Attention requise</b> sans consultation de l'IA. Une adresse complète (<code>jean@exemple.com</code>) ou un domaine entier (<code>@exemple.com</code>) par ligne.</small>
                     </div>
                     
                     <div class="form-group">
@@ -305,7 +305,7 @@ client.important@societe.fr
                         <textarea id="input-no-ia" rows="4" placeholder="notaire@cabinet.fr
 rh@maboite.com
 @confidentiel.org"></textarea>
-                        <small data-i18n="help_no_ia">Le contenu de ces emails est trop sensible pour être analysé par Gemini. Ils seront classés <b>Attention Requise</b> directement, sans envoyer leur contenu à l'IA. Une adresse ou un domaine par ligne.</small>
+                        <small data-i18n="help_no_ia">Le contenu de ces emails est trop sensible pour être analysé par Gemini. Ils seront classés <b>Attention requise</b> directement, sans envoyer leur contenu à l'IA. Une adresse ou un domaine par ligne.</small>
                     </div>
                     
                     <div class="form-group">
@@ -313,7 +313,7 @@ rh@maboite.com
                         <textarea id="input-aucune" rows="4" placeholder="noreply@mabanque.com
 notifications@linkedin.com
 @newsletters.fr"></textarea>
-                        <small data-i18n="help_aucune">Ces expéditeurs seront automatiquement classés <b>Aucune Action</b> sans analyse. Idéal pour les newsletters, alertes automatiques ou confirmations de commande. Une adresse ou un domaine par ligne.</small>
+                        <small data-i18n="help_aucune">Ces expéditeurs seront automatiquement classés <b>Aucune action</b> sans analyse. Idéal pour les newsletters, alertes automatiques ou confirmations de commande. Une adresse ou un domaine par ligne.</small>
                     </div>
                     
                     <div class="form-actions">
@@ -337,7 +337,7 @@ notifications@linkedin.com
                     <div class="glass-card">
                         <div class="card-icon"><span class="material-symbols-outlined">category</span></div>
                         <h3 data-i18n="guide_labels_title">Les catégories de tri</h3>
-                        <p data-i18n="guide_labels_desc">L'outil trie vos emails en 3 catégories principales : Action Rapide (réponse simple), Attention Requise (dossier complexe) et Aucune Action (informatif).</p>
+                        <p data-i18n="guide_labels_desc">L'outil trie vos emails en 3 catégories principales : Action rapide (réponse simple), Attention requise (dossier complexe) et Aucune action (informatif).</p>
                     </div>
 
                     <div class="glass-card">
