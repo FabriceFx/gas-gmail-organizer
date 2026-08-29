@@ -1,31 +1,34 @@
 'use strict';
 
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * TRI GMAIL V3.1 — Triage hybride Gmail + Gemini
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Principes :
- *   1. Quelques règles déterministes sûres évitent les appels IA inutiles.
- *   2. Les cas ambigus sont analysés par Gemini avec une sortie JSON structurée.
- *   3. Un verrou empêche deux exécutions de traiter les mêmes conversations.
- *   4. Les libellés sont appliqués par lots et les anciennes catégories retirées.
- *   5. Les erreurs répétées sont placées en quarantaine au lieu de boucler.
- *   6. Le contenu des emails est considéré comme une donnée non fiable :
- *      Gemini ne doit jamais suivre les instructions présentes dans un email.
- *
- * Préparation :
- *   - Ajouter GEMINI_API_KEY dans les propriétés du script.
- *   - Facultatif : ajouter COMPTE_EMAIL si Session.getEffectiveUser() ne renvoie
- *     aucune adresse.
- *   - Facultatif : ajouter ADRESSES_PERSONNELLES, séparées par des virgules.
- *   - Exécuter setup() une fois manuellement.
- *
- * Attention :
- *   Le sujet, une partie du corps et les métadonnées des pièces jointes sont
- *   envoyés à l'API Gemini pour les emails qui ne correspondent pas à une règle
- *   locale. Utilisez NE_PAS_ENVOYER_A_IA pour les expéditeurs sensibles.
- */
+// ═══════════════════════════════════════════════════════════════════════════
+// TRIGÉNIE — Triage hybride Gmail + Gemini
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// Constantes, libellés Gmail et paramètres par défaut utilisés par
+// l'ensemble du projet.
+//
+// Principes :
+//   1. Quelques règles déterministes sûres évitent les appels IA inutiles.
+//   2. Les cas ambigus sont analysés par Gemini avec une sortie JSON structurée.
+//   3. Un verrou empêche deux exécutions de traiter les mêmes conversations.
+//   4. Les libellés sont appliqués par lots et les anciennes catégories retirées.
+//   5. Les erreurs répétées sont placées en quarantaine au lieu de boucler.
+//   6. Le contenu des emails est considéré comme une donnée non fiable :
+//      Gemini ne doit jamais suivre les instructions présentes dans un email.
+//
+// Préparation :
+//   - Ajouter GEMINI_API_KEY dans les propriétés du script.
+//   - Facultatif : ajouter COMPTE_EMAIL si Session.getEffectiveUser() ne renvoie
+//     aucune adresse.
+//   - Facultatif : ajouter ADRESSES_PERSONNELLES, séparées par des virgules.
+//   - Exécuter setup() une fois manuellement.
+//
+// Attention :
+//   Le sujet, une partie du corps et les métadonnées des pièces jointes sont
+//   envoyés à l'API Gemini pour les emails qui ne correspondent pas à une règle
+//   locale. Utilisez NE_PAS_ENVOYER_A_IA pour les expéditeurs sensibles.
+//
+// TriGénie · Fabrice Faucheux · https://faucheux.bzh
 
 const CLES_PROPRIETES_ = Object.freeze({
     API_KEY: 'GEMINI_API_KEY',

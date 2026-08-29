@@ -3,6 +3,11 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // IDENTITÉS, ADRESSES ET RÈGLES
 // ═══════════════════════════════════════════════════════════════════════════
+//
+// Fonctions utilitaires partagées : identités et règles d'expéditeurs,
+// formatage de dates/textes, journalisation et échappement HTML.
+//
+// TriGénie · Fabrice Faucheux · https://faucheux.bzh
 
 function obtenirComptePrincipal_() {
     const props = PropertiesService.getScriptProperties();

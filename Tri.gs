@@ -3,6 +3,12 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // TRI PRINCIPAL
 // ═══════════════════════════════════════════════════════════════════════════
+//
+// Cœur du tri automatique : recherche les emails à traiter, applique les
+// règles déterministes puis délègue à Gemini, et pose les libellés
+// résultants sur chaque conversation.
+//
+// TriGénie · Fabrice Faucheux · https://faucheux.bzh
 
 /**
  * Fonction appelée par le déclencheur one-off du Dashboard.

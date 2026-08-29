@@ -1,10 +1,13 @@
 'use strict';
 
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * TESTS UNITAIRES — Fonctions pures du projet TriGénie
- * ═══════════════════════════════════════════════════════════════════════════
- */
+// ═══════════════════════════════════════════════════════════════════════════
+// TESTS UNITAIRES — Fonctions pures du projet TriGénie
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// Suite de tests unitaires couvrant les fonctions pures du projet,
+// exécutable directement depuis l'éditeur Apps Script.
+//
+// TriGénie · Fabrice Faucheux · https://faucheux.bzh
 
 /**
  * Exécute l'ensemble des tests unitaires dans Google Apps Script.

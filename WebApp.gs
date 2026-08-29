@@ -1,10 +1,13 @@
 'use strict';
 
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * WEBAPP ET BACKEND UI
- * ═══════════════════════════════════════════════════════════════════════════
- */
+// ═══════════════════════════════════════════════════════════════════════════
+// WEBAPP ET BACKEND UI
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// Point d'entrée de la WebApp (Dashboard) : rendu des pages, actions
+// rapides déclenchées depuis le Digest, et API appelée par l'interface.
+//
+// TriGénie · Fabrice Faucheux · https://faucheux.bzh
 
 /**
  * Point d'entrée de la WebApp.

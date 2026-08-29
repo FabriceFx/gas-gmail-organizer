@@ -3,6 +3,11 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // DIGEST QUOTIDIEN
 // ═══════════════════════════════════════════════════════════════════════════
+//
+// Construit et envoie l'e-mail de résumé quotidien du tri, avec un rendu
+// HTML façon notification Google Workspace.
+//
+// TriGénie · Fabrice Faucheux · https://faucheux.bzh
 
 /**
  * Génère et envoie le résumé quotidien de tri par email, avec une présentation

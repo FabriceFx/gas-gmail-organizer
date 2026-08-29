@@ -3,6 +3,11 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // MOTEUR HYBRIDE
 // ═══════════════════════════════════════════════════════════════════════════
+//
+// Prépare les données d'un thread, interroge l'API Gemini avec retry/backoff
+// et valide puis mappe sa réponse vers une catégorie de tri.
+//
+// TriGénie · Fabrice Faucheux · https://faucheux.bzh
 
 function classerThreadAvecIA_(
     thread,
