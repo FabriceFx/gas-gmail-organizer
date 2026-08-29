@@ -348,6 +348,13 @@ function fetchDashboardStatus() {
             const estQuarantaineVide = status.quarantaineCount === '0' || status.quarantaineCount === 0 || !status.quarantaineCount;
             qBadge.textContent = (status.quarantaineCount || '0') + (currentLang === 'en' ? ' quarantined' : ' en quarantaine');
             qBadge.className = !estQuarantaineVide ? 'status-badge warning' : 'status-badge inactive';
+            
+            const btnRetry = document.getElementById('btn-retry-errors');
+            if (btnRetry) {
+                btnRetry.disabled = estQuarantaineVide;
+                btnRetry.style.opacity = estQuarantaineVide ? '0.5' : '1';
+                btnRetry.style.cursor = estQuarantaineVide ? 'not-allowed' : 'pointer';
+            }
 
             // Dernier tri
             const dernierTri = status.dernierTri;
